@@ -11,6 +11,7 @@ jobs:
 
     runs-on: macos-latest
 
+
     steps:
     - uses: actions/checkout@v2
       
@@ -28,6 +29,8 @@ jobs:
       
     - name: Build Android
       run: flutter build apk
+      working-directory: ./example
     
     - name: Build iOS
       run: flutter build ios --release --no-codesign
+      working-directory: ./example
