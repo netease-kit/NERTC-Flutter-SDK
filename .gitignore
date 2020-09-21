@@ -1,0 +1,5 @@
+
+.packages
+.idea/
+example/lib/config.dart
+.dart_tool/
