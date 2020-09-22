@@ -146,7 +146,7 @@ class NERtcEngine {
   ///
   /// [enable] - true: 开启， false : 关闭
   Future<int> enableLocalVideo(bool enable) async {
-    IntValue reply = await _api.enableLocalAudio(BoolValue()..value = enable);
+    IntValue reply = await _api.enableLocalVideo(BoolValue()..value = enable);
     return reply.value;
   }
 
