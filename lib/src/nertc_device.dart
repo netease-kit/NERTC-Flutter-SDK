@@ -57,16 +57,17 @@ class NERtcDeviceManager {
   /// 开启或关闭闪光灯
   Future<int> setCameraTorchOn(bool on) async {
     assert(on != null);
-    IntValue reply = await _api.setCameraTorchOn(BoolValue()..value =  on);
+    IntValue reply = await _api.setCameraTorchOn(BoolValue()..value = on);
     return reply.value;
   }
 
   /// 设置对焦区域
   Future<int> setCameraFocusPosition(double x, double y) async {
     assert(x != null && y != null);
-    IntValue reply = await _api.setCameraFocusPosition(SetCameraFocusPositionRequest()
-        ..x = x
-        ..y = y);
+    IntValue reply =
+        await _api.setCameraFocusPosition(SetCameraFocusPositionRequest()
+          ..x = x
+          ..y = y);
     return reply.value;
   }
 
@@ -95,7 +96,7 @@ class NERtcDeviceManager {
   }
 
   /// 获取音频采集设备是否静音
-  Future<bool> isRecordDeviceMute() async  {
+  Future<bool> isRecordDeviceMute() async {
     BoolValue reply = await _api.isRecordDeviceMute();
     return reply.value;
   }
@@ -106,8 +107,8 @@ class NERtcDeviceManager {
   /// [volume] 耳返音量 [0 - 100]（默认 100）
   Future<int> enableEarBack(bool enabled, int volume) async {
     IntValue reply = await _api.enableEarback(EnableEarbackRequest()
-        ..enabled = enabled
-        ..volume = volume);
+      ..enabled = enabled
+      ..volume = volume);
     return reply.value;
   }
 

@@ -275,97 +275,133 @@ class NERtcErrorCode {
 
   ///参数错误
   static const int illegalArgument = -400;
+
   ///状态错误
   static const int illegalStatus = -500;
+
   ///未初始化
   static const int uninitialized = -501;
+
   ///操作不支持
   static const int invalidOperation = -700;
 
   ///请求超时
   static const int reserveTimeout = 408;
+
   ///参数错误
   static const int reserveInvalidParameter = 414;
+
   ///只支持两个用户, 有第三个人试图使用相同的频道名分配频道
   static const int reserveMoreThanTwoUser = 600;
+
   ///没有权限，包括没有开通音视频功能、没有开通非安全但是请求了非安全等
   static const int reserveNoPermission = 403;
+
   ///分配频道服务器出错
   static const int reserveServerFail = 500;
 
   ///内部错误
   static const int errorFatal = 30001;
+
   ///内存溢出
   static const int outOfMemory = 30002;
+
   ///参数错误
   static const int invalidParam = 30003;
+
   ///不支持
   static const int notSupported = 30004;
+
   ///状态错误
   static const int invalidState = 30005;
+
   ///缺乏资源
   static const int lackOfResource = 30006;
+
   ///序号非法
   static const int invalidIndex = 30007;
+
   ///设备未找到
   static const int deviceNotFound = 30008;
+
   ///设备ID非法
   static const int invalidDeviceSourceId = 30009;
+
   ///视频能力非法
   static const int invalidVideoProfile = 30010;
+
   ///创建设备失败
   static const int createDeviceSourceFail = 30011;
+
   ///画布非法
   static const int invalidRender = 30012;
+
   ///预览已打开
   static const int devicePreviewAlreadyStarted = 30013;
+
   ///挂起
   static const int transmitPending = 30014;
+
   ///连接失败
   static const int connectFail = 30015;
+
   ///创建dump 失败
   static const int createDumpFileFail = 30016;
+
   ///开始dump失败
   static const int startDumpFail = 30017;
 
-
   ///房间已加入
   static const int roomAlreadyJoined = 30100;
+
   ///房间未加入
   static const int roomNotJoined = 30101;
+
   ///重复离开房间
   static const int roomRepeatedlyLeave = 30102;
+
   ///请求加入房间失败
   static const int requestJoinRoomFail = 30103;
+
   ///会话未找到
   static const int sessionNotFound = 30104;
+
   ///用户未找到
   static const int userNotFound = 30105;
+
   ///非法用户
   static const int invalidUserId = 30106;
+
   ///媒体会话未建立
   static const int mediaNotStarted = 30107;
+
   ///媒体源未找到
   static const int sourceNotFound = 30108;
+
   ///连接未找到
   static const int connectionNotFound = 30200;
+
   ///媒体流未找到
   static const int streamNotFound = 30201;
+
   ///添加track失败
   static const int addTrackFail = 30202;
+
   ///track未找到
   static const int trackNotFound = 30203;
+
   ///媒体连接已断开
   static const int mediaConnectionDisconnected = 30204;
+
   ///信令断开
   static const int signalDisconnected = 30205;
+
   ///被管理员踢出房间
   static const int serverKicked = 30206;
+
   ///房间被关闭
   static const int roomClosed = 30207;
 }
-
-
 
 /// 运行时错误
 class NERtcRuntimeError {
@@ -459,7 +495,6 @@ class NERtcChannelProfile {
   /// 直播场景
   static const int liveBroadcasting = 1;
 }
-
 
 /// 远端视频流类型
 class NERtcRemoteVideoStreamType {

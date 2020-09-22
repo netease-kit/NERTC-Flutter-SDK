@@ -2,7 +2,6 @@ part of nertc;
 
 ///音效
 class NERtcAudioEffectManager {
-
   final _AudioEffectEventHandler _handler = _AudioEffectEventHandler();
 
   NERtcAudioEffectManager._();
@@ -31,13 +30,13 @@ class NERtcAudioEffectManager {
   Future<int> playEffect(int effectId, NERtcAudioEffectOptions options) async {
     assert(effectId != null);
     IntValue reply = await _api.playEffect(PlayEffectRequest()
-        ..effectId = effectId
-        ..path = options?.path
-        ..loopCount = options?.loopCount
-        ..sendEnabled = options?.sendEnabled
-        ..sendVolume = options?.sendVolume
-        ..playbackEnabled = options?.playbackEnabled
-        ..playbackVolume = options?.playbackVolume);
+      ..effectId = effectId
+      ..path = options?.path
+      ..loopCount = options?.loopCount
+      ..sendEnabled = options?.sendEnabled
+      ..sendVolume = options?.sendVolume
+      ..playbackEnabled = options?.playbackEnabled
+      ..playbackVolume = options?.playbackVolume);
     return reply.value;
   }
 
@@ -94,8 +93,8 @@ class NERtcAudioEffectManager {
     assert(effectId != null);
     assert(volume != null);
     IntValue reply = await _api.setEffectSendVolume(SetEffectSendVolumeRequest()
-        ..effectId = effectId
-        ..volume = volume);
+      ..effectId = effectId
+      ..volume = volume);
     return reply.value;
   }
 
@@ -104,7 +103,8 @@ class NERtcAudioEffectManager {
   /// [effectId] 指定音效的 ID。每个音效均有唯一的 ID
   Future<int> getEffectSendVolume(int effectId) async {
     assert(effectId != null);
-    IntValue reply = await _api.getEffectPlaybackVolume(IntValue()..value = effectId);
+    IntValue reply =
+        await _api.getEffectPlaybackVolume(IntValue()..value = effectId);
     return reply.value;
   }
 
@@ -115,9 +115,10 @@ class NERtcAudioEffectManager {
   Future<int> setEffectPlaybackVolume(int effectId, int volume) async {
     assert(effectId != null);
     assert(volume != null);
-    IntValue reply = await _api.setEffectPlaybackVolume(SetEffectPlaybackVolumeRequest()
-        ..effectId = effectId
-        ..volume = volume);
+    IntValue reply =
+        await _api.setEffectPlaybackVolume(SetEffectPlaybackVolumeRequest()
+          ..effectId = effectId
+          ..volume = volume);
     return reply.value;
   }
 
@@ -126,14 +127,20 @@ class NERtcAudioEffectManager {
   /// [effectId] 指定音效的 ID。每个音效均有唯一的 ID
   Future<int> getEffectPlaybackVolume(int effectId) async {
     assert(effectId != null);
-    IntValue reply = await _api.getEffectPlaybackVolume(IntValue()..value = effectId);
+    IntValue reply =
+        await _api.getEffectPlaybackVolume(IntValue()..value = effectId);
     return reply.value;
   }
 }
 
 class NERtcAudioEffectOptions {
   const NERtcAudioEffectOptions(
-      {this.path, this.loopCount, this.sendEnabled, this.sendVolume, this.playbackEnabled, this.playbackVolume});
+      {this.path,
+      this.loopCount,
+      this.sendEnabled,
+      this.sendVolume,
+      this.playbackEnabled,
+      this.playbackVolume});
 
   final String path;
   final int loopCount;

@@ -1,5 +1,5 @@
 name: nertc
-description: Flutter plugin for NetEase RTC SDK.
+description: A Flutter plugin for NetEase RTC SDK on Android and iOS.
 version: 0.3.6+3
 homepage: https://yunxin.163.com/
 

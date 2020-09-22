@@ -1,4 +1,3 @@
-
 part of nertc;
 
 mixin _EventHandler {
