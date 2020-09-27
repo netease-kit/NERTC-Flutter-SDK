@@ -14,7 +14,8 @@ class CallPage extends StatefulWidget {
   }
 }
 
-class _CallPageState extends State<CallPage> with NERtcChannelEventCallback, NERtcStatsEventCallback {
+class _CallPageState extends State<CallPage>
+    with NERtcChannelEventCallback, NERtcStatsEventCallback {
   NERtcEngine _engine = NERtcEngine();
   _UserSession _localSession = _UserSession();
   _UserSession _remoteSession = _UserSession();
@@ -40,7 +41,7 @@ class _CallPageState extends State<CallPage> with NERtcChannelEventCallback, NER
   }
 
   Future<void> _initRenderers() async {
-    _localSession.renderer =  await _engine.createVideoRenderer();
+    _localSession.renderer = await _engine.createVideoRenderer();
     setState(() {});
   }
 
@@ -77,10 +78,9 @@ class _CallPageState extends State<CallPage> with NERtcChannelEventCallback, NER
     Navigator.pop(context);
   }
 
-
   Widget buildCallingVideoViewWidget(BuildContext context) {
     if (_remoteSession.renderer != null && _localSession.renderer != null) {
-      NERtcVideoRenderer big =  _remoteSession.renderer;
+      NERtcVideoRenderer big = _remoteSession.renderer;
       NERtcVideoRenderer small = _localSession.renderer;
       return Stack(children: <Widget>[
         NERtcVideoView(big),
@@ -93,7 +93,7 @@ class _CallPageState extends State<CallPage> with NERtcChannelEventCallback, NER
           ),
         ),
       ]);
-    } else if(_localSession.renderer != null) {
+    } else if (_localSession.renderer != null) {
       return NERtcVideoView(_localSession.renderer);
     } else {
       return Container();
@@ -132,7 +132,8 @@ class _CallPageState extends State<CallPage> with NERtcChannelEventCallback, NER
         videoEncodeMode: NERtcMediaCodecMode.software,
         videoDecodeMode: NERtcMediaCodecMode.software,
         videoAdapt: true);
-    _engine.create(appKey: Config.APP_KEY, channelEventCallback: this, options: options);
+    _engine.create(
+        appKey: Config.APP_KEY, channelEventCallback: this, options: options);
     _engine.setStatsEventCallback(this);
   }
 
@@ -220,7 +221,10 @@ class _CallPageState extends State<CallPage> with NERtcChannelEventCallback, NER
 
   @override
   void onUserVideoProfileUpdate(int uid, int maxProfile) {
-    print('onUserVideoProfileUpdate->' + uid.toString() + ', ' + maxProfile.toString());
+    print('onUserVideoProfileUpdate->' +
+        uid.toString() +
+        ', ' +
+        maxProfile.toString());
   }
 
   @override
@@ -230,9 +234,10 @@ class _CallPageState extends State<CallPage> with NERtcChannelEventCallback, NER
   }
 
   Future<void> setupVideoView(int uid, int maxProfile) async {
-    _remoteSession.renderer =  await _engine.createVideoRenderer();
+    _remoteSession.renderer = await _engine.createVideoRenderer();
     _remoteSession.renderer.addToRemoteVideoSink(uid);
-    _engine.subscribeRemoteVideoStream(uid, NERtcRemoteVideoStreamType.high, true);
+    _engine.subscribeRemoteVideoStream(
+        uid, NERtcRemoteVideoStreamType.high, true);
     setState(() {});
   }
 
@@ -273,7 +278,8 @@ class _CallPageState extends State<CallPage> with NERtcChannelEventCallback, NER
   void onLocalAudioVolumeIndication(int volume) {}
 
   @override
-  void onRemoteAudioVolumeIndication(List<NERtcAudioVolumeInfo> volumeList, int totalVolume) {}
+  void onRemoteAudioVolumeIndication(
+      List<NERtcAudioVolumeInfo> volumeList, int totalVolume) {}
 
   @override
   void onWarning(int code) {}

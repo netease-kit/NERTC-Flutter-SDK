@@ -218,7 +218,6 @@ class NERtcAudioSendStats {
         'rtt: $rtt, volume: $volume, numChannels: $numChannels, '
         'sentSampleRate: $sentSampleRate}';
   }
-
 }
 
 /// 远端视频流的统计信息
@@ -274,7 +273,6 @@ class NERtcVideoRecvStats {
         ' rendererOutputFrameRate: $rendererOutputFrameRate,'
         ' totalFrozenTime: $totalFrozenTime, frozenRate: $frozenRate}';
   }
-
 }
 
 /// 本地视频流上传统计信息
@@ -315,12 +313,10 @@ class NERtcVideoSendStats {
         'sendBitrate: $sendBitrate, encoderOutputFrameRate: $encoderOutputFrameRate, '
         'captureFrameRate: $captureFrameRate, targetBitrate: $targetBitrate, sentFrameRate: $sentFrameRate}';
   }
-
 }
 
 /// 语音音量
 class NERtcAudioVolumeInfo {
-
   /// 用户 ID
   int uid;
 
@@ -336,7 +332,6 @@ class NERtcAudioVolumeInfo {
     return 'AudioVolumeInfo{uid: $uid, volume: $volume}';
   }
 }
-
 
 /// 用户的网络质量
 class NERtcNetworkQualityInfo {

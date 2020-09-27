@@ -20,7 +20,9 @@ class NERtcVideoRenderer {
     IntValue reply = await _api.createVideoRenderer();
     _textureId = reply.value;
     _streamSubscription =
-        EventChannel('NERtcFlutterRenderer/Texture$_textureId').receiveBroadcastStream().listen(_onData);
+        EventChannel('NERtcFlutterRenderer/Texture$_textureId')
+            .receiveBroadcastStream()
+            .listen(_onData);
   }
 
   void _onData(dynamic event) {
@@ -49,8 +51,11 @@ class NERtcVideoRenderer {
 
   int get textureId => _textureId;
 
-  double get aspectRatio =>
-      (_width * _height == 0) ? 1.0 : (_rotation == 90 || _rotation == 270) ? _height / _width : _width / _height;
+  double get aspectRatio => (_width * _height == 0)
+      ? 1.0
+      : (_rotation == 90 || _rotation == 270)
+          ? _height / _width
+          : _width / _height;
 
   NERtcVideoViewFitType get videoViewFitType => _videoViewFitType;
 
@@ -83,14 +88,16 @@ class NERtcVideoRenderer {
   }
 
   Future<int> _doSetSource(bool local, int uid, int textureId) async {
-    if(textureId == null) return -1;
+    if (textureId == null) return -1;
     if (local) {
-      IntValue reply = await _api.setupLocalVideoRenderer(IntValue()..value = textureId);
+      IntValue reply =
+          await _api.setupLocalVideoRenderer(IntValue()..value = textureId);
       return reply.value;
     } else {
-      IntValue reply = await _api.setupRemoteVideoRenderer(SetupRemoteVideoRendererRequest()
-        ..textureId = textureId
-        ..uid = uid);
+      IntValue reply =
+          await _api.setupRemoteVideoRenderer(SetupRemoteVideoRendererRequest()
+            ..textureId = textureId
+            ..uid = uid);
       return reply.value;
     }
   }
@@ -146,9 +153,12 @@ class _NERtcVideoViewState extends State<NERtcVideoView> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
       return Center(
-        child: widget._renderer._textureId == null ? Container() : _buildVideoView(constraints),
+        child: widget._renderer._textureId == null
+            ? Container()
+            : _buildVideoView(constraints),
       );
     });
   }
@@ -156,7 +166,9 @@ class _NERtcVideoViewState extends State<NERtcVideoView> {
   Widget _buildVideoView(BoxConstraints constraints) {
     return Container(
       child: FittedBox(
-        fit: _fitType == NERtcVideoViewFitType.contain ? BoxFit.contain : BoxFit.cover,
+        fit: _fitType == NERtcVideoViewFitType.contain
+            ? BoxFit.contain
+            : BoxFit.cover,
         child: Center(
           child: SizedBox(
             height: constraints.maxHeight,

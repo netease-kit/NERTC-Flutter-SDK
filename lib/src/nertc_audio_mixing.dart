@@ -8,9 +8,7 @@ class NERtcAudioMixingManager {
 
   _EventHandler _eventHandler() => _handler;
 
-
   AudioMixingApi _api = AudioMixingApi();
-
 
   Future<int> setEventCallback(NERtcAudioMixingEventCallback callback) async {
     assert(callback != null);
@@ -28,13 +26,12 @@ class NERtcAudioMixingManager {
   /// 开始混音任务
   Future<int> startAudioMixing(NERtcAudioMixingOptions options) async {
     IntValue reply = await _api.startAudioMixing(StartAudioMixingRequest()
-        ..path = options?.path
-        ..loopCount = options?.loopCount
-        ..sendEnabled = options?.sendEnabled
-        ..sendVolume = options?.sendVolume
-        ..playbackEnabled = options?.playbackEnabled
-        ..playbackVolume = options?.playbackVolume
-      );
+      ..path = options?.path
+      ..loopCount = options?.loopCount
+      ..sendEnabled = options?.sendEnabled
+      ..sendVolume = options?.sendVolume
+      ..playbackEnabled = options?.playbackEnabled
+      ..playbackVolume = options?.playbackVolume);
     return reply.value;
   }
 
@@ -59,7 +56,8 @@ class NERtcAudioMixingManager {
   /// 设置混音发送音量
   Future<int> setAudioMixingSendVolume(int volume) async {
     assert(volume != null);
-    IntValue reply = await _api.setAudioMixingSendVolume(IntValue()..value = volume);
+    IntValue reply =
+        await _api.setAudioMixingSendVolume(IntValue()..value = volume);
     return reply.value;
   }
 
@@ -72,7 +70,8 @@ class NERtcAudioMixingManager {
   /// 设置混音播放音量
   Future<int> setAudioMixingPlaybackVolume(int volume) async {
     assert(volume != null);
-    IntValue reply = await _api.setAudioMixingPlaybackVolume(IntValue()..value = volume);
+    IntValue reply =
+        await _api.setAudioMixingPlaybackVolume(IntValue()..value = volume);
     return reply.value;
   }
 
@@ -97,14 +96,20 @@ class NERtcAudioMixingManager {
   /// 定位到具体混音时间点
   Future<int> setAudioMixingPosition(int position) async {
     assert(position != null);
-    IntValue reply = await _api.setAudioMixingPosition(IntValue()..value = position);
+    IntValue reply =
+        await _api.setAudioMixingPosition(IntValue()..value = position);
     return reply.value;
   }
 }
 
 class NERtcAudioMixingOptions {
   const NERtcAudioMixingOptions(
-      {this.path, this.loopCount, this.sendEnabled, this.sendVolume, this.playbackEnabled, this.playbackVolume});
+      {this.path,
+      this.loopCount,
+      this.sendEnabled,
+      this.sendVolume,
+      this.playbackEnabled,
+      this.playbackVolume});
 
   final String path;
   final int loopCount;

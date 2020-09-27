@@ -8,4 +8,3 @@ class _PlatformUtils {
 
   static MethodChannel get methodChannel => _kChannel;
 }
-

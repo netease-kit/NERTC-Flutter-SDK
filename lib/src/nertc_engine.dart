@@ -3,7 +3,6 @@
 part of nertc;
 
 class NERtcEngine {
-
   factory NERtcEngine() => _instance;
 
   NERtcEngine._() {
@@ -124,7 +123,8 @@ class NERtcEngine {
   /// [subscribe] true: 订阅 false: 取消订阅
   Future<int> subscribeAllRemoteAudioStreams(bool subscribe) async {
     assert(subscribe != null);
-    IntValue reply = await _api.subscribeAllRemoteAudioStreams(BoolValue()..value = subscribe);
+    IntValue reply = await _api
+        .subscribeAllRemoteAudioStreams(BoolValue()..value = subscribe);
     return reply.value;
   }
 
@@ -175,7 +175,8 @@ class NERtcEngine {
   /// 开启屏幕共享
   Future<int> startScreenCapture(int screenProfile) async {
     if (defaultTargetPlatform == TargetPlatform.android) {
-      IntValue reply = await _api.startScreenCapture(IntValue()..value = screenProfile);
+      IntValue reply =
+          await _api.startScreenCapture(IntValue()..value = screenProfile);
       return reply.value;
     } else {
       return Future.value(-1);
@@ -198,10 +199,11 @@ class NERtcEngine {
     assert(uid != null);
     assert(streamType != null);
     assert(subscribe != null);
-    IntValue reply = await _api.subscribeRemoteVideoStream(SubscribeRemoteVideoStreamRequest()
-      ..uid = uid
-      ..streamType = streamType
-      ..subscribe = subscribe);
+    IntValue reply = await _api
+        .subscribeRemoteVideoStream(SubscribeRemoteVideoStreamRequest()
+          ..uid = uid
+          ..streamType = streamType
+          ..subscribe = subscribe);
     return reply.value;
   }
 
@@ -236,9 +238,10 @@ class NERtcEngine {
   /// [enable] 是否启用说话者音量提示
   /// [interval] 指定音量提示的时间间隔，单位为毫秒。必须设置为 100 毫秒的整数倍值
   Future<int> enableAudioVolumeIndication(bool enable, int interval) async {
-    IntValue reply = await _api.enableAudioVolumeIndication(EnableAudioVolumeIndicationRequest()
-    ..enable = enable
-    ..interval = interval);
+    IntValue reply = await _api
+        .enableAudioVolumeIndication(EnableAudioVolumeIndicationRequest()
+          ..enable = enable
+          ..interval = interval);
     return reply.value;
   }
 

@@ -46,7 +46,8 @@ class _StatsEventHandler with _EventHandler {
 
   void _handleOnNetworkQuality(MethodCall call) {
     List<dynamic> arguments = call.arguments;
-    List<NERtcNetworkQualityInfo> statsList = new List<NERtcNetworkQualityInfo>();
+    List<NERtcNetworkQualityInfo> statsList =
+        new List<NERtcNetworkQualityInfo>();
     for (Map<dynamic, dynamic> argument in arguments) {
       statsList.add(NERtcNetworkQualityInfo.fromMap(argument));
     }

@@ -1,4 +1,5 @@
 # nertc
+[![build Status](https://github.com/netease-im/NERTC-Flutter-SDK/workflows/build/badge.svg)](https://github.com/netease-im/NERTC-Flutter-SDK/actions)
 
 Flutter plugin for NetEase RTC SDK.
 

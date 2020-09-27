@@ -85,7 +85,6 @@ class PlayEffectRequest {
   int playbackVolume;
 }
 
-
 class SetEffectSendVolumeRequest {
   int effectId;
   int volume;
@@ -115,7 +114,8 @@ abstract class EngineApi {
   IntValue joinChannel(JoinChannelRequest request);
   IntValue leaveChannel();
   IntValue enableLocalAudio(BoolValue enable);
-  IntValue subscribeRemoteAudioStream(SubscribeRemoteAudioStreamRequest request);
+  IntValue subscribeRemoteAudioStream(
+      SubscribeRemoteAudioStreamRequest request);
   IntValue subscribeAllRemoteAudioStreams(BoolValue subscribe);
   IntValue setAudioProfile(SetAudioProfileRequest request);
   IntValue setLocalVideoConfig(SetLocalVideoConfigRequest request);
@@ -124,12 +124,14 @@ abstract class EngineApi {
   IntValue enableLocalVideo(BoolValue enable);
   IntValue startScreenCapture(IntValue screenProfile);
   IntValue stopScreenCapture();
-  IntValue subscribeRemoteVideoStream(SubscribeRemoteVideoStreamRequest request);
+  IntValue subscribeRemoteVideoStream(
+      SubscribeRemoteVideoStreamRequest request);
   IntValue muteLocalAudioStream(BoolValue mute);
   IntValue muteLocalVideoStream(BoolValue mute);
   IntValue startAudioDump();
   IntValue stopAudioDump();
-  IntValue enableAudioVolumeIndication(EnableAudioVolumeIndicationRequest request);
+  IntValue enableAudioVolumeIndication(
+      EnableAudioVolumeIndicationRequest request);
   IntValue adjustRecordingSignalVolume(IntValue volume);
   IntValue adjustPlaybackSignalVolume(IntValue volume);
 }
