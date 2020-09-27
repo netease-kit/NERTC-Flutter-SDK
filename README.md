@@ -1,5 +1,5 @@
 # nertc
-[![build Status](https://github.com/netease-im/NERTC-Flutter-SDK/workflows/build/badge.svg)](https://github.com/netease-im/NERTC-Flutter-SDK/actions)
+[![build Status](https://github.com/netease-im/NERTC-Flutter-SDK/workflows/build/badge.svg)](https://github.com/netease-im/NERTC-Flutter-SDK/actions) [![pub package](https://img.shields.io/pub/v/nertc.svg)](https://pub.dev/packages/nertc)
 
 Flutter plugin for NetEase RTC SDK.
 
