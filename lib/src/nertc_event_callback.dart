@@ -96,6 +96,10 @@ abstract class NERtcChannelEventCallback {
   /// [newConnectionType] 参考 [ConnectionType]
   void onConnectionTypeChanged(int newConnectionType);
 
+
+  /// 重连开始回调，SDK内部进行重连时回调，重连结果参考 [onReJoinChannel]、[onDisconnect]
+  void onReconnectingStart();
+
   /// 重新加入频道回调
   /// 有时候由于网络原因，客户端可能会和服务器失去连接，SDK会进行自动重连，自动重连后触发此回调方法
   ///

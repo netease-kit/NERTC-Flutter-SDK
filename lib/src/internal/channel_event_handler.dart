@@ -67,6 +67,9 @@ class _ChannelEventHandler with _EventHandler {
       case 'onReJoinChannel':
         _handleOnReJoinChannel(call);
         return true;
+      case 'onReconnectingStart':
+        _handleOnReconnectingStart(call);
+        return true;
       case 'onLocalAudioVolumeIndication':
         _handleOnLocalAudioVolumeIndication(call);
         return true;
@@ -175,6 +178,10 @@ class _ChannelEventHandler with _EventHandler {
   void _handleOnReJoinChannel(MethodCall call) {
     Map arguments = call.arguments;
     _callback.onReJoinChannel(arguments['result']);
+  }
+
+  void _handleOnReconnectingStart(MethodCall call) {
+    _callback.onReconnectingStart();
   }
 
   void _handleOnLocalAudioVolumeIndication(MethodCall call) {

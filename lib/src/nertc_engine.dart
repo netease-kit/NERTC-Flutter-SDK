@@ -48,11 +48,10 @@ class NERtcEngine {
       ..videoDecodeMode = options?.videoDecodeMode?.index
       ..serverRecordAudio = options?.serverRecordAudio
       ..serverRecordVideo = options?.serverRecordVideo
-      ..videoAdapt = options?.videoAdapt
       ..serverRecordMode = options?.serverRecordMode?.index
       ..serverRecordSpeaker = options?.serverRecordSpeaker
       ..publishSelfStream = options?.publishSelfStream
-      ..channelProfile = options?.channelProfile);
+      ..videoSendMode = options?.videoSendMode?.index);
   }
 
   /// Release rtc engine
@@ -73,6 +72,18 @@ class NERtcEngine {
   Future<int> clearStatsEventCallback() async {
     _statsEventHandler.setCallback(null);
     IntValue reply = await _api.clearStatsEventCallback();
+    return reply.value;
+  }
+
+  ///设置频道场景
+  ///只能在加入频道之前调用
+  ///SDK 会根据不同的使用场景采用不同的优化策略，通信场景偏好流畅，直播场景偏好画质。
+  ///
+  /// [channelProfile] - 频道场景. [NERtcChannelProfile]
+  Future<int> setChannelProfile(int channelProfile) async {
+    assert(channelProfile != null);
+    IntValue reply =
+        await _api.setChannelProfile(IntValue()..value = channelProfile);
     return reply.value;
   }
 
@@ -100,6 +111,7 @@ class NERtcEngine {
   ///
   /// [enable] - true: 开启， false : 关闭
   Future<int> enableLocalAudio(bool enable) async {
+    assert(enable != null);
     IntValue reply = await _api.enableLocalAudio(BoolValue()..value = enable);
     return reply.value;
   }
@@ -142,6 +154,15 @@ class NERtcEngine {
     return reply.value;
   }
 
+  /// 是否开启双流模式
+  ///
+  /// [enable] - true:开启小流（默认），false: 关闭小流
+  Future<int> enableDualStreamMode(bool enable) async {
+    IntValue reply =
+        await _api.enableDualStreamMode(BoolValue()..value = enable);
+    return reply.value;
+  }
+
   /// 开启/关闭本地视频采集以及发送
   ///
   /// [enable] - true: 开启， false : 关闭
@@ -156,7 +177,12 @@ class NERtcEngine {
     IntValue reply = await _api.setLocalVideoConfig(SetLocalVideoConfigRequest()
       ..frontCamera = videoConfig.frontCamera
       ..videoCropMode = videoConfig.videoCropMode
-      ..videoProfile = videoConfig.videoProfile);
+      ..videoProfile = videoConfig.videoProfile
+      ..frameRate = videoConfig.frameRate
+      ..minFrameRate = videoConfig.minFrameRate
+      ..bitrate = videoConfig.bitrate
+      ..minBitrate = videoConfig.minBitrate
+      ..degradationPrefer = videoConfig.degradationPrefer);
     return reply.value;
   }
 

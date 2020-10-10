@@ -27,7 +27,7 @@ class NERtcStats {
   /// 当前 App 的内存大小 (KB)
   int memoryAppUsageInKBytes;
 
-  /// 自加入频道的通话时长 ， 退出后再加入重新计时 ( 单位：S)
+  /// 自加入频道的通话时长， 退出后再加入重新计时 ( 单位：S)
   int totalDuration;
 
   /// 自加入频道后累计的发送的音频字节数（Byte）

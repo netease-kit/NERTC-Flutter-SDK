@@ -2,6 +2,7 @@
 
 part of nertc;
 
+/// 音视频通话相关的参数设置
 class NERtcOptions {
   const NERtcOptions(
       {this.logDir,
@@ -11,24 +12,43 @@ class NERtcOptions {
       this.videoDecodeMode,
       this.serverRecordAudio,
       this.serverRecordVideo,
-      this.videoAdapt,
       this.serverRecordMode,
       this.serverRecordSpeaker,
       this.publishSelfStream,
-      this.channelProfile});
+      this.videoSendMode});
 
+  /// 日志路径
   final String logDir;
+
+  /// 日志等级
   final int logLevel;
+
+  /// 是否自动订阅音频（默认订阅）
   final bool autoSubscribeAudio;
+
+  /// 视频编码模式
   final NERtcMediaCodecMode videoEncodeMode;
+
+  /// 视频解码模式.
   final NERtcMediaCodecMode videoDecodeMode;
+
+  /// 是否开启服务器录制语音
   final bool serverRecordAudio;
+
+  /// 是否开启服务器录制视频
   final bool serverRecordVideo;
-  final bool videoAdapt;
+
+  /// 服务器录制模式
   final NERtcServerRecordMode serverRecordMode;
+
+  /// 是否服务器录制主讲人
   final bool serverRecordSpeaker;
+
+  /// 是否允许在房间推流时推送自身的视频流
   final bool publishSelfStream;
-  final int channelProfile;
+
+  /// 视频发布模式
+  final NERtcVideoSendMode videoSendMode;
 }
 
 /// 视频设置参数
@@ -42,9 +62,28 @@ class NERtcVideoConfig {
   /// 摄像头位置，默认前置摄像头
   bool frontCamera = true;
 
+  /// 视频编码帧率
+  int frameRate = NERtcVideoFrameRate.fps_30;
+
+  /// 最小帧率。0：表示使用默认帧率
+  int minFrameRate = 0;
+
+  /// 视频编码码率，单位为Kbps。 0：表示使用默认码率，手动设置请参考码表
+  int bitrate = 0;
+
+  /// 视频编码最小码率，单位为Kbps。直播场景下使用，0：表示使用默认
+  int minBitrate = 0;
+
+  /// 带宽受限时的视频编码降级偏好
+  int degradationPrefer = NERtcDegradationPreference.degradationDefault;
+
   @override
   String toString() {
-    return 'VideoConfig{videoProfile: $videoProfile, videoCropMode: $videoCropMode, frontCamera: $frontCamera}';
+    return 'NERtcVideoConfig{videoProfile: $videoProfile, '
+        'videoCropMode: $videoCropMode, frontCamera: $frontCamera, '
+        'frameRate: $frameRate, minFrameRate: $minFrameRate,'
+        ' bitrate: $bitrate, minBitrate: $minBitrate, '
+        'degradationPrefer: $degradationPrefer}';
   }
 }
 
@@ -503,4 +542,70 @@ class NERtcRemoteVideoStreamType {
 
   /// 低分辨率的远端视频流
   static const int low = 1;
+}
+
+/// 与会者角色， 主播/观众
+class NERtcUserRole {
+  /// 主播模式，能发送和接收数据
+  static const int broadcaster = 1;
+
+  /// 观众模式，只能接收数据
+  static const int audience = 2;
+}
+
+/// 语音设备类型
+class NERtcAudioFocusMode {
+  /// 不请求音频焦点
+  static const int audioFocusOff = 0;
+
+  /// 长时间获得焦点
+  static const int audioFocusGain = 1;
+
+  /// 短暂性获得焦点，用完应立即释放，比如notification sounds
+  static const int audioFocusGainTransient = 2;
+
+  /// 临时请求, 降低其他音频应用的声音，可混音播放
+  static const int audioFocusGainTransientMayDuck = 3;
+
+  /// 短暂性获得焦点，录音或者语音识别
+  static const int audioFocusGainTransientExclusive = 4;
+}
+
+/// 视频发布流类型
+enum NERtcVideoSendMode {
+  /// 按对端订阅格式发流
+  none,
+
+  /// 初始发送大流
+  high,
+
+  /// 初始发布小流
+  low,
+
+  /// 初始大小流同时发送
+  all
+}
+
+/// 带宽受限时的视频编码降级偏好
+class NERtcDegradationPreference {
+  /// COMMUNICATION模式（BALANCED）/LIVE_BROADCASTING（MAINTAIN_QUALITY）
+  static const int degradationDefault = 0;
+
+  /// 降低视频质量以保证编码帧率
+  static const int degradationMaintainFrameRate = 1;
+
+  /// 降低编码帧率以保证视频质量
+  static const int degradationMaintainQuality = 2;
+
+  /// 在编码帧率和视频质量之间保持平衡
+  static const int degradationBalanced = 3;
+}
+
+/// 视频编码帧率
+class NERtcVideoFrameRate {
+  static const int fps_7 = 7;
+  static const int fps_10 = 10;
+  static const int fps_15 = 15;
+  static const int fps_24 = 24;
+  static const int fps_30 = 30;
 }

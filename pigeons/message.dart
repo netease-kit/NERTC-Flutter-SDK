@@ -9,11 +9,10 @@ class CreateEngineRequest {
   int videoDecodeMode;
   bool serverRecordAudio;
   bool serverRecordVideo;
-  bool videoAdapt;
   int serverRecordMode;
   bool serverRecordSpeaker;
   bool publishSelfStream;
-  int channelProfile;
+  int videoSendMode;
 }
 
 class JoinChannelRequest {
@@ -36,6 +35,11 @@ class SetLocalVideoConfigRequest {
   int videoProfile;
   int videoCropMode;
   bool frontCamera;
+  int frameRate;
+  int minFrameRate;
+  int bitrate;
+  int minBitrate;
+  int degradationPrefer;
 }
 
 class SubscribeRemoteVideoStreamRequest {
@@ -111,6 +115,7 @@ abstract class EngineApi {
   void release();
   IntValue setStatsEventCallback();
   IntValue clearStatsEventCallback();
+  IntValue setChannelProfile(IntValue channelProfile);
   IntValue joinChannel(JoinChannelRequest request);
   IntValue leaveChannel();
   IntValue enableLocalAudio(BoolValue enable);
@@ -118,6 +123,7 @@ abstract class EngineApi {
       SubscribeRemoteAudioStreamRequest request);
   IntValue subscribeAllRemoteAudioStreams(BoolValue subscribe);
   IntValue setAudioProfile(SetAudioProfileRequest request);
+  IntValue enableDualStreamMode(BoolValue enable);
   IntValue setLocalVideoConfig(SetLocalVideoConfigRequest request);
   IntValue startVideoPreview();
   IntValue stopVideoPreview();
@@ -161,6 +167,7 @@ abstract class DeviceManagerApi {
   BoolValue isRecordDeviceMute();
   IntValue enableEarback(EnableEarbackRequest request);
   IntValue setEarbackVolume(IntValue volume);
+  IntValue setAudioFocusMode(IntValue focusMode);
 }
 
 @HostApi()

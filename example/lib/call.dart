@@ -130,8 +130,7 @@ class _CallPageState extends State<CallPage>
     NERtcOptions options = NERtcOptions(
         autoSubscribeAudio: true,
         videoEncodeMode: NERtcMediaCodecMode.software,
-        videoDecodeMode: NERtcMediaCodecMode.software,
-        videoAdapt: true);
+        videoDecodeMode: NERtcMediaCodecMode.software);
     _engine.create(
         appKey: Config.APP_KEY, channelEventCallback: this, options: options);
     _engine.setStatsEventCallback(this);
@@ -286,6 +285,9 @@ class _CallPageState extends State<CallPage>
 
   @override
   void onNetworkQuality(List<NERtcNetworkQualityInfo> statsList) {}
+
+  @override
+  void onReconnectingStart() {}
 }
 
 class _UserSession {
