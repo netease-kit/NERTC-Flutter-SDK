@@ -140,10 +140,6 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
   if ((NSNull *)result.serverRecordVideo == [NSNull null]) {
     result.serverRecordVideo = nil;
   }
-  result.videoAdapt = dict[@"videoAdapt"];
-  if ((NSNull *)result.videoAdapt == [NSNull null]) {
-    result.videoAdapt = nil;
-  }
   result.serverRecordMode = dict[@"serverRecordMode"];
   if ((NSNull *)result.serverRecordMode == [NSNull null]) {
     result.serverRecordMode = nil;
@@ -156,14 +152,14 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
   if ((NSNull *)result.publishSelfStream == [NSNull null]) {
     result.publishSelfStream = nil;
   }
-  result.channelProfile = dict[@"channelProfile"];
-  if ((NSNull *)result.channelProfile == [NSNull null]) {
-    result.channelProfile = nil;
+  result.videoSendMode = dict[@"videoSendMode"];
+  if ((NSNull *)result.videoSendMode == [NSNull null]) {
+    result.videoSendMode = nil;
   }
   return result;
 }
 -(NSDictionary*)toMap {
-  return [NSDictionary dictionaryWithObjectsAndKeys:(self.appKey ? self.appKey : [NSNull null]), @"appKey", (self.logDir ? self.logDir : [NSNull null]), @"logDir", (self.logLevel ? self.logLevel : [NSNull null]), @"logLevel", (self.autoSubscribeAudio ? self.autoSubscribeAudio : [NSNull null]), @"autoSubscribeAudio", (self.videoEncodeMode ? self.videoEncodeMode : [NSNull null]), @"videoEncodeMode", (self.videoDecodeMode ? self.videoDecodeMode : [NSNull null]), @"videoDecodeMode", (self.serverRecordAudio ? self.serverRecordAudio : [NSNull null]), @"serverRecordAudio", (self.serverRecordVideo ? self.serverRecordVideo : [NSNull null]), @"serverRecordVideo", (self.videoAdapt ? self.videoAdapt : [NSNull null]), @"videoAdapt", (self.serverRecordMode ? self.serverRecordMode : [NSNull null]), @"serverRecordMode", (self.serverRecordSpeaker ? self.serverRecordSpeaker : [NSNull null]), @"serverRecordSpeaker", (self.publishSelfStream ? self.publishSelfStream : [NSNull null]), @"publishSelfStream", (self.channelProfile ? self.channelProfile : [NSNull null]), @"channelProfile", nil];
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.appKey ? self.appKey : [NSNull null]), @"appKey", (self.logDir ? self.logDir : [NSNull null]), @"logDir", (self.logLevel ? self.logLevel : [NSNull null]), @"logLevel", (self.autoSubscribeAudio ? self.autoSubscribeAudio : [NSNull null]), @"autoSubscribeAudio", (self.videoEncodeMode ? self.videoEncodeMode : [NSNull null]), @"videoEncodeMode", (self.videoDecodeMode ? self.videoDecodeMode : [NSNull null]), @"videoDecodeMode", (self.serverRecordAudio ? self.serverRecordAudio : [NSNull null]), @"serverRecordAudio", (self.serverRecordVideo ? self.serverRecordVideo : [NSNull null]), @"serverRecordVideo", (self.serverRecordMode ? self.serverRecordMode : [NSNull null]), @"serverRecordMode", (self.serverRecordSpeaker ? self.serverRecordSpeaker : [NSNull null]), @"serverRecordSpeaker", (self.publishSelfStream ? self.publishSelfStream : [NSNull null]), @"publishSelfStream", (self.videoSendMode ? self.videoSendMode : [NSNull null]), @"videoSendMode", nil];
 }
 @end
 
@@ -254,10 +250,30 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
   if ((NSNull *)result.frontCamera == [NSNull null]) {
     result.frontCamera = nil;
   }
+  result.frameRate = dict[@"frameRate"];
+  if ((NSNull *)result.frameRate == [NSNull null]) {
+    result.frameRate = nil;
+  }
+  result.minFrameRate = dict[@"minFrameRate"];
+  if ((NSNull *)result.minFrameRate == [NSNull null]) {
+    result.minFrameRate = nil;
+  }
+  result.bitrate = dict[@"bitrate"];
+  if ((NSNull *)result.bitrate == [NSNull null]) {
+    result.bitrate = nil;
+  }
+  result.minBitrate = dict[@"minBitrate"];
+  if ((NSNull *)result.minBitrate == [NSNull null]) {
+    result.minBitrate = nil;
+  }
+  result.degradationPrefer = dict[@"degradationPrefer"];
+  if ((NSNull *)result.degradationPrefer == [NSNull null]) {
+    result.degradationPrefer = nil;
+  }
   return result;
 }
 -(NSDictionary*)toMap {
-  return [NSDictionary dictionaryWithObjectsAndKeys:(self.videoProfile ? self.videoProfile : [NSNull null]), @"videoProfile", (self.videoCropMode ? self.videoCropMode : [NSNull null]), @"videoCropMode", (self.frontCamera ? self.frontCamera : [NSNull null]), @"frontCamera", nil];
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.videoProfile ? self.videoProfile : [NSNull null]), @"videoProfile", (self.videoCropMode ? self.videoCropMode : [NSNull null]), @"videoCropMode", (self.frontCamera ? self.frontCamera : [NSNull null]), @"frontCamera", (self.frameRate ? self.frameRate : [NSNull null]), @"frameRate", (self.minFrameRate ? self.minFrameRate : [NSNull null]), @"minFrameRate", (self.bitrate ? self.bitrate : [NSNull null]), @"bitrate", (self.minBitrate ? self.minBitrate : [NSNull null]), @"minBitrate", (self.degradationPrefer ? self.degradationPrefer : [NSNull null]), @"degradationPrefer", nil];
 }
 @end
 
@@ -546,6 +562,23 @@ void FLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTEngineA
   {
     FlutterBasicMessageChannel *channel =
       [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.EngineApi.setChannelProfile"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        FLTIntValue *input = [FLTIntValue fromMap:message];
+        FLTIntValue *output = [api setChannelProfile:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
         messageChannelWithName:@"dev.flutter.pigeon.EngineApi.joinChannel"
         binaryMessenger:binaryMessenger];
     if (api) {
@@ -637,6 +670,23 @@ void FLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTEngineA
         FlutterError *error;
         FLTSetAudioProfileRequest *input = [FLTSetAudioProfileRequest fromMap:message];
         FLTIntValue *output = [api setAudioProfile:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.EngineApi.enableDualStreamMode"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        FLTBoolValue *input = [FLTBoolValue fromMap:message];
+        FLTIntValue *output = [api enableDualStreamMode:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1120,6 +1170,23 @@ void FLTDeviceManagerApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLT
         FlutterError *error;
         FLTIntValue *input = [FLTIntValue fromMap:message];
         FLTIntValue *output = [api setEarbackVolume:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.DeviceManagerApi.setAudioFocusMode"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        FLTIntValue *input = [FLTIntValue fromMap:message];
+        FLTIntValue *output = [api setAudioFocusMode:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }

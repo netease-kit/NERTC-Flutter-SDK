@@ -17,7 +17,7 @@ Flutter plugin for NetEase RTC SDK.
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
   s.dependency 'Libyuv', '1703'
-  s.dependency 'NERtcSDK', '3.6.2'
+  s.dependency 'NERtcSDK', '3.7.0'
   s.platform = :ios, '10.0'
 
   # Flutter.framework does not contain a i386 slice. Only x86_64 simulators are supported.

@@ -125,6 +125,11 @@ public class NERtcCallbackImpl implements NERtcCallbackEx {
         callback.invokeMethod("onUserVideoMute", map);
     }
 
+    @Override
+    public void onClientRoleChange(int old, int newRole) {
+
+    }
+
 
     @Override
     public void onFirstAudioDataReceived(long uid) {
@@ -199,11 +204,16 @@ public class NERtcCallbackImpl implements NERtcCallbackEx {
     }
 
     @Override
+    public void onReconnectingStart() {
+        callback.invokeMethod("onReconnectingStart", null);
+    }
+
+    @Override
     public void onReJoinChannel(int result,
                                 long channelId) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("result", result);
-        //map.put("channelId", channelId);
+        map.put("channelId", channelId);
         callback.invokeMethod("onReJoinChannel", map);
     }
 
@@ -253,7 +263,7 @@ public class NERtcCallbackImpl implements NERtcCallbackEx {
     }
 
     @Override
-    public void onLiveStreamState(String s, String s1, int i) {
+    public void onLiveStreamState(String taskId, String pushUrl, int liveState) {
 
     }
 

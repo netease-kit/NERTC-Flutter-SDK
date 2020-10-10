@@ -34,11 +34,10 @@ class CreateEngineRequest {
   int videoDecodeMode;
   bool serverRecordAudio;
   bool serverRecordVideo;
-  bool videoAdapt;
   int serverRecordMode;
   bool serverRecordSpeaker;
   bool publishSelfStream;
-  int channelProfile;
+  int videoSendMode;
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
@@ -50,11 +49,10 @@ class CreateEngineRequest {
     pigeonMap['videoDecodeMode'] = videoDecodeMode;
     pigeonMap['serverRecordAudio'] = serverRecordAudio;
     pigeonMap['serverRecordVideo'] = serverRecordVideo;
-    pigeonMap['videoAdapt'] = videoAdapt;
     pigeonMap['serverRecordMode'] = serverRecordMode;
     pigeonMap['serverRecordSpeaker'] = serverRecordSpeaker;
     pigeonMap['publishSelfStream'] = publishSelfStream;
-    pigeonMap['channelProfile'] = channelProfile;
+    pigeonMap['videoSendMode'] = videoSendMode;
     return pigeonMap;
   }
   // ignore: unused_element
@@ -71,11 +69,10 @@ class CreateEngineRequest {
     result.videoDecodeMode = pigeonMap['videoDecodeMode'];
     result.serverRecordAudio = pigeonMap['serverRecordAudio'];
     result.serverRecordVideo = pigeonMap['serverRecordVideo'];
-    result.videoAdapt = pigeonMap['videoAdapt'];
     result.serverRecordMode = pigeonMap['serverRecordMode'];
     result.serverRecordSpeaker = pigeonMap['serverRecordSpeaker'];
     result.publishSelfStream = pigeonMap['publishSelfStream'];
-    result.channelProfile = pigeonMap['channelProfile'];
+    result.videoSendMode = pigeonMap['videoSendMode'];
     return result;
   }
 }
@@ -172,12 +169,22 @@ class SetLocalVideoConfigRequest {
   int videoProfile;
   int videoCropMode;
   bool frontCamera;
+  int frameRate;
+  int minFrameRate;
+  int bitrate;
+  int minBitrate;
+  int degradationPrefer;
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
     pigeonMap['videoProfile'] = videoProfile;
     pigeonMap['videoCropMode'] = videoCropMode;
     pigeonMap['frontCamera'] = frontCamera;
+    pigeonMap['frameRate'] = frameRate;
+    pigeonMap['minFrameRate'] = minFrameRate;
+    pigeonMap['bitrate'] = bitrate;
+    pigeonMap['minBitrate'] = minBitrate;
+    pigeonMap['degradationPrefer'] = degradationPrefer;
     return pigeonMap;
   }
   // ignore: unused_element
@@ -189,6 +196,11 @@ class SetLocalVideoConfigRequest {
     result.videoProfile = pigeonMap['videoProfile'];
     result.videoCropMode = pigeonMap['videoCropMode'];
     result.frontCamera = pigeonMap['frontCamera'];
+    result.frameRate = pigeonMap['frameRate'];
+    result.minFrameRate = pigeonMap['minFrameRate'];
+    result.bitrate = pigeonMap['bitrate'];
+    result.minBitrate = pigeonMap['minBitrate'];
+    result.degradationPrefer = pigeonMap['degradationPrefer'];
     return result;
   }
 }
@@ -526,6 +538,28 @@ class EngineApi {
     }
     
   }
+  Future<IntValue> setChannelProfile(IntValue arg) async {
+    final Map<dynamic, dynamic> requestMap = arg._toMap();
+    const BasicMessageChannel<dynamic> channel =
+        BasicMessageChannel<dynamic>('dev.flutter.pigeon.EngineApi.setChannelProfile', StandardMessageCodec());
+    
+    final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null);
+    } else if (replyMap['error'] != null) {
+      final Map<dynamic, dynamic> error = replyMap['error'];
+      throw PlatformException(
+          code: error['code'],
+          message: error['message'],
+          details: error['details']);
+    } else {
+      return IntValue._fromMap(replyMap['result']);
+    }
+    
+  }
   Future<IntValue> joinChannel(JoinChannelRequest arg) async {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
     const BasicMessageChannel<dynamic> channel =
@@ -639,6 +673,28 @@ class EngineApi {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
     const BasicMessageChannel<dynamic> channel =
         BasicMessageChannel<dynamic>('dev.flutter.pigeon.EngineApi.setAudioProfile', StandardMessageCodec());
+    
+    final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null);
+    } else if (replyMap['error'] != null) {
+      final Map<dynamic, dynamic> error = replyMap['error'];
+      throw PlatformException(
+          code: error['code'],
+          message: error['message'],
+          details: error['details']);
+    } else {
+      return IntValue._fromMap(replyMap['result']);
+    }
+    
+  }
+  Future<IntValue> enableDualStreamMode(BoolValue arg) async {
+    final Map<dynamic, dynamic> requestMap = arg._toMap();
+    const BasicMessageChannel<dynamic> channel =
+        BasicMessageChannel<dynamic>('dev.flutter.pigeon.EngineApi.enableDualStreamMode', StandardMessageCodec());
     
     final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
     if (replyMap == null) {
@@ -1268,6 +1324,28 @@ class DeviceManagerApi {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
     const BasicMessageChannel<dynamic> channel =
         BasicMessageChannel<dynamic>('dev.flutter.pigeon.DeviceManagerApi.setEarbackVolume', StandardMessageCodec());
+    
+    final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null);
+    } else if (replyMap['error'] != null) {
+      final Map<dynamic, dynamic> error = replyMap['error'];
+      throw PlatformException(
+          code: error['code'],
+          message: error['message'],
+          details: error['details']);
+    } else {
+      return IntValue._fromMap(replyMap['result']);
+    }
+    
+  }
+  Future<IntValue> setAudioFocusMode(IntValue arg) async {
+    final Map<dynamic, dynamic> requestMap = arg._toMap();
+    const BasicMessageChannel<dynamic> channel =
+        BasicMessageChannel<dynamic>('dev.flutter.pigeon.DeviceManagerApi.setAudioFocusMode', StandardMessageCodec());
     
     final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
     if (replyMap == null) {

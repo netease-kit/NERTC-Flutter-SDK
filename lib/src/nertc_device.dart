@@ -119,4 +119,18 @@ class NERtcDeviceManager {
     IntValue reply = await _api.setEarbackVolume(IntValue()..value = volume);
     return reply.value;
   }
+
+
+  /// 设置音频焦点模式.
+  /// 目前仅针对 Android 平台
+  ///
+  /// [focusMode] 焦点模式 [NERtcAudioFocusMode]
+  Future<int> setAudioFocusMode(int focusMode) async {
+    if(defaultTargetPlatform == TargetPlatform.android) {
+      IntValue reply = await _api.setAudioFocusMode(IntValue()..value = focusMode);
+      return reply.value;
+    } else {
+      return -1;
+    }
+  }
 }

@@ -23,6 +23,8 @@ import com.netease.lava.nertc.sdk.audio.NERtcCreateAudioEffectOption;
 import com.netease.lava.nertc.sdk.audio.NERtcCreateAudioMixingOption;
 import com.netease.lava.nertc.sdk.video.NERtcRemoteVideoStreamType;
 import com.netease.lava.nertc.sdk.video.NERtcVideoConfig;
+import com.netease.lava.nertc.sdk.video.NERtcVideoConfig.NERtcDegradationPreference;
+import com.netease.lava.nertc.sdk.video.NERtcVideoConfig.NERtcVideoFrameRate;
 import com.netease.lava.webrtc.EglBase;
 import com.netease.nertcflutter.Messages.AudioEffectApi;
 import com.netease.nertcflutter.Messages.AudioMixingApi;
@@ -215,9 +217,6 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
         if (arg.getServerRecordVideo() != null) {
             parameters.setBoolean(NERtcParameters.KEY_SERVER_RECORD_VIDEO, arg.getServerRecordVideo());
         }
-        if (arg.getVideoAdapt() != null) {
-            parameters.setBoolean(NERtcParameters.KEY_VIDEO_ADAPT, arg.getVideoAdapt());
-        }
         if (arg.getServerRecordMode() != null) {
             parameters.setInteger(NERtcParameters.KEY_SERVER_RECORD_MODE, arg.getServerRecordMode().intValue());
         }
@@ -227,8 +226,8 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
         if (arg.getPublishSelfStream() != null) {
             parameters.setBoolean(NERtcParameters.KEY_PUBLISH_SELF_STREAM, arg.getPublishSelfStream());
         }
-        if (arg.getChannelProfile() != null) {
-            NERtcEx.getInstance().setChannelProfile(arg.getChannelProfile().intValue());
+        if(arg.getVideoSendMode() != null) {
+            parameters.setInteger(NERtcParameters.KEY_VIDEO_SEND_MODE, arg.getVideoSendMode().intValue());
         }
 
         try {
@@ -276,6 +275,14 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
         IntValue result = new IntValue();
         NERtcEx.getInstance().setStatsObserver(null);
         result.setValue(0L);
+        return result;
+    }
+
+    @Override
+    public IntValue setChannelProfile(IntValue arg) {
+        IntValue result = new IntValue();
+        int ret = NERtcEx.getInstance().setChannelProfile(arg.getValue().intValue());
+        result.setValue((long) ret);
         return result;
     }
 
@@ -328,6 +335,14 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
         return result;
     }
 
+    @Override
+    public IntValue enableDualStreamMode(BoolValue arg) {
+        IntValue result = new IntValue();
+        int ret = NERtcEx.getInstance().enableDualStreamMode(arg.getValue());
+        result.setValue((long) ret);
+        return result;
+    }
+
 
     @Override
     public IntValue setLocalVideoConfig(SetLocalVideoConfigRequest arg) {
@@ -336,9 +351,43 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
         config.videoProfile = arg.getVideoProfile().intValue();
         config.videoCropMode = arg.getVideoCropMode().intValue();
         config.frontCamera = arg.getFrontCamera();
+        config.frameRate = toVideoFrameRate(arg.getFrameRate().intValue());
+        config.minFramerate = arg.getMinFrameRate().intValue();
+        config.bitrate = arg.getBitrate().intValue();
+        config.minBitrate = arg.getMinBitrate().intValue();
+        config.degradationPrefer = toDegradationPreference(arg.getDegradationPrefer().intValue());
+
         int ret = NERtcEx.getInstance().setLocalVideoConfig(config);
         result.setValue((long) ret);
         return result;
+    }
+
+    private NERtcVideoFrameRate toVideoFrameRate(int value) {
+        switch (value) {
+            case 7:
+                return NERtcVideoFrameRate.FRAME_RATE_FPS_7;
+            case 10:
+                return NERtcVideoFrameRate.FRAME_RATE_FPS_10;
+            case 15:
+                return NERtcVideoFrameRate.FRAME_RATE_FPS_15;
+            case 24:
+                return NERtcVideoFrameRate.FRAME_RATE_FPS_24;
+            default:
+                return NERtcVideoFrameRate.FRAME_RATE_FPS_30;
+        }
+    }
+
+    private NERtcDegradationPreference toDegradationPreference(int value) {
+        switch (value) {
+            case 1:
+                return NERtcDegradationPreference.DEGRADATION_MAINTAIN_FRAMERATE;
+            case 2:
+                return NERtcDegradationPreference.DEGRADATION_MAINTAIN_QUALITY;
+            case 3:
+                return NERtcDegradationPreference.DEGRADATION_BALANCED;
+            default:
+                return NERtcDegradationPreference.DEGRADATION_DEFAULT;
+        }
     }
 
     @Override
@@ -848,6 +897,14 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
     public IntValue setEarbackVolume(IntValue arg) {
         IntValue result = new IntValue();
         int ret = NERtcEx.getInstance().setEarbackVolume(arg.getValue().intValue());
+        result.setValue((long) ret);
+        return result;
+    }
+
+    @Override
+    public IntValue setAudioFocusMode(IntValue arg) {
+        IntValue result = new IntValue();
+        int ret = NERtcEx.getInstance().setAudioFocusMode(arg.getValue().intValue());
         result.setValue((long) ret);
         return result;
     }

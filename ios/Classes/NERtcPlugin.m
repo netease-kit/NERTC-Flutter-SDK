@@ -96,17 +96,13 @@
     if(input.videoDecodeMode != nil) {
         [params setObject:input.videoEncodeMode == 0 ? @(YES) : @(NO) forKey:kNERtcKeyVideoPreferHWDecode];
     }
-    if(input.videoAdapt != nil) {
-        [params setObject:input.videoAdapt forKey:kNERtcKeyVideoAdaptEnabled];
+    if(input.videoSendMode != nil) {
+        [params setObject:input.videoSendMode forKey:kNERtcKeyVideoSendOnPubType];
     }
-    
+
     [params setObject:@(YES) forKey:kNERtcKeyVideoPreferMetalRender];
     
     [[NERtcEngine sharedEngine] setParameters: params];
-    
-    if(input.channelProfile != nil) {
-        [[NERtcEngine sharedEngine]setChannelProfile:(NERtcChannelProfileType)input.channelProfile];
-    }
     
     FLTIntValue* result = [[FLTIntValue alloc] init];
     result.value = @(ret);
@@ -182,6 +178,11 @@
     NERtcVideoEncodeConfiguration * config = [[NERtcVideoEncodeConfiguration alloc] init];
     config.maxProfile = input.videoProfile.intValue;
     config.cropMode = input.videoCropMode.intValue;
+    config.bitrate = input.bitrate.intValue;
+    config.minBitrate = input.minBitrate.intValue;
+    config.frameRate = input.frameRate.intValue;
+    config.minFrameRate = input.minBitrate.intValue;
+    config.degradationPreference = input.degradationPrefer.intValue;
     int ret = [[NERtcEngine  sharedEngine] setLocalVideoConfig:config];
     result.value = @(ret);
     return result;
@@ -380,6 +381,28 @@
     _deviceCallbackEnabled = NO;
     _audioEffetCallbackEnabled = NO;
 }
+
+- (nullable FLTIntValue *)enableDualStreamMode:(nonnull FLTBoolValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+#ifdef DEBUG
+    NSLog(@"FlutterCalled:EngineApi#enableDualStreamMode");
+#endif
+    FLTIntValue* result = [[FLTIntValue alloc] init];
+    int ret = [[NERtcEngine  sharedEngine] enableDualStreamMode:input.value.boolValue];
+    result.value = @(ret);
+    return result;
+}
+
+
+- (nullable FLTIntValue *)setChannelProfile:(nonnull FLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+#ifdef DEBUG
+    NSLog(@"FlutterCalled:EngineApi#setChannelProfile");
+#endif
+    FLTIntValue* result = [[FLTIntValue alloc] init];
+    int ret = [[NERtcEngine  sharedEngine] setChannelProfile:input.value.intValue];
+    result.value = @(ret);
+    return result;
+}
+
 
 #pragma mark - FLTVideoRendererApi
 
@@ -586,6 +609,13 @@
     FLTIntValue* result = [[FLTIntValue alloc] init];
     int ret = [[NERtcEngine sharedEngine] switchCamera];
     result.value = @(ret);
+    return result;
+}
+
+- (nullable FLTIntValue *)setAudioFocusMode:(nonnull FLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+    //ignore
+    FLTIntValue* result = [[FLTIntValue alloc] init];
+    result.value = @(-1L);
     return result;
 }
 
@@ -955,6 +985,10 @@
 
 - (void)onNERtcEngineDidDisconnectWithReason:(NERtcError)reason {
     [_channel invokeMethod:@"onDisconnect" arguments:@{@"reason": @(reason)}];
+}
+
+- (void)onNERtcEngineReconnectingStart {
+    [_channel invokeMethod:@"onReconnectingStart" arguments:nil];
 }
 
 - (void)onNERtcEngineRejoinChannel:(NERtcError)result {
