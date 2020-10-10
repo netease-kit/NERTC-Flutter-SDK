@@ -1,3 +1,6 @@
+## 0.3.7+1
+* Fixed iOS `setAudioProfile` error
+
 ## 0.3.7
 * Upgrade NERtc SDK to 3.7.0
 

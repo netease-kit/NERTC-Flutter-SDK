@@ -115,11 +115,7 @@
     NSLog(@"FlutterCalled:EngineApi#joinChannel");
 #endif
     FLTIntValue* result = [[FLTIntValue alloc] init];
-    NSString *token = input.token;
-    if (token == nil) {
-        token = @"";
-    }
-    int ret = [[NERtcEngine sharedEngine] joinChannelWithToken:token channelName:input.channelName myUid:input.uid.unsignedLongLongValue completion:^(NSError * _Nullable error, uint64_t channelId, uint64_t elapesd) {
+    int ret = [[NERtcEngine sharedEngine] joinChannelWithToken:input.token channelName:input.channelName myUid:input.uid.unsignedLongLongValue completion:^(NSError * _Nullable error, uint64_t channelId, uint64_t elapesd) {
         long code;
         if(error) {
             code = error.code;
@@ -194,7 +190,7 @@
     NSLog(@"FlutterCalled:EngineApi#setAudioProfile");
 #endif
     FLTIntValue* result = [[FLTIntValue alloc] init];
-    int ret = [[NERtcEngine  sharedEngine] setAudioProfile: (NERtcAudioProfileType)input.profile scenario:(NERtcAudioScenarioType)input.scenario];
+    int ret = [[NERtcEngine  sharedEngine] setAudioProfile: (NERtcAudioProfileType)input.profile.intValue scenario:(NERtcAudioScenarioType)input.scenario.intValue];
     result.value = @(ret);
     return result;
 }
