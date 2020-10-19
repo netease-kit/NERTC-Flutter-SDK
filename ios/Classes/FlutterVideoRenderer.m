@@ -53,8 +53,7 @@
 }
 
 - (CVPixelBufferRef)copyPixelBuffer {
-    if(_pixelBufferRef != nil){
-        CVBufferRetain(_pixelBufferRef);
+    if(_pixelBufferRef != nil) {
         return _pixelBufferRef;
     }
     return nil;

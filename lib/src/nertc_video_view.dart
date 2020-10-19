@@ -157,7 +157,7 @@ class _NERtcVideoViewState extends State<NERtcVideoView> {
         builder: (BuildContext context, BoxConstraints constraints) {
       return Center(
         child: widget._renderer._textureId == null
-            ? Container()
+            ? Container(color: Colors.black)
             : _buildVideoView(constraints),
       );
     });
@@ -165,6 +165,7 @@ class _NERtcVideoViewState extends State<NERtcVideoView> {
 
   Widget _buildVideoView(BoxConstraints constraints) {
     return Container(
+      color: Colors.black,
       child: FittedBox(
         fit: _fitType == NERtcVideoViewFitType.contain
             ? BoxFit.contain
