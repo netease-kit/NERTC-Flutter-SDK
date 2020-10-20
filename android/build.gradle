@@ -43,7 +43,7 @@ android {
 
         dependencies {
             implementation 'com.netease.yunxin:yxbase:1.0.0'
-            implementation 'com.netease.yunxin:nertc:3.7.0'
+            implementation 'com.netease.yunxin:nertc:3.7.1'
         }
     }
 }
