@@ -156,7 +156,7 @@ class _NERtcVideoViewState extends State<NERtcVideoView> {
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
       return Center(
-        child: widget._renderer._textureId == null
+        child: widget._renderer?._textureId == null
             ? Container(color: Colors.black)
             : _buildVideoView(constraints),
       );

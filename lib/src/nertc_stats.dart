@@ -270,8 +270,8 @@ class NERtcVideoRecvStats {
         'receivedBitrate: $receivedBitrate, fps: $fps, '
         'packetLossRate: $packetLossRate, '
         'decoderOutputFrameRate: $decoderOutputFrameRate,'
-        ' rendererOutputFrameRate: $rendererOutputFrameRate,'
-        ' totalFrozenTime: $totalFrozenTime, frozenRate: $frozenRate}';
+        'rendererOutputFrameRate: $rendererOutputFrameRate,'
+        'totalFrozenTime: $totalFrozenTime, frozenRate: $frozenRate}';
   }
 }
 
