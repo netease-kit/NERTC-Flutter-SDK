@@ -1,6 +1,6 @@
 #import "FlutterVideoRenderer.h"
 #import <NERtcSDK/NERtcSDK.h>
-#include <NIMLibYuv/NIMLibYuv.h>
+#include "libyuv.h"
 
 
 @interface FlutterVideoRenderer () <FlutterStreamHandler>
@@ -54,6 +54,7 @@
 
 - (CVPixelBufferRef)copyPixelBuffer {
     if(_pixelBufferRef != nil) {
+        CVBufferRetain(_pixelBufferRef);
         return _pixelBufferRef;
     }
     return nil;
