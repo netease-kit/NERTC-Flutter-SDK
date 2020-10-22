@@ -54,7 +54,6 @@
 
 - (CVPixelBufferRef)copyPixelBuffer {
     if(_pixelBufferRef != nil) {
-        CVBufferRetain(_pixelBufferRef);
         return _pixelBufferRef;
     }
     return nil;
@@ -194,6 +193,8 @@
                             kCVPixelFormatType_32BGRA,
                             (__bridge CFDictionaryRef)(pixelAttributes), &_pixelBufferRef);
         
+        CVBufferRetain(_pixelBufferRef);
+
         
         // I420 Buffer
         if(_i420Buffer != NULL) {
