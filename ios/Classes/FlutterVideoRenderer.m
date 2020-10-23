@@ -1,6 +1,6 @@
 #import "FlutterVideoRenderer.h"
 #import <NERtcSDK/NERtcSDK.h>
-#include "libyuv.h"
+#include <NEDyldYuv/Libyuv.h>
 
 
 @interface FlutterVideoRenderer () <FlutterStreamHandler>

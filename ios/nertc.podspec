@@ -16,7 +16,7 @@ Flutter plugin for NetEase RTC SDK.
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
-  s.dependency 'Libyuv', '1703'
+  s.dependency 'NEDyldYuv', '0.0.1'
   s.dependency 'NERtcSDK', '3.7.0'
   s.platform = :ios, '10.0'
   s.static_framework = true
