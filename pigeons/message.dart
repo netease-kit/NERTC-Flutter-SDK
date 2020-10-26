@@ -112,7 +112,7 @@ class EnableEarbackRequest {
 @HostApi()
 abstract class EngineApi {
   IntValue create(CreateEngineRequest request);
-  void release();
+  IntValue release();
   IntValue setStatsEventCallback();
   IntValue clearStatsEventCallback();
   IntValue setChannelProfile(IntValue channelProfile);
