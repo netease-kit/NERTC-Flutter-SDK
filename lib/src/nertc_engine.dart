@@ -55,9 +55,14 @@ class NERtcEngine {
   }
 
   /// Release rtc engine
-  Future<void> release() {
+  Future<int> release() async {
     this._channelEventHandler.setCallback(null);
-    return _api.release();
+    this.clearStatsEventCallback();
+    this._deviceManager.clearEventCallback();
+    this._audioEffectManager.clearEventCallback();
+    this._audioMixingManager.clearEventCallback();
+    IntValue reply = await _api.release();
+    return reply.value;
   }
 
   /// 设置统计监听

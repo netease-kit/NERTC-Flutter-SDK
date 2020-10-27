@@ -367,15 +367,20 @@
 }
 
 
-- (void)release:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (void)release:(FlutterError * _Nullable __autoreleasing * _Nonnull)error withCompletion:(nonnull void (^)(void))completion {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:EngineApi#release");
 #endif
     [[NERtcEngine sharedEngine] cleanupEngineMediaStatsObserver];
-    [NERtcEngine destroyEngine];
     _audioMixingCallbackEnabled = NO;
     _deviceCallbackEnabled = NO;
     _audioEffetCallbackEnabled = NO;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [NERtcEngine destroyEngine];
+        if(completion) {
+            completion();
+        }
+    });
 }
 
 - (nullable FLTIntValue *)enableDualStreamMode:(nonnull FLTBoolValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {

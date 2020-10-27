@@ -245,7 +245,7 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
     }
 
     @Override
-    public void release() {
+    public IntValue release() {
         NERtcEx.getInstance().setStatsObserver(null);
         callback.setAudioMixingCallbackEnabled(false);
         callback.setDeviceCallbackEnabled(false);
@@ -259,6 +259,9 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
 //            }
 //            iterator.remove();
 //        }
+        IntValue result = new IntValue();
+        result.setValue(0L);
+        return result;
     }
 
 
