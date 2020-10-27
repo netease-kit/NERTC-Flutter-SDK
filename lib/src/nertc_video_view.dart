@@ -132,21 +132,21 @@ class _NERtcVideoViewState extends State<NERtcVideoView> {
   @override
   void dispose() {
     super.dispose();
-    widget._renderer.onFrameResolutionChanged = null;
+    widget._renderer?.onFrameResolutionChanged = null;
   }
 
   void _setupVideoView() {
-    _fitType = widget._renderer._videoViewFitType;
-    _aspectRatio = widget._renderer.aspectRatio;
-    _mirror = widget._renderer.mirror;
+    _fitType = widget._renderer?._videoViewFitType;
+    _aspectRatio = widget._renderer?.aspectRatio;
+    _mirror = widget._renderer?.mirror;
     _bindOnFrameResolutionChanged();
   }
 
   void _bindOnFrameResolutionChanged() {
-    widget._renderer.onFrameResolutionChanged = () {
+    widget._renderer?.onFrameResolutionChanged = () {
       setState(() {
-        _fitType = widget._renderer._videoViewFitType;
-        _aspectRatio = widget._renderer.aspectRatio;
+        _fitType = widget._renderer?._videoViewFitType;
+        _aspectRatio = widget._renderer?.aspectRatio;
       });
     };
   }
@@ -178,7 +178,7 @@ class _NERtcVideoViewState extends State<NERtcVideoView> {
               transform: Matrix4.identity()..rotateY(_mirror ? -math.pi : 0.0),
               alignment: FractionalOffset.center,
               child: Texture(
-                textureId: widget._renderer._textureId,
+                textureId: widget._renderer?._textureId,
               ),
             ),
           ),
