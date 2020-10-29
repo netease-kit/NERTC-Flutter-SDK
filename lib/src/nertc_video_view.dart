@@ -14,7 +14,7 @@ class NERtcVideoRenderer {
   bool _local = false;
   int _uid = -1;
 
-  dynamic onFrameResolutionChanged;
+  List<VoidCallback> onFrameResolutionChangedList = List();
 
   Future<void> initialize() async {
     IntValue reply = await _api.createVideoRenderer();
@@ -38,9 +38,27 @@ class NERtcVideoRenderer {
         print('didFirstFrameRendered');
         break;
     }
-    if (this.onFrameResolutionChanged != null) {
-      this.onFrameResolutionChanged();
+    notify();
+  }
+
+  void register(VoidCallback callback){
+    if(callback==null){
+      return;
     }
+    this.onFrameResolutionChangedList.add(callback);
+  }
+
+  void unRegister(VoidCallback callback) {
+    if (callback == null) {
+      return;
+    }
+    this.onFrameResolutionChangedList.remove(callback);
+  }
+
+  void notify(){
+    this.onFrameResolutionChangedList.forEach((element) {
+      element();
+    });
   }
 
   int get rotation => _rotation;
@@ -61,18 +79,14 @@ class NERtcVideoRenderer {
 
   set fitType(NERtcVideoViewFitType fitType) {
     _videoViewFitType = fitType;
-    if (this.onFrameResolutionChanged != null) {
-      this.onFrameResolutionChanged();
-    }
+    notify();
   }
 
   bool get mirror => _mirror;
 
   set mirror(bool mirror) {
     _mirror = mirror;
-    if (this.onFrameResolutionChanged != null) {
-      this.onFrameResolutionChanged();
-    }
+    notify();
   }
 
   Future<int> addToRemoteVideoSink(int uid) {
@@ -103,6 +117,8 @@ class NERtcVideoRenderer {
   }
 
   Future<void> dispose() async {
+    this.onFrameResolutionChangedList?.clear();
+    this.onFrameResolutionChangedList = null;
     await _doSetSource(_local, _uid, null);
     await _streamSubscription?.cancel();
     await _api.disposeVideoRenderer(IntValue()..value = textureId);
@@ -122,7 +138,7 @@ class _NERtcVideoViewState extends State<NERtcVideoView> {
   NERtcVideoViewFitType _fitType = NERtcVideoViewFitType.contain;
   double _aspectRatio;
   bool _mirror;
-
+  var callback;
   @override
   void initState() {
     super.initState();
@@ -132,7 +148,7 @@ class _NERtcVideoViewState extends State<NERtcVideoView> {
   @override
   void dispose() {
     super.dispose();
-    widget._renderer?.onFrameResolutionChanged = null;
+    widget._renderer?.unRegister(callback);
   }
 
   void _setupVideoView() {
@@ -143,12 +159,13 @@ class _NERtcVideoViewState extends State<NERtcVideoView> {
   }
 
   void _bindOnFrameResolutionChanged() {
-    widget._renderer?.onFrameResolutionChanged = () {
+    callback = () {
       setState(() {
         _fitType = widget._renderer?._videoViewFitType;
         _aspectRatio = widget._renderer?.aspectRatio;
       });
     };
+    widget._renderer?.register(callback);
   }
 
   @override
