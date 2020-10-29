@@ -41,21 +41,24 @@ class NERtcVideoRenderer {
     notify();
   }
 
-  void register(VoidCallback callback){
-    if(callback==null){
+  void register(VoidCallback callback) {
+    if (callback == null || this.onFrameResolutionChangedList == null) {
       return;
     }
     this.onFrameResolutionChangedList.add(callback);
   }
 
   void unRegister(VoidCallback callback) {
-    if (callback == null) {
+    if (callback == null || this.onFrameResolutionChangedList == null) {
       return;
     }
     this.onFrameResolutionChangedList.remove(callback);
   }
 
-  void notify(){
+  void notify() {
+    if (this.onFrameResolutionChangedList == null) {
+      return;
+    }
     this.onFrameResolutionChangedList.forEach((element) {
       element();
     });
