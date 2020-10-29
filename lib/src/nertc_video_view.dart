@@ -155,16 +155,14 @@ class _NERtcVideoViewState extends State<NERtcVideoView> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
-      return Center(
-        child: widget._renderer?._textureId == null
-            ? Container(color: Color(0xFF292933))
-            : _buildVideoView(constraints),
-      );
+      return Center(child: _buildVideoView(constraints));
     });
   }
 
   Widget _buildVideoView(BoxConstraints constraints) {
     return Container(
+      width: constraints.maxWidth,
+      height: constraints.maxHeight,
       color: Color(0xFF292933),
       child: FittedBox(
         fit: _fitType == NERtcVideoViewFitType.contain
@@ -177,15 +175,15 @@ class _NERtcVideoViewState extends State<NERtcVideoView> {
             child: Transform(
               transform: Matrix4.identity()..rotateY(_mirror ? -math.pi : 0.0),
               alignment: FractionalOffset.center,
-              child: Texture(
-                textureId: widget._renderer?._textureId,
-              ),
+              child: widget._renderer?._textureId == null
+                  ? Container()
+                  : Texture(
+                      textureId: widget._renderer?._textureId,
+                    ),
             ),
           ),
         ),
       ),
-      width: constraints.maxWidth,
-      height: constraints.maxHeight,
     );
   }
 }

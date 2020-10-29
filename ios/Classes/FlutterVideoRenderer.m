@@ -114,24 +114,22 @@
     }
     
     // I420Rotate
-    if (frame.rotation == kNERtcVideoRotation_90 ||
-        frame.rotation == kNERtcVideoRotation_270) {
-        
+    if (frame.rotation == kNERtcVideoRotation_0) {
+        [self copyI420BufferToCVPixelBuffer:_pixelBufferRef withI420Buffer:frame.buffer bufferWidth:frame.width bufferHeight:frame.height];
+    } else {
         const uint8_t* src_y =  frame.buffer;
         int src_stride_y = frame.width;
         const uint8_t* src_u =  src_y + src_stride_y * frame.height;
         int src_stride_u = (int)((frame.width + 1) / 2);
         const uint8_t* src_v =  src_y + src_stride_y * frame.height + src_stride_u * ((frame.height + 1) / 2);
         int src_stride_v = (int)((frame.width + 1) / 2);
-
-
+        
         uint8_t* dst_y = _i420Buffer;
         int dst_stride_y = _frameSize.width;
         uint8_t* dst_u = dst_y + (int)(dst_stride_y * _frameSize.height);
         int dst_stride_u = (_frameSize.width + 1) / 2;
         uint8_t* dst_v = dst_y + (int)(dst_stride_y * _frameSize.height) + (int)(dst_stride_u * (int)((_frameSize.height + 1) / 2));
         int dst_stride_v = (_frameSize.width + 1) / 2;
-
         
         I420Rotate(src_y, src_stride_y,
                    src_u, src_stride_u,
@@ -142,12 +140,7 @@
                    frame.width, frame.height,
                    (RotationModeEnum)frame.rotation);
         
-        [self copyI420BufferToCVPixelBuffer:_pixelBufferRef withI420Buffer:_i420Buffer bufferWidth:_frameSize.width bufferHeight:_frameSize.height];
-        
-    } else {
-        [self copyI420BufferToCVPixelBuffer:_pixelBufferRef withI420Buffer:frame.buffer bufferWidth:frame.width bufferHeight:frame.height];
-    }
-    
+        [self copyI420BufferToCVPixelBuffer:_pixelBufferRef withI420Buffer:_i420Buffer bufferWidth:_frameSize.width bufferHeight:_frameSize.height];    }
     
     __weak FlutterVideoRenderer *weakSelf = self;
     if(_renderSize.width != frame.width || _renderSize.height != frame.height || _rotation != frame.rotation){
@@ -194,7 +187,7 @@
                             (__bridge CFDictionaryRef)(pixelAttributes), &_pixelBufferRef);
         
         CVBufferRetain(_pixelBufferRef);
-
+        
         
         // I420 Buffer
         if(_i420Buffer != NULL) {
