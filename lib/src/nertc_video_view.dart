@@ -163,6 +163,9 @@ class _NERtcVideoViewState extends State<NERtcVideoView> {
 
   void _bindOnFrameResolutionChanged() {
     callback = () {
+      if (!this.mounted) {
+        return;
+      }
       setState(() {
         _fitType = widget._renderer?._videoViewFitType;
         _aspectRatio = widget._renderer?.aspectRatio;
