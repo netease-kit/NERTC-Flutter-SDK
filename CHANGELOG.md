@@ -1,3 +1,6 @@
+## 0.3.7+2
+* Fixed video view error
+
 ## 0.3.7+1
 * Fixed iOS `setAudioProfile` error
 
