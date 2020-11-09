@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
+import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -48,11 +49,8 @@ import com.netease.nertcflutter.Messages.StartAudioMixingRequest;
 import com.netease.nertcflutter.Messages.SubscribeRemoteAudioStreamRequest;
 import com.netease.nertcflutter.Messages.SubscribeRemoteVideoStreamRequest;
 import com.netease.nertcflutter.Messages.VideoRendererApi;
-import com.netease.yunxin.base.utils.StringUtils;
+import com.netease.nertcflutter.bridge.NERtcApiBridge;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -188,7 +186,7 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
         }
 
         String appKey = arg.getAppKey();
-        if (StringUtils.isEmpty(appKey)) {
+        if (TextUtils.isEmpty(appKey)) {
             Log.e("NERtcEngine", "Create RTC engine error: app key is null");
             result.setValue(-2L);
             return result;
@@ -233,10 +231,7 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
         try {
             NERtcEx.getInstance().setParameters(parameters);
             NERtcEx.getInstance().init(applicationContext, appKey, callback, option);
-            EglBase.Context localSharedEglContext = getEglSharedContext();
-            if (localSharedEglContext != null) {
-                sharedEglContext = EglBase.create(localSharedEglContext, EglBase.CONFIG_PLAIN).getEglBaseContext();
-            }
+            sharedEglContext = NERtcApiBridge.ensureEglContext();
         } catch (Exception e) {
             Log.e("NERtcEngine", "Create RTC engine exception:" + e.toString());
             result.setValue(-3L);
@@ -965,21 +960,4 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-
-    @SuppressWarnings("rawtypes")
-    private EglBase.Context getEglSharedContext() {
-        try {
-            Class clazzNERtc = NERtc.getInstance().getClass();
-            Field fieldRtcEngine = clazzNERtc.getDeclaredField("mRtcEngine");
-            fieldRtcEngine.setAccessible(true);
-            Object rtcEngine = fieldRtcEngine.get(NERtc.getInstance());
-            Class clazzRtcEngine = rtcEngine.getClass();
-            Method method = clazzRtcEngine.getMethod("getEglSharedContext");
-            return (EglBase.Context) method.invoke(rtcEngine);
-        } catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
 }
