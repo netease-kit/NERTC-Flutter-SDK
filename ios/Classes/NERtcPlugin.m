@@ -56,18 +56,7 @@
 #ifdef DEBUG
     NSLog(@"FlutterCalled:EngineApi#create");
 #endif
-    NERtcEngineContext *context = [[NERtcEngineContext alloc] init];
-    context.appKey = input.appKey;
-    context.logSetting = [[NERtcLogSetting alloc] init];
-    if(input.logDir != nil) {
-        context.logSetting.logDir = input.logDir;
-    }
-    if(input.logLevel != nil) {
-        context.logSetting.logLevel = input.logLevel.intValue;
-    }
-    context.engineDelegate = self;
-    int ret = [[NERtcEngine sharedEngine] setupEngineWithContext:context];
-    
+
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     
     // Audio
@@ -94,7 +83,7 @@
         [params setObject:input.videoEncodeMode == 0 ? @(YES) : @(NO) forKey:kNERtcKeyVideoPreferHWEncode];
     }
     if(input.videoDecodeMode != nil) {
-        [params setObject:input.videoEncodeMode == 0 ? @(YES) : @(NO) forKey:kNERtcKeyVideoPreferHWDecode];
+        [params setObject:input.videoDecodeMode == 0 ? @(YES) : @(NO) forKey:kNERtcKeyVideoPreferHWDecode];
     }
     if(input.videoSendMode != nil) {
         [params setObject:input.videoSendMode forKey:kNERtcKeyVideoSendOnPubType];
@@ -103,6 +92,18 @@
     [params setObject:@(YES) forKey:kNERtcKeyVideoPreferMetalRender];
     
     [[NERtcEngine sharedEngine] setParameters: params];
+
+    NERtcEngineContext *context = [[NERtcEngineContext alloc] init];
+    context.appKey = input.appKey;
+    context.logSetting = [[NERtcLogSetting alloc] init];
+    if(input.logDir != nil) {
+         context.logSetting.logDir = input.logDir;
+    }
+    if(input.logLevel != nil) {
+         context.logSetting.logLevel = input.logLevel.intValue;
+    }
+    context.engineDelegate = self;
+    int ret = [[NERtcEngine sharedEngine] setupEngineWithContext:context];
     
     FLTIntValue* result = [[FLTIntValue alloc] init];
     result.value = @(ret);
