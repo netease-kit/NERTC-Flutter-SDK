@@ -378,9 +378,11 @@
     _audioEffetCallbackEnabled = NO;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [NERtcEngine destroyEngine];
-        if(completion) {
-            completion();
-        }
+        dispatch_async(dispatch_get_main_queue(), ^{ 
+            if(completion) {
+                completion();
+            }
+        }); 
     });
 }
 
