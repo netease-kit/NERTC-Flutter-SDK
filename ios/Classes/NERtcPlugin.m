@@ -1050,6 +1050,28 @@
 
 #pragma mark - DeviceDelegate
 
+- (void)onNERtcEngineAudioDeviceRoutingDidChange:(NERtcAudioOutputRouting)routing {
+    if(_deviceCallbackEnabled == NO) return;
+    int selected = 0;
+       switch (routing) {
+           case kNERtcAudioOutputRoutingHeadset:
+               selected = 1;
+               break;
+           case kNERtcAudioOutputRoutingEarpiece:
+               selected = 2;
+               break;
+           case kNERtcAudioOutputRoutingLoudspeaker:
+               selected = 0;
+               break;
+           case kNERtcAudioOutputRoutingBluetooth:
+               selected = 3;
+               break;
+           default:
+               break;
+       }
+    [_channel invokeMethod:@"onAudioDeviceChanged" arguments:@{@"selected":@(selected)}];
+}
+
 - (void)onNERtcEngineAudioDeviceStateChangeWithDeviceID:(nonnull NSString *)deviceID deviceType:(NERtcAudioDeviceType)deviceType deviceState:(NERtcAudioDeviceState)deviceState {
     if(_deviceCallbackEnabled == NO) return;
     int type = 0;
