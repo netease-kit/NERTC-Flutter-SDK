@@ -56,18 +56,7 @@
 #ifdef DEBUG
     NSLog(@"FlutterCalled:EngineApi#create");
 #endif
-    NERtcEngineContext *context = [[NERtcEngineContext alloc] init];
-    context.appKey = input.appKey;
-    context.logSetting = [[NERtcLogSetting alloc] init];
-    if(input.logDir != nil) {
-        context.logSetting.logDir = input.logDir;
-    }
-    if(input.logLevel != nil) {
-        context.logSetting.logLevel = input.logLevel.intValue;
-    }
-    context.engineDelegate = self;
-    int ret = [[NERtcEngine sharedEngine] setupEngineWithContext:context];
-    
+
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     
     // Audio
@@ -94,7 +83,7 @@
         [params setObject:input.videoEncodeMode == 0 ? @(YES) : @(NO) forKey:kNERtcKeyVideoPreferHWEncode];
     }
     if(input.videoDecodeMode != nil) {
-        [params setObject:input.videoEncodeMode == 0 ? @(YES) : @(NO) forKey:kNERtcKeyVideoPreferHWDecode];
+        [params setObject:input.videoDecodeMode == 0 ? @(YES) : @(NO) forKey:kNERtcKeyVideoPreferHWDecode];
     }
     if(input.videoSendMode != nil) {
         [params setObject:input.videoSendMode forKey:kNERtcKeyVideoSendOnPubType];
@@ -103,6 +92,18 @@
     [params setObject:@(YES) forKey:kNERtcKeyVideoPreferMetalRender];
     
     [[NERtcEngine sharedEngine] setParameters: params];
+
+    NERtcEngineContext *context = [[NERtcEngineContext alloc] init];
+    context.appKey = input.appKey;
+    context.logSetting = [[NERtcLogSetting alloc] init];
+    if(input.logDir != nil) {
+         context.logSetting.logDir = input.logDir;
+    }
+    if(input.logLevel != nil) {
+         context.logSetting.logLevel = input.logLevel.intValue;
+    }
+    context.engineDelegate = self;
+    int ret = [[NERtcEngine sharedEngine] setupEngineWithContext:context];
     
     FLTIntValue* result = [[FLTIntValue alloc] init];
     result.value = @(ret);
@@ -377,9 +378,11 @@
     _audioEffetCallbackEnabled = NO;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [NERtcEngine destroyEngine];
-        if(completion) {
-            completion();
-        }
+        dispatch_async(dispatch_get_main_queue(), ^{ 
+            if(completion) {
+                completion();
+            }
+        }); 
     });
 }
 
@@ -1046,6 +1049,28 @@
 
 
 #pragma mark - DeviceDelegate
+
+- (void)onNERtcEngineAudioDeviceRoutingDidChange:(NERtcAudioOutputRouting)routing {
+    if(_deviceCallbackEnabled == NO) return;
+    int selected = 0;
+       switch (routing) {
+           case kNERtcAudioOutputRoutingHeadset:
+               selected = 1;
+               break;
+           case kNERtcAudioOutputRoutingEarpiece:
+               selected = 2;
+               break;
+           case kNERtcAudioOutputRoutingLoudspeaker:
+               selected = 0;
+               break;
+           case kNERtcAudioOutputRoutingBluetooth:
+               selected = 3;
+               break;
+           default:
+               break;
+       }
+    [_channel invokeMethod:@"onAudioDeviceChanged" arguments:@{@"selected":@(selected)}];
+}
 
 - (void)onNERtcEngineAudioDeviceStateChangeWithDeviceID:(nonnull NSString *)deviceID deviceType:(NERtcAudioDeviceType)deviceType deviceState:(NERtcAudioDeviceState)deviceState {
     if(_deviceCallbackEnabled == NO) return;
