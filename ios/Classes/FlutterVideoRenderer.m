@@ -154,6 +154,9 @@
                     @"height": @(frame.height),
                     @"rotation": @(frame.rotation)
                                      });
+#ifdef DEBUG
+                NSLog(@"CalledFlutter:onFrameResolutionChanged");
+#endif
             }
         });
         _renderSize = CGSizeMake(frame.width, frame.height);
@@ -167,6 +170,9 @@
             if (strongSelf.eventSink) {
                 strongSelf.eventSink(@{@"event":@"onFirstFrameRendered"});
                 strongSelf->_isFirstFrameRendered = true;
+#ifdef DEBUG
+                NSLog(@"CalledFlutter:onFirstFrameRendered");
+#endif
             }
         }
     });

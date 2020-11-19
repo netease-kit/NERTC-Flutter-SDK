@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2019 NetEase, Inc. All right reserved.
+// Copyright (c) 2019-2020 NetEase, Inc. All right reserved.
 
 part of nertc;
 
@@ -274,12 +274,6 @@ class NERtcEngine {
           ..enable = enable
           ..interval = interval);
     return reply.value;
-  }
-
-  Future<NERtcVideoRenderer> createVideoRenderer() async {
-    NERtcVideoRenderer renderer = NERtcVideoRenderer();
-    await renderer.initialize();
-    return renderer;
   }
 
   Future<dynamic> _handleCallbacks(MethodCall call) async {

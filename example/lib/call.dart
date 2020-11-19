@@ -41,7 +41,7 @@ class _CallPageState extends State<CallPage>
   }
 
   Future<void> _initRenderers() async {
-    _localSession.renderer = await _engine.createVideoRenderer();
+    _localSession.renderer = await VideoRendererFactory.createVideoRenderer();
     setState(() {});
   }
 
@@ -106,8 +106,6 @@ class _CallPageState extends State<CallPage>
 
   Future<void> _startLocalVideoPreview() async {
     _engine.enableLocalVideo(true);
-    _localSession.renderer.fitType = NERtcVideoViewFitType.cover;
-    _localSession.renderer.mirror = true;
     _localSession.renderer.addToLocalVideoSink();
     NERtcVideoConfig config = NERtcVideoConfig();
     config.videoProfile = NERtcVideoProfile.hd720p;
@@ -233,7 +231,7 @@ class _CallPageState extends State<CallPage>
   }
 
   Future<void> setupVideoView(int uid, int maxProfile) async {
-    _remoteSession.renderer = await _engine.createVideoRenderer();
+    _remoteSession.renderer = await VideoRendererFactory.createVideoRenderer();
     _remoteSession.renderer.addToRemoteVideoSink(uid);
     _engine.subscribeRemoteVideoStream(
         uid, NERtcRemoteVideoStreamType.high, true);

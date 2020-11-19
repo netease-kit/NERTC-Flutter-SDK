@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2019 NetEase, Inc. All right reserved.
+// Copyright (c) 2019-2020 NetEase, Inc. All right reserved.
 
 part of nertc;
 
