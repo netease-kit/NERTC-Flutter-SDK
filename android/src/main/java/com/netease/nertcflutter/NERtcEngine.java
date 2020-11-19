@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
+import android.opengl.EGLContext;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -21,11 +22,14 @@ import com.netease.lava.nertc.sdk.NERtcOption;
 import com.netease.lava.nertc.sdk.NERtcParameters;
 import com.netease.lava.nertc.sdk.audio.NERtcCreateAudioEffectOption;
 import com.netease.lava.nertc.sdk.audio.NERtcCreateAudioMixingOption;
+import com.netease.lava.nertc.sdk.video.NERtcEglContextWrapper;
 import com.netease.lava.nertc.sdk.video.NERtcRemoteVideoStreamType;
 import com.netease.lava.nertc.sdk.video.NERtcVideoConfig;
 import com.netease.lava.nertc.sdk.video.NERtcVideoConfig.NERtcDegradationPreference;
 import com.netease.lava.nertc.sdk.video.NERtcVideoConfig.NERtcVideoFrameRate;
 import com.netease.lava.webrtc.EglBase;
+import com.netease.lava.webrtc.EglBase10;
+import com.netease.lava.webrtc.EglBase14;
 import com.netease.nertcflutter.Messages.AudioEffectApi;
 import com.netease.nertcflutter.Messages.AudioMixingApi;
 import com.netease.nertcflutter.Messages.BoolValue;
@@ -49,10 +53,6 @@ import com.netease.nertcflutter.Messages.SubscribeRemoteAudioStreamRequest;
 import com.netease.nertcflutter.Messages.SubscribeRemoteVideoStreamRequest;
 import com.netease.nertcflutter.Messages.VideoRendererApi;
 import com.netease.yunxin.base.utils.StringUtils;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -69,9 +69,9 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
 
     private final NERtcStatsObserverImpl observer;
 
-    private EglBase.Context sharedEglContext = null;
+    private NERtcEglContextWrapper sharedEglContext = null;
 
-    private Context applicationContext;
+    private final Context applicationContext;
 
     private AddActivityResultListener addActivityResultListener;
 
@@ -83,7 +83,7 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
 
     private final BinaryMessenger messenger;
 
-    private Map<Long, FlutterVideoRenderer> renderers = new HashMap<>();
+    private final Map<Long, FlutterVideoRenderer> renderers = new HashMap<>();
 
 
     @FunctionalInterface
@@ -201,6 +201,10 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
         if (arg.getLogLevel() != null) {
             option.logLevel = arg.getLogLevel().intValue();
         }
+
+        sharedEglContext = NERtcEglContextWrapper.createEglContext();
+        option.eglContext = sharedEglContext.getEglContext();
+
         NERtcParameters parameters = new NERtcParameters();
         if (arg.getAutoSubscribeAudio() != null) {
             parameters.setBoolean(NERtcParameters.KEY_AUTO_SUBSCRIBE_AUDIO, arg.getAutoSubscribeAudio());
@@ -233,10 +237,6 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
         try {
             NERtcEx.getInstance().setParameters(parameters);
             NERtcEx.getInstance().init(applicationContext, appKey, callback, option);
-            EglBase.Context localSharedEglContext = getEglSharedContext();
-            if (localSharedEglContext != null) {
-                sharedEglContext = EglBase.create(localSharedEglContext, EglBase.CONFIG_PLAIN).getEglBaseContext();
-            }
         } catch (Exception e) {
             Log.e("NERtcEngine", "Create RTC engine exception:" + e.toString());
             result.setValue(-3L);
@@ -250,7 +250,6 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
         callback.setAudioMixingCallbackEnabled(false);
         callback.setDeviceCallbackEnabled(false);
         callback.setAudioEffectCallbackEnabled(false);
-        sharedEglContext = null;
         NERtc.getInstance().release();
 //        for (Iterator<FlutterVideoRenderer> iterator = renderers.values().iterator(); iterator.hasNext(); ) {
 //            FlutterVideoRenderer renderer = iterator.next();
@@ -259,6 +258,10 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
 //            }
 //            iterator.remove();
 //        }
+        if(sharedEglContext != null) {
+            sharedEglContext.release();
+            sharedEglContext = null;
+        }
         IntValue result = new IntValue();
         result.setValue(0L);
         return result;
@@ -917,12 +920,22 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
 
     /////////////////////////////////// VideoRendererApi /////////////////////////////////////////////
 
+    //支持外部输入eglContext
+    private EglBase.Context getEglBaseContext(Object eglContext) {
+        if(eglContext instanceof android.opengl.EGLContext) {
+            return new EglBase14.Context((EGLContext) eglContext);
+        } else if(eglContext instanceof javax.microedition.khronos.egl.EGLContext) {
+            return new EglBase10.Context((javax.microedition.khronos.egl.EGLContext) eglContext);
+        }
+        return null;
+    }
+
     @Override
     public IntValue createVideoRenderer() {
         IntValue result = new IntValue();
         TextureRegistry.SurfaceTextureEntry entry = registry.createSurfaceTexture();
         if (sharedEglContext != null) {
-            FlutterVideoRenderer renderer = new FlutterVideoRenderer(messenger, entry, sharedEglContext);
+            FlutterVideoRenderer renderer = new FlutterVideoRenderer(messenger, entry, getEglBaseContext(sharedEglContext.getEglContext()));
             renderers.put(entry.id(), renderer);
             result.setValue(renderer.id());
         } else {
@@ -965,21 +978,5 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-
-    @SuppressWarnings("rawtypes")
-    private EglBase.Context getEglSharedContext() {
-        try {
-            Class clazzNERtc = NERtc.getInstance().getClass();
-            Field fieldRtcEngine = clazzNERtc.getDeclaredField("mRtcEngine");
-            fieldRtcEngine.setAccessible(true);
-            Object rtcEngine = fieldRtcEngine.get(NERtc.getInstance());
-            Class clazzRtcEngine = rtcEngine.getClass();
-            Method method = clazzRtcEngine.getMethod("getEglSharedContext");
-            return (EglBase.Context) method.invoke(rtcEngine);
-        } catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 
 }
