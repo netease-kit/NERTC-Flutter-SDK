@@ -127,6 +127,11 @@ abstract class NERtcChannelEventCallback {
   void onRemoteAudioVolumeIndication(
       List<NERtcAudioVolumeInfo> volumeList, int totalVolume);
 
+  /// 频道连接状态回调
+  /// [state] 当前的网络连接状态 {@link NERtcConstants.ConnectionState}
+  /// [reason] 引起当前网络连接状态发生改变的原因 {@link NERtcConstants.ConnectionStateChangeReason}
+  void onConnectionStateChanged(int state, int reason);
+
   /// 发生警告回调
   /// 该回调方法表示 SDK 运行时出现了（网络或媒体相关的）警告。
   /// 通常情况下，SDK 上报的警告信息 App 可以忽略，SDK 会自动恢复

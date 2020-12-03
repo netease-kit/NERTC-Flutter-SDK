@@ -70,6 +70,10 @@ class BoolValue {
   bool value;
 }
 
+class StringValue {
+  String value;
+}
+
 class StartAudioMixingRequest {
   String path;
   int loopCount;
@@ -109,6 +113,28 @@ class EnableEarbackRequest {
   int volume;
 }
 
+class AddOrUpdateLiveStreamTaskRequest {
+  int serial;
+  String taskId;
+  String url;
+  bool serverRecordEnabled;
+  int liveMode;
+  int layoutWidth;
+  int layoutHeight;
+  int layoutBackgroundColor;
+  String layoutImageUrl;
+  int layoutImageX;
+  int layoutImageY;
+  int layoutImageWidth;
+  int layoutImageHeight;
+  List layoutUserTranscodingList;
+}
+
+class DeleteLiveStreamTaskRequest {
+  int serial;
+  String taskId;
+}
+
 @HostApi()
 abstract class EngineApi {
   IntValue create(CreateEngineRequest request);
@@ -140,6 +166,10 @@ abstract class EngineApi {
       EnableAudioVolumeIndicationRequest request);
   IntValue adjustRecordingSignalVolume(IntValue volume);
   IntValue adjustPlaybackSignalVolume(IntValue volume);
+
+  IntValue addLiveStreamTask(AddOrUpdateLiveStreamTaskRequest request);
+  IntValue updateLiveStreamTask(AddOrUpdateLiveStreamTaskRequest request);
+  IntValue removeLiveStreamTask(DeleteLiveStreamTaskRequest request);
 }
 
 @HostApi()

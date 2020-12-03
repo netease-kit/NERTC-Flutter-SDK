@@ -609,3 +609,197 @@ class NERtcVideoFrameRate {
   static const int fps_24 = 24;
   static const int fps_30 = 30;
 }
+
+/// 直播推流模式
+class NERtcLiveStreamMode {
+  /// 推流带视频
+  static const int liveStreamModeVideo = 0;
+
+  /// 推流纯音频
+  static const int liveStreamModeAudio = 1;
+}
+
+/// 直播推流状态
+class NERtcLiveStreamState {
+  /// 推流中
+  static const int pushing = 505;
+
+  /// 互动直播推流失败
+  static const int pushFail = 506;
+
+  /// 推流结束
+  static const int pushStopped = 511;
+
+  /// 背景图片设置出错
+  static const int imageError = 512;
+}
+
+/// LiveStream Error Code
+class NERtcLiveStreamErrorCode {
+  /// 成功
+  static const int ok = 0;
+
+  /// Task请求无效，被后续操作覆盖
+  static const int requestIsInvaild = 1301;
+
+  /// Task参数格式错误
+  static const int invaild = 1400;
+
+  /// 房间已经退出
+  static const int roomExited = 1401;
+
+  /// 推流任务超出上限
+  static const int numLimit = 1402;
+
+  /// 推流ID重复
+  static const int duplicateId = 1403;
+
+  /// TaskId任务不存在，或频道不存在
+  static const int notFound = 1404;
+
+  /// 请求失败
+  static const int requestError = 1417;
+
+  /// 服务器内部错误
+  static const int internalServerErr = 1500;
+
+  /// 布局参数错误
+  static const int invalidLayout = 1501;
+
+  /// 用户图片错误
+  static const int userPictureError = 1502;
+}
+
+/// 直播布局
+class NERtcLiveStreamLayout {
+  const NERtcLiveStreamLayout({
+    this.width,
+    this.height,
+    this.backgroundImg,
+    this.userTranscodingList,
+    this.backgroundColor,
+  });
+
+  /// 视频推流宽度
+  final int width;
+
+  /// 视频推流高度
+  final int height;
+
+  /// 视频推流背景色 RGB
+  final int backgroundColor;
+
+  /// 视频推流背景图
+  final NERtcLiveStreamImageInfo backgroundImg;
+
+  /// 成员布局数组
+  final List<NERtcLiveStreamUserTranscoding> userTranscodingList;
+}
+
+class NERtcLiveStreamVideoScaleMode {
+  /// 视频尺寸等比缩放。优先保证视频内容全部显示。因视频尺寸与显示视窗尺寸不一致造成的视窗未被填满的区域填充背景色。
+  static const int liveStreamModeVideoScaleFit = 0;
+
+  /// 视频尺寸等比缩放。优先保证视窗被填满。因视频尺寸与显示视窗尺寸不一致而多出的视频将被截掉。
+  static const int liveStreamModeVideoScaleCropFill = 1;
+}
+
+/// 直播成员布局
+class NERtcLiveStreamUserTranscoding {
+  const NERtcLiveStreamUserTranscoding(
+      {@required this.uid,
+      this.videoPush = true,
+      this.audioPush = true,
+      this.adaption = NERtcLiveStreamVideoScaleMode.liveStreamModeVideoScaleFit,
+      this.x = 0,
+      this.y = 0,
+      this.width = 0,
+      this.height = 0});
+
+  /// 用户uid
+  final int uid;
+
+  /// 是否推送该用户视频流，推流模式为 [NERtcLiveStreamMode.liveStreamModeAudio] 时无效
+  final bool videoPush;
+
+  /// 是否推送该用户音频流
+  final bool audioPush;
+
+  /// 视频流裁剪模式, 参考 [NERtcLiveStreamVideoScaleMode]
+  final int adaption;
+
+  /// 画面离主画面左边距
+  final int x;
+
+  /// 画面离主画面上边距
+  final int y;
+
+  /// 画面在主画面的显示宽度，画面右边超出主画面会失败
+  final int width;
+
+  /// 画面在主画面的显示高度，画面底边超出主画面会失败
+  final int height;
+
+  Map<dynamic, dynamic> _toMap() {
+    final Map<dynamic, dynamic> map = <dynamic, dynamic>{};
+    map['uid'] = uid;
+    map['videoPush'] = videoPush;
+    map['audioPush'] = audioPush;
+    map['adaption'] = adaption;
+    map['x'] = x;
+    map['y'] = y;
+    map['width'] = width;
+    map['height'] = height;
+    return map;
+  }
+}
+
+/// 推流背景图片设置
+class NERtcLiveStreamImageInfo {
+  const NERtcLiveStreamImageInfo(
+      {@required this.url,
+      this.x = 0,
+      this.y = 0,
+      this.width = 0,
+      this.height = 0});
+
+  /// 图片地址url
+  final String url;
+
+  /// 图片离主画面左边距 ， 默认 0
+  final int x;
+
+  /// 图片离主画面上边距 ， 默认 0
+  final int y;
+
+  /// 图片在主画面的显示宽度，图片右边超出主画面会失败 ， 默认主画面宽度
+  final int width;
+
+  /// 图片在主画面的显示高度，图片底边超出主画面会失败， 默认主画面高度
+  final int height;
+}
+
+/// 房间推流任务参数
+class NERtcLiveStreamTaskInfo {
+  const NERtcLiveStreamTaskInfo(
+      {@required this.taskId,
+      @required this.url,
+      this.serverRecordEnabled = false,
+      this.liveMode = NERtcLiveStreamMode.liveStreamModeVideo,
+      this.layout = const NERtcLiveStreamLayout()});
+
+  /// 推流任务ID，为推流任务的唯一标识，用于过程中增删任务操作
+  final String taskId;
+
+  /// 直播推流地址
+  final String url;
+
+  /// 服务器录制功能是否开启
+  final bool serverRecordEnabled;
+
+  /// 直播推流模式 [NERtcLiveStreamMode]
+  final int liveMode;
+
+  /// 视频布局
+  final NERtcLiveStreamLayout layout;
+}

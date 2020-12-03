@@ -28,3 +28,4 @@ part 'src/internal/device_event_handler.dart';
 part 'src/internal/channel_event_handler.dart';
 part 'src/internal/video_renderer_impl.dart';
 part 'src/internal/nertc_common.dart';
+part 'src/internal/once_event_handler.dart';
