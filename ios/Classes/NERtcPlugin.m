@@ -407,6 +407,161 @@
     return result;
 }
 
+- (nullable FLTIntValue *)addLiveStreamTask:(nonnull FLTAddOrUpdateLiveStreamTaskRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+#ifdef DEBUG
+    NSLog(@"FlutterCalled:EngineApi#addLiveStreamTask");
+#endif
+    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NERtcLiveStreamTaskInfo* taskInfo = [[NERtcLiveStreamTaskInfo alloc] init];
+    NSNumber* serial = input.serial;
+    if(input.taskId != nil) {
+        taskInfo.taskID = input.taskId;
+    }
+    if(input.url != nil) {
+        taskInfo.streamURL = input.url;
+    }
+    if(input.serverRecordEnabled != nil) {
+        taskInfo.serverRecordEnabled = input.serverRecordEnabled.boolValue;
+    }
+    if(input.liveMode != nil) {
+        taskInfo.lsMode = input.liveMode.intValue;
+    }
+    NERtcLiveStreamLayout* layout = [[NERtcLiveStreamLayout alloc] init];
+    taskInfo.layout = layout;
+    if(input.layoutWidth != nil) {
+        layout.width = input.layoutWidth.intValue;
+    }
+    if(input.layoutHeight != nil) {
+        layout.height = input.layoutHeight.intValue;
+    }
+    if(input.layoutBackgroundColor != nil) {
+        layout.backgroundColor = input.layoutBackgroundColor.unsignedIntValue;
+    }
+    NERtcLiveStreamImageInfo* imageInfo = [[NERtcLiveStreamImageInfo alloc] init];
+    layout.bgImage = imageInfo;
+    if(input.layoutImageUrl != nil) {
+        imageInfo.url = input.layoutImageUrl;
+    }
+    if(input.layoutImageX != nil) {
+        imageInfo.x = input.layoutImageX.intValue;
+    }
+    if(input.layoutImageY != nil) {
+        imageInfo.y = input.layoutImageY.intValue;
+    }
+    if(input.layoutImageWidth != nil) {
+        imageInfo.width = input.layoutImageWidth.intValue;
+    }
+    if(input.layoutImageHeight != nil) {
+        imageInfo.height = input.layoutImageHeight.intValue;
+    }
+    if(input.layoutUserTranscodingList != nil) {
+        NSArray* userTranscodingList = input.layoutUserTranscodingList;
+    }
+    
+    int ret =  [[NERtcEngine sharedEngine] addLiveStreamTask:taskInfo compeltion:^(NSString * _Nonnull taskId, kNERtcLiveStreamError errorCode) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+            [dictionary setValue:serial forKey:@"serial"];
+            NSMutableDictionary *arguments = [[NSMutableDictionary alloc] init];
+            [arguments setValue:taskId forKey:@"taskId"];
+            [arguments setValue:[NSNumber numberWithInt:errorCode] forKey:@"errCode"];
+            [dictionary setValue:arguments forKey:@"arguments"];
+            [self->_channel invokeMethod:@"onOnceEvent" arguments:dictionary];
+        });
+    }];
+    result.value = @(ret);
+    return result;
+}
+
+
+- (nullable FLTIntValue *)removeLiveStreamTask:(nonnull FLTDeleteLiveStreamTaskRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+#ifdef DEBUG
+    NSLog(@"FlutterCalled:EngineApi#removeLiveStreamTask");
+#endif
+    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NSNumber* serial = input.serial;
+    int ret = [[NERtcEngine sharedEngine] removeLiveStreamTask:input.taskId compeltion:^(NSString * _Nonnull taskId, kNERtcLiveStreamError errorCode) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+            [dictionary setValue:serial forKey:@"serial"];
+            NSMutableDictionary *arguments = [[NSMutableDictionary alloc] init];
+            [arguments setValue:taskId forKey:@"taskId"];
+            [arguments setValue:[NSNumber numberWithInt:errorCode] forKey:@"errCode"];
+            [dictionary setValue:arguments forKey:@"arguments"];
+            [self->_channel invokeMethod:@"onOnceEvent" arguments:dictionary];
+        });
+    }];
+    result.value = @(ret);
+    return result;
+}
+
+
+- (nullable FLTIntValue *)updateLiveStreamTask:(nonnull FLTAddOrUpdateLiveStreamTaskRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+#ifdef DEBUG
+    NSLog(@"FlutterCalled:EngineApi#updateLiveStreamTask");
+#endif
+    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NERtcLiveStreamTaskInfo* taskInfo = [[NERtcLiveStreamTaskInfo alloc] init];
+    NSNumber* serial = input.serial;
+    if(input.taskId != nil) {
+        taskInfo.taskID = input.taskId;
+    }
+    if(input.url != nil) {
+        taskInfo.streamURL = input.url;
+    }
+    if(input.serverRecordEnabled != nil) {
+        taskInfo.serverRecordEnabled = input.serverRecordEnabled.boolValue;
+    }
+    if(input.liveMode != nil) {
+        taskInfo.lsMode = input.liveMode.intValue;
+    }
+    NERtcLiveStreamLayout* layout = [[NERtcLiveStreamLayout alloc] init];
+    taskInfo.layout = layout;
+    if(input.layoutWidth != nil) {
+        layout.width = input.layoutWidth.intValue;
+    }
+    if(input.layoutHeight != nil) {
+        layout.height = input.layoutHeight.intValue;
+    }
+    if(input.layoutBackgroundColor != nil) {
+        layout.backgroundColor = input.layoutBackgroundColor.unsignedIntValue;
+    }
+    NERtcLiveStreamImageInfo* imageInfo = [[NERtcLiveStreamImageInfo alloc] init];
+    layout.bgImage = imageInfo;
+    if(input.layoutImageUrl != nil) {
+        imageInfo.url = input.layoutImageUrl;
+    }
+    if(input.layoutImageX != nil) {
+        imageInfo.x = input.layoutImageX.intValue;
+    }
+    if(input.layoutImageY != nil) {
+        imageInfo.y = input.layoutImageY.intValue;
+    }
+    if(input.layoutImageWidth != nil) {
+        imageInfo.width = input.layoutImageWidth.intValue;
+    }
+    if(input.layoutImageHeight != nil) {
+        imageInfo.height = input.layoutImageHeight.intValue;
+    }
+    if(input.layoutUserTranscodingList != nil) {
+        NSArray* userTranscodingList = input.layoutUserTranscodingList;
+    }
+    int ret = [[NERtcEngine sharedEngine] updateLiveStreamTask:taskInfo compeltion:^(NSString * _Nonnull taskId, kNERtcLiveStreamError errorCode) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+            [dictionary setValue:serial forKey:@"serial"];
+            NSMutableDictionary *arguments = [[NSMutableDictionary alloc] init];
+            [arguments setValue:taskId forKey:@"taskId"];
+            [arguments setValue:[NSNumber numberWithInt:errorCode] forKey:@"errCode"];
+            [dictionary setValue:arguments forKey:@"arguments"];
+            [self->_channel invokeMethod:@"onOnceEvent" arguments:dictionary];
+        });
+    }];
+    result.value = @(ret);
+    return result;
+}
+
+
 
 #pragma mark - FLTVideoRendererApi
 
