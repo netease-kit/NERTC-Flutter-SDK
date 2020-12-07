@@ -56,7 +56,7 @@
 #ifdef DEBUG
     NSLog(@"FlutterCalled:EngineApi#create");
 #endif
-
+    
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     
     // Audio
@@ -88,19 +88,19 @@
     if(input.videoSendMode != nil) {
         [params setObject:input.videoSendMode forKey:kNERtcKeyVideoSendOnPubType];
     }
-
+    
     [params setObject:@(YES) forKey:kNERtcKeyVideoPreferMetalRender];
     
     [[NERtcEngine sharedEngine] setParameters: params];
-
+    
     NERtcEngineContext *context = [[NERtcEngineContext alloc] init];
     context.appKey = input.appKey;
     context.logSetting = [[NERtcLogSetting alloc] init];
     if(input.logDir != nil) {
-         context.logSetting.logDir = input.logDir;
+        context.logSetting.logDir = input.logDir;
     }
     if(input.logLevel != nil) {
-         context.logSetting.logLevel = input.logLevel.intValue;
+        context.logSetting.logLevel = input.logLevel.intValue;
     }
     context.engineDelegate = self;
     int ret = [[NERtcEngine sharedEngine] setupEngineWithContext:context];
@@ -378,11 +378,11 @@
     _audioEffetCallbackEnabled = NO;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [NERtcEngine destroyEngine];
-        dispatch_async(dispatch_get_main_queue(), ^{ 
+        dispatch_async(dispatch_get_main_queue(), ^{
             if(completion) {
                 completion();
             }
-        }); 
+        });
     });
 }
 
@@ -454,8 +454,54 @@
     if(input.layoutImageHeight != nil) {
         imageInfo.height = input.layoutImageHeight.intValue;
     }
+    NSMutableArray *userTranscodingArray = [NSMutableArray array];
     if(input.layoutUserTranscodingList != nil) {
-        NSArray* userTranscodingList = input.layoutUserTranscodingList;
+        for(id dict in input.layoutUserTranscodingList) {
+            NERtcLiveStreamUserTranscoding* userTranscoding = [[NERtcLiveStreamUserTranscoding alloc] init];
+            NSNumber* uid = dict[@"uid"];
+            if ((NSNull *)uid == [NSNull null]) {
+                userTranscoding.uid = uid.unsignedLongLongValue;
+            }
+            
+            NSNumber* videoPush = dict[@"videoPush"];
+            if ((NSNull *)videoPush == [NSNull null]) {
+                userTranscoding.videoPush = videoPush.boolValue;
+            }
+            
+            NSNumber* audioPush = dict[@"audioPush"];
+            if ((NSNull *)audioPush == [NSNull null]) {
+                userTranscoding.audioPush = audioPush.boolValue;
+            }
+            
+            
+            NSNumber* adaption = dict[@"adaption"];
+            if ((NSNull *)adaption == [NSNull null]) {
+                userTranscoding.adaption = adaption.boolValue;
+            }
+            
+            
+            NSNumber* x = dict[@"x"];
+            if ((NSNull *)x == [NSNull null]) {
+                userTranscoding.x = videoPush.intValue;
+            }
+            
+            NSNumber* y = dict[@"y"];
+            if ((NSNull *)y == [NSNull null]) {
+                userTranscoding.y = y.intValue;
+            }
+            
+            NSNumber* width = dict[@"width"];
+            if ((NSNull *)width == [NSNull null]) {
+                userTranscoding.width = width.intValue;
+            }
+            
+            NSNumber* height = dict[@"height"];
+            if ((NSNull *)height == [NSNull null]) {
+                userTranscoding.height = height.intValue;
+            }
+            
+            [userTranscodingArray addObject:userTranscoding];
+        }
     }
     
     int ret =  [[NERtcEngine sharedEngine] addLiveStreamTask:taskInfo compeltion:^(NSString * _Nonnull taskId, kNERtcLiveStreamError errorCode) {
@@ -543,8 +589,54 @@
     if(input.layoutImageHeight != nil) {
         imageInfo.height = input.layoutImageHeight.intValue;
     }
+    NSMutableArray *userTranscodingArray = [NSMutableArray array];
     if(input.layoutUserTranscodingList != nil) {
-        NSArray* userTranscodingList = input.layoutUserTranscodingList;
+        for(id dict in input.layoutUserTranscodingList) {
+            NERtcLiveStreamUserTranscoding* userTranscoding = [[NERtcLiveStreamUserTranscoding alloc] init];
+            NSNumber* uid = dict[@"uid"];
+            if ((NSNull *)uid == [NSNull null]) {
+                userTranscoding.uid = uid.unsignedLongLongValue;
+            }
+            
+            NSNumber* videoPush = dict[@"videoPush"];
+            if ((NSNull *)videoPush == [NSNull null]) {
+                userTranscoding.videoPush = videoPush.boolValue;
+            }
+            
+            NSNumber* audioPush = dict[@"audioPush"];
+            if ((NSNull *)audioPush == [NSNull null]) {
+                userTranscoding.audioPush = audioPush.boolValue;
+            }
+            
+            
+            NSNumber* adaption = dict[@"adaption"];
+            if ((NSNull *)adaption == [NSNull null]) {
+                userTranscoding.adaption = adaption.boolValue;
+            }
+            
+            
+            NSNumber* x = dict[@"x"];
+            if ((NSNull *)x == [NSNull null]) {
+                userTranscoding.x = videoPush.intValue;
+            }
+            
+            NSNumber* y = dict[@"y"];
+            if ((NSNull *)y == [NSNull null]) {
+                userTranscoding.y = y.intValue;
+            }
+            
+            NSNumber* width = dict[@"width"];
+            if ((NSNull *)width == [NSNull null]) {
+                userTranscoding.width = width.intValue;
+            }
+            
+            NSNumber* height = dict[@"height"];
+            if ((NSNull *)height == [NSNull null]) {
+                userTranscoding.height = height.intValue;
+            }
+            
+            [userTranscodingArray addObject:userTranscoding];
+        }
     }
     int ret = [[NERtcEngine sharedEngine] updateLiveStreamTask:taskInfo compeltion:^(NSString * _Nonnull taskId, kNERtcLiveStreamError errorCode) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -1134,6 +1226,11 @@
     [_channel invokeMethod:@"onError" arguments:@{@"code":@(errCode)}];
 }
 
+- (void)onNERtcEngineConnectionStateChangeWithState:(NERtcConnectionStateType)state
+                                             reason:(NERtcReasonConnectionChangedType)reason {
+    [_channel invokeMethod:@"onConnectionStateChanged" arguments:@{@"state": @(state), @"reason":@(reason)}];
+}
+
 - (void)onJoinChannel:(long)result channelId:(uint64_t)channelId elapsed:(uint64_t)elapesd {
     [_channel invokeMethod:@"onJoinChannel" arguments:@{@"result": @(result), @"channelId": @(channelId), @"elapesd":@(elapesd)}];
 }
@@ -1179,7 +1276,11 @@
 }
 
 
+#pragma mark - LiveStreamDelegate
 
+- (void)onNERTCEngineLiveStreamState:(NERtcLiveStreamStateCode)state taskID:(NSString *)taskID url:(NSString *)url {
+    [_channel invokeMethod:@"onLiveStreamState" arguments:@{@"taskId":taskID, @"pushUrl": url, @"liveState":@(state)}];
+}
 
 
 #pragma mark - AudioEffectDelegate
@@ -1208,22 +1309,22 @@
 - (void)onNERtcEngineAudioDeviceRoutingDidChange:(NERtcAudioOutputRouting)routing {
     if(_deviceCallbackEnabled == NO) return;
     int selected = 0;
-       switch (routing) {
-           case kNERtcAudioOutputRoutingHeadset:
-               selected = 1;
-               break;
-           case kNERtcAudioOutputRoutingEarpiece:
-               selected = 2;
-               break;
-           case kNERtcAudioOutputRoutingLoudspeaker:
-               selected = 0;
-               break;
-           case kNERtcAudioOutputRoutingBluetooth:
-               selected = 3;
-               break;
-           default:
-               break;
-       }
+    switch (routing) {
+        case kNERtcAudioOutputRoutingHeadset:
+            selected = 1;
+            break;
+        case kNERtcAudioOutputRoutingEarpiece:
+            selected = 2;
+            break;
+        case kNERtcAudioOutputRoutingLoudspeaker:
+            selected = 0;
+            break;
+        case kNERtcAudioOutputRoutingBluetooth:
+            selected = 3;
+            break;
+        default:
+            break;
+    }
     [_channel invokeMethod:@"onAudioDeviceChanged" arguments:@{@"selected":@(selected)}];
 }
 
@@ -1372,7 +1473,7 @@
 #pragma mark - NERtcEngineMediaStatsObserver
 
 
-- (void)onLocalAudioStat:(nonnull NERtcAudioSendStats *)stat { 
+- (void)onLocalAudioStat:(nonnull NERtcAudioSendStats *)stat {
     if(!stat) return;
     NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
     [dictionary setValue:[NSNumber numberWithLongLong:stat.sentBitrate] forKey:@"kbps"];
@@ -1385,7 +1486,7 @@
 }
 
 
-- (void)onLocalVideoStat:(nonnull NERtcVideoSendStats *)stat { 
+- (void)onLocalVideoStat:(nonnull NERtcVideoSendStats *)stat {
     if(!stat) return;
     NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
     [dictionary setValue:[NSNumber numberWithInt:stat.encodedFrameWidth] forKey:@"width"];
@@ -1398,7 +1499,7 @@
     [_channel invokeMethod:@"onLocalVideoStats" arguments:dictionary];
 }
 
-- (void)onNetworkQuality:(nonnull NSArray<NERtcNetworkQualityStats *> *)stats { 
+- (void)onNetworkQuality:(nonnull NSArray<NERtcNetworkQualityStats *> *)stats {
     if([stats isKindOfClass:[NSArray class]] && stats.count > 0) {
         NSMutableArray* array = [[NSMutableArray alloc] init];
         for(NERtcNetworkQualityStats* stat in stats) {
@@ -1413,7 +1514,7 @@
 }
 
 
-- (void)onRemoteAudioStats:(nonnull NSArray<NERtcAudioRecvStats *> *)stats { 
+- (void)onRemoteAudioStats:(nonnull NSArray<NERtcAudioRecvStats *> *)stats {
     if([stats isKindOfClass:[NSArray class]] && stats.count > 0) {
         NSMutableArray* array = [[NSMutableArray alloc] init];
         for(NERtcAudioRecvStats* stat in stats) {
@@ -1431,7 +1532,7 @@
 }
 
 
-- (void)onRemoteVideoStats:(nonnull NSArray<NERtcVideoRecvStats *> *)stats { 
+- (void)onRemoteVideoStats:(nonnull NSArray<NERtcVideoRecvStats *> *)stats {
     if([stats isKindOfClass:[NSArray class]] && stats.count > 0) {
         NSMutableArray* array = [[NSMutableArray alloc] init];
         for(NERtcVideoRecvStats* stat in stats) {
@@ -1452,7 +1553,7 @@
     
 }
 
-- (void)onRtcStats:(nonnull NERtcStats *)stat { 
+- (void)onRtcStats:(nonnull NERtcStats *)stat {
     if(!stat) return;
     NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
     [dictionary setValue:[NSNumber numberWithLongLong:stat.txBytes] forKey:@"txBytes"];
@@ -1485,7 +1586,4 @@
     [_channel invokeMethod:@"onRtcStats" arguments:dictionary];
 }
 
-
-
 @end
-

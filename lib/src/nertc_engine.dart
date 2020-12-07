@@ -294,9 +294,7 @@ class NERtcEngine {
       });
     }
     List<Map<dynamic, dynamic>> userTranscodingList =
-        List<Map<dynamic, dynamic>>();
-    taskInfo?.layout?.userTranscodingList
-        ?.map((e) => userTranscodingList.add(e._toMap()));
+        taskInfo?.layout?.userTranscodingList?.map((e) => e._toMap())?.toList();
     IntValue reply =
         await _api.addLiveStreamTask(AddOrUpdateLiveStreamTaskRequest()
           ..serial = serial
@@ -329,9 +327,7 @@ class NERtcEngine {
       });
     }
     List<Map<dynamic, dynamic>> userTranscodingList =
-        List<Map<dynamic, dynamic>>();
-    taskInfo?.layout?.userTranscodingList
-        ?.map((e) => userTranscodingList.add(e._toMap()));
+        taskInfo?.layout?.userTranscodingList?.map((e) => e._toMap())?.toList();
     IntValue reply =
         await _api.updateLiveStreamTask(AddOrUpdateLiveStreamTaskRequest()
           ..serial = serial

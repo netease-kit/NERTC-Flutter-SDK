@@ -30,10 +30,12 @@ import com.netease.lava.nertc.sdk.video.NERtcVideoConfig.NERtcVideoFrameRate;
 import com.netease.lava.webrtc.EglBase;
 import com.netease.lava.webrtc.EglBase10;
 import com.netease.lava.webrtc.EglBase14;
+import com.netease.nertcflutter.Messages.AddOrUpdateLiveStreamTaskRequest;
 import com.netease.nertcflutter.Messages.AudioEffectApi;
 import com.netease.nertcflutter.Messages.AudioMixingApi;
 import com.netease.nertcflutter.Messages.BoolValue;
 import com.netease.nertcflutter.Messages.CreateEngineRequest;
+import com.netease.nertcflutter.Messages.DeleteLiveStreamTaskRequest;
 import com.netease.nertcflutter.Messages.DeviceManagerApi;
 import com.netease.nertcflutter.Messages.DoubleValue;
 import com.netease.nertcflutter.Messages.EnableAudioVolumeIndicationRequest;
@@ -531,17 +533,17 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
     }
 
     @Override
-    public IntValue addLiveStreamTask(Messages.AddOrUpdateLiveStreamTaskRequest arg) {
+    public IntValue addLiveStreamTask(AddOrUpdateLiveStreamTaskRequest arg) {
         return null;
     }
 
     @Override
-    public IntValue updateLiveStreamTask(Messages.AddOrUpdateLiveStreamTaskRequest arg) {
+    public IntValue updateLiveStreamTask(AddOrUpdateLiveStreamTaskRequest arg) {
         return null;
     }
 
     @Override
-    public IntValue removeLiveStreamTask(Messages.DeleteLiveStreamTaskRequest arg) {
+    public IntValue removeLiveStreamTask(DeleteLiveStreamTaskRequest arg) {
         return null;
     }
 

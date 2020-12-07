@@ -670,9 +670,24 @@ class NERtcLiveStreamErrorCode {
   static const int userPictureError = 1502;
 }
 
+/// 直播推流状态
+class LiveStreamState {
+  /// 推流中
+  static const int pushing = 505;
+
+  /// 互动直播推流失败
+  static const int push_fail = 506;
+
+  /// 推流结束
+  static const int push_stopped = 511;
+
+  /// 背景图片设置出错
+  static const int image_error = 512;
+}
+
 /// 直播布局
 class NERtcLiveStreamLayout {
-  const NERtcLiveStreamLayout({
+  NERtcLiveStreamLayout({
     this.width,
     this.height,
     this.backgroundImg,
@@ -681,19 +696,19 @@ class NERtcLiveStreamLayout {
   });
 
   /// 视频推流宽度
-  final int width;
+  int width;
 
   /// 视频推流高度
-  final int height;
+  int height;
 
   /// 视频推流背景色 RGB
-  final int backgroundColor;
+  int backgroundColor;
 
   /// 视频推流背景图
-  final NERtcLiveStreamImageInfo backgroundImg;
+  NERtcLiveStreamImageInfo backgroundImg;
 
   /// 成员布局数组
-  final List<NERtcLiveStreamUserTranscoding> userTranscodingList;
+  List<NERtcLiveStreamUserTranscoding> userTranscodingList;
 }
 
 class NERtcLiveStreamVideoScaleMode {
@@ -706,7 +721,7 @@ class NERtcLiveStreamVideoScaleMode {
 
 /// 直播成员布局
 class NERtcLiveStreamUserTranscoding {
-  const NERtcLiveStreamUserTranscoding(
+  NERtcLiveStreamUserTranscoding(
       {@required this.uid,
       this.videoPush = true,
       this.audioPush = true,
@@ -717,28 +732,28 @@ class NERtcLiveStreamUserTranscoding {
       this.height = 0});
 
   /// 用户uid
-  final int uid;
+  int uid;
 
   /// 是否推送该用户视频流，推流模式为 [NERtcLiveStreamMode.liveStreamModeAudio] 时无效
-  final bool videoPush;
+  bool videoPush;
 
   /// 是否推送该用户音频流
-  final bool audioPush;
+  bool audioPush;
 
   /// 视频流裁剪模式, 参考 [NERtcLiveStreamVideoScaleMode]
-  final int adaption;
+  int adaption;
 
   /// 画面离主画面左边距
-  final int x;
+  int x;
 
   /// 画面离主画面上边距
-  final int y;
+  int y;
 
   /// 画面在主画面的显示宽度，画面右边超出主画面会失败
-  final int width;
+  int width;
 
   /// 画面在主画面的显示高度，画面底边超出主画面会失败
-  final int height;
+  int height;
 
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> map = <dynamic, dynamic>{};
@@ -756,50 +771,103 @@ class NERtcLiveStreamUserTranscoding {
 
 /// 推流背景图片设置
 class NERtcLiveStreamImageInfo {
-  const NERtcLiveStreamImageInfo(
-      {@required this.url,
-      this.x = 0,
-      this.y = 0,
-      this.width = 0,
-      this.height = 0});
+  NERtcLiveStreamImageInfo(
+      {this.url, this.x = 0, this.y = 0, this.width = 0, this.height = 0});
 
   /// 图片地址url
-  final String url;
+  String url;
 
   /// 图片离主画面左边距 ， 默认 0
-  final int x;
+  int x;
 
   /// 图片离主画面上边距 ， 默认 0
-  final int y;
+  int y;
 
   /// 图片在主画面的显示宽度，图片右边超出主画面会失败 ， 默认主画面宽度
-  final int width;
+  int width;
 
   /// 图片在主画面的显示高度，图片底边超出主画面会失败， 默认主画面高度
-  final int height;
+  int height;
 }
 
 /// 房间推流任务参数
 class NERtcLiveStreamTaskInfo {
-  const NERtcLiveStreamTaskInfo(
-      {@required this.taskId,
-      @required this.url,
+  NERtcLiveStreamTaskInfo(
+      {this.taskId,
+      this.url,
       this.serverRecordEnabled = false,
       this.liveMode = NERtcLiveStreamMode.liveStreamModeVideo,
-      this.layout = const NERtcLiveStreamLayout()});
+      this.layout});
 
   /// 推流任务ID，为推流任务的唯一标识，用于过程中增删任务操作
-  final String taskId;
+  String taskId;
 
   /// 直播推流地址
-  final String url;
+  String url;
 
   /// 服务器录制功能是否开启
-  final bool serverRecordEnabled;
+  bool serverRecordEnabled;
 
   /// 直播推流模式 [NERtcLiveStreamMode]
-  final int liveMode;
+  int liveMode;
 
   /// 视频布局
-  final NERtcLiveStreamLayout layout;
+  NERtcLiveStreamLayout layout;
+}
+
+/// 频道连接状态
+class ConnectionState {
+  /// 未知
+  static const int unknown = 0;
+
+  /// 网络连接断开
+  static const int disconnected = 1;
+
+  ///建立网络连接中
+  static const int connecting = 2;
+
+  /// 网络已连接
+  static const int connected = 3;
+
+  /// 重新建立网络连接中
+  static const int reconnecting = 4;
+
+  /// 网络连接失败
+  static const int failed = 5;
+}
+
+/// 频道连接状态变更原因
+class ConnectionStateChangeReason {
+  /// 离开房间
+  static const int leave_channel = 1;
+
+  /// 房间被关闭
+  static const int channel_closed = 2;
+
+  /// 用户被踢
+  static const int server_kicked = 3;
+
+  /// 超时离开
+  static const int time_out = 4;
+
+  /// 加入房间
+  static const int join_channel = 5;
+
+  /// 加入房间成功
+  static const int join_succeed = 6;
+
+  /// 重新加入房间成功（重连）
+  static const int rejoin_succeed = 7;
+
+  /// 媒体连接断开
+  static const int media_connection_disconnected = 8;
+
+  /// 信令连接断开
+  static const int signal_disconnected = 9;
+
+  /// 请求频道失败
+  static const int request_channel_failed = 10;
+
+  /// 加入频道失败
+  static const int join_channel_failed = 11;
 }

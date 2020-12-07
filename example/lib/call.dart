@@ -289,6 +289,9 @@ class _CallPageState extends State<CallPage>
 
   @override
   void onConnectionStateChanged(int state, int reason) {}
+
+  @override
+  void onLiveStreamState(String taskId, String pushUrl, int liveState) {}
 }
 
 class _UserSession {
