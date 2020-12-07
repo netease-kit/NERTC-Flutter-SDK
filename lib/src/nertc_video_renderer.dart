@@ -12,8 +12,8 @@ class VideoRendererFactory {
 }
 
 abstract class NERtcVideoRendererEventListener {
-  void onFrameResolutionChanged(int width, int height, int rotation);
-  void onFirstFrameRendered();
+  void onFrameResolutionChanged(int uid, int width, int height, int rotation);
+  void onFirstFrameRendered(int uid);
 }
 
 abstract class NERtcVideoRenderer extends ValueNotifier<_NERtcVideoValue> {

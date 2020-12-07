@@ -32,11 +32,11 @@ class _NERtcVideoRendererImpl extends NERtcVideoRenderer {
             height: map['height'],
             rotation: map['rotation']);
         rendererEventLister?.onFrameResolutionChanged(
-            value.width, value.height, value.rotation);
+            _uid, value.width, value.height, value.rotation);
         print('onFrameResolutionChanged: ${value.toString()}');
         break;
       case 'didFirstFrameRendered':
-        rendererEventLister?.onFirstFrameRendered();
+        rendererEventLister?.onFirstFrameRendered(_uid);
         print('didFirstFrameRendered');
         break;
     }
