@@ -3,6 +3,8 @@
 
 package com.netease.nertcflutter;
 
+import com.netease.nertcflutter.NERtcEngine.SuccessCallback;
+
 import io.flutter.plugin.common.BasicMessageChannel;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.StandardMessageCodec;
@@ -1777,7 +1779,7 @@ public class Messages {
     IntValue startVideoPreview();
     IntValue stopVideoPreview();
     IntValue enableLocalVideo(BoolValue arg);
-    IntValue startScreenCapture(IntValue arg);
+    void startScreenCapture(IntValue arg, SuccessCallback successCallback);
     IntValue stopScreenCapture();
     IntValue subscribeRemoteVideoStream(SubscribeRemoteVideoStreamRequest arg);
     IntValue muteLocalAudioStream(BoolValue arg);
@@ -2126,13 +2128,17 @@ public class Messages {
             try {
               @SuppressWarnings("ConstantConditions")
               IntValue input = IntValue.fromMap((HashMap)message);
-              IntValue output = api.startScreenCapture(input);
-              wrapped.put("result", output.toMap());
+              api.startScreenCapture(input,  result -> {
+                HashMap<String, Object> toMapResult = new HashMap<>();
+                toMapResult.put("value", result);
+                wrapped.put("result", toMapResult);
+                reply.reply(wrapped);
+              });
             }
             catch (Exception exception) {
               wrapped.put("error", wrapError(exception));
+              reply.reply(wrapped);
             }
-            reply.reply(wrapped);
           });
         } else {
           channel.setMessageHandler(null);

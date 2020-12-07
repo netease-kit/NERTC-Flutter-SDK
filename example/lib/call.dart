@@ -286,6 +286,9 @@ class _CallPageState extends State<CallPage>
 
   @override
   void onReconnectingStart() {}
+
+  @override
+  void onConnectionStateChanged(int state, int reason) {}
 }
 
 class _UserSession {

@@ -530,6 +530,21 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
         return result;
     }
 
+    @Override
+    public IntValue addLiveStreamTask(Messages.AddOrUpdateLiveStreamTaskRequest arg) {
+        return null;
+    }
+
+    @Override
+    public IntValue updateLiveStreamTask(Messages.AddOrUpdateLiveStreamTaskRequest arg) {
+        return null;
+    }
+
+    @Override
+    public IntValue removeLiveStreamTask(Messages.DeleteLiveStreamTaskRequest arg) {
+        return null;
+    }
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 
