@@ -78,6 +78,12 @@ class _ChannelEventHandler with _EventHandler {
       case 'onRemoteAudioVolumeIndication':
         _handleOnRemoteAudioVolumeIndication(call);
         return true;
+      case 'onConnectionStateChanged':
+        _handleOnConnectionStateChanged(call);
+        return true;
+      case 'onLiveStreamState':
+        _handleOnLiveStreamState(call);
+        return true;
       case 'onError':
         _handleOnError(call);
         return true;
@@ -200,6 +206,17 @@ class _ChannelEventHandler with _EventHandler {
     }
     _callback.onRemoteAudioVolumeIndication(
         volumeList, arguments['totalVolume']);
+  }
+
+  void _handleOnConnectionStateChanged(MethodCall call) {
+    Map arguments = call.arguments;
+    _callback.onConnectionStateChanged(arguments['state'], arguments['reason']);
+  }
+
+  void _handleOnLiveStreamState(MethodCall call) {
+    Map arguments = call.arguments;
+    _callback.onLiveStreamState(
+        arguments['taskId'], arguments['pushUrl'], arguments['liveState']);
   }
 
   void _handleOnError(MethodCall call) {

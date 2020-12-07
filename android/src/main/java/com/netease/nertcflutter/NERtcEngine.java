@@ -22,6 +22,11 @@ import com.netease.lava.nertc.sdk.NERtcOption;
 import com.netease.lava.nertc.sdk.NERtcParameters;
 import com.netease.lava.nertc.sdk.audio.NERtcCreateAudioEffectOption;
 import com.netease.lava.nertc.sdk.audio.NERtcCreateAudioMixingOption;
+import com.netease.lava.nertc.sdk.live.NERtcLiveStreamImageInfo;
+import com.netease.lava.nertc.sdk.live.NERtcLiveStreamLayout;
+import com.netease.lava.nertc.sdk.live.NERtcLiveStreamTaskInfo;
+import com.netease.lava.nertc.sdk.live.NERtcLiveStreamTaskInfo.NERtcLiveStreamMode;
+import com.netease.lava.nertc.sdk.live.NERtcLiveStreamUserTranscoding;
 import com.netease.lava.nertc.sdk.video.NERtcEglContextWrapper;
 import com.netease.lava.nertc.sdk.video.NERtcRemoteVideoStreamType;
 import com.netease.lava.nertc.sdk.video.NERtcVideoConfig;
@@ -55,7 +60,10 @@ import com.netease.nertcflutter.Messages.SubscribeRemoteAudioStreamRequest;
 import com.netease.nertcflutter.Messages.SubscribeRemoteVideoStreamRequest;
 import com.netease.nertcflutter.Messages.VideoRendererApi;
 import com.netease.yunxin.base.utils.StringUtils;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import io.flutter.plugin.common.BinaryMessenger;
@@ -87,6 +95,8 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
 
     private final Map<Long, FlutterVideoRenderer> renderers = new HashMap<>();
 
+    private CallbackMethod invokeMethod;
+
 
     @FunctionalInterface
     interface AddActivityResultListener {
@@ -116,6 +126,7 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
 
     NERtcEngine(@NonNull Context applicationContext, @NonNull BinaryMessenger messenger,
                 @NonNull CallbackMethod method, @NonNull TextureRegistry registry) {
+        this.invokeMethod = method;
         this.callback = new NERtcCallbackImpl(method);
         this.observer = new NERtcStatsObserverImpl(method);
         this.applicationContext = applicationContext;
@@ -232,7 +243,7 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
         if (arg.getPublishSelfStream() != null) {
             parameters.setBoolean(NERtcParameters.KEY_PUBLISH_SELF_STREAM, arg.getPublishSelfStream());
         }
-        if(arg.getVideoSendMode() != null) {
+        if (arg.getVideoSendMode() != null) {
             parameters.setInteger(NERtcParameters.KEY_VIDEO_SEND_MODE, arg.getVideoSendMode().intValue());
         }
 
@@ -260,7 +271,7 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
 //            }
 //            iterator.remove();
 //        }
-        if(sharedEglContext != null) {
+        if (sharedEglContext != null) {
             sharedEglContext.release();
             sharedEglContext = null;
         }
@@ -534,17 +545,217 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
 
     @Override
     public IntValue addLiveStreamTask(AddOrUpdateLiveStreamTaskRequest arg) {
-        return null;
+        NERtcLiveStreamTaskInfo taskInfo = new NERtcLiveStreamTaskInfo();
+        Long serial = arg.getSerial();
+        if (arg.getTaskId() != null) {
+            taskInfo.taskId = arg.getTaskId();
+        }
+        if (arg.getUrl() != null) {
+            taskInfo.url = arg.getUrl();
+        }
+        if (arg.getServerRecordEnabled() != null) {
+            taskInfo.serverRecordEnabled = arg.getServerRecordEnabled();
+        }
+        if (arg.getLiveMode() != null) {
+            taskInfo.liveMode = FLTUtils.int2LiveStreamMode(arg.getLiveMode().intValue());
+        }
+        NERtcLiveStreamLayout layout = new NERtcLiveStreamLayout();
+        taskInfo.layout = layout;
+        if (arg.getLayoutWidth() != null) {
+            layout.width = arg.getLayoutWidth().intValue();
+        }
+        if (arg.getLayoutHeight() != null) {
+            layout.height = arg.getLayoutHeight().intValue();
+        }
+        if (arg.getLayoutBackgroundColor() != null) {
+            layout.backgroundColor = arg.getLayoutBackgroundColor().intValue();
+        }
+        NERtcLiveStreamImageInfo imageInfo = new NERtcLiveStreamImageInfo();
+        layout.backgroundImg = imageInfo;
+        if (arg.getLayoutImageUrl() != null) {
+            imageInfo.url = arg.getLayoutImageUrl();
+        }
+        if (arg.getLayoutImageWidth() != null) {
+            imageInfo.width = arg.getLayoutImageWidth().intValue();
+        }
+        if (arg.getLayoutImageHeight() != null) {
+            imageInfo.height = arg.getLayoutHeight().intValue();
+        }
+        if (arg.getLayoutImageX() != null) {
+            imageInfo.x = arg.getLayoutImageX().intValue();
+        }
+        if (arg.getLayoutImageY() != null) {
+            imageInfo.y = arg.getLayoutImageY().intValue();
+        }
+        ArrayList<NERtcLiveStreamUserTranscoding> userTranscodingList = new ArrayList<>();
+        layout.userTranscodingList = userTranscodingList;
+        if (arg.getLayoutUserTranscodingList() != null) {
+            ArrayList<Map<String, Object>> userList = arg.getLayoutUserTranscodingList();
+            for (Map<String, Object> user : userList) {
+                NERtcLiveStreamUserTranscoding userTranscoding = new NERtcLiveStreamUserTranscoding();
+                Object uid = user.get("uid");
+                if (uid instanceof Number) {
+                    userTranscoding.uid = ((Number) uid).longValue();
+                }
+                Object videoPush = user.get("videoPush");
+                if (videoPush instanceof Boolean) {
+                    userTranscoding.videoPush = (Boolean) videoPush;
+                }
+                Object audioPush = user.get("audioPush");
+                if (audioPush instanceof Boolean) {
+                    userTranscoding.audioPush = (Boolean) audioPush;
+                }
+                Object adaption = user.get("adaption");
+                if (adaption instanceof Number) {
+                    userTranscoding.adaption = FLTUtils.int2LiveStreamVideoScaleMode(((Number) adaption).intValue());
+                }
+                Object x = user.get("x");
+                if (x instanceof Number) {
+                    userTranscoding.x = ((Number) x).intValue();
+                }
+                Object y = user.get("y");
+                if (y instanceof Number) {
+                    userTranscoding.y = ((Number) y).intValue();
+                }
+                Object width = user.get("width");
+                if (width instanceof Number) {
+                    userTranscoding.width = ((Number) width).intValue();
+                }
+                Object height = user.get("height");
+                if (height instanceof Number) {
+                    userTranscoding.height = ((Number) height).intValue();
+                }
+                userTranscodingList.add(userTranscoding);
+            }
+        }
+        int ret = NERtcEx.getInstance().addLiveStreamTask(taskInfo, (taskId, errorCode) -> {
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("serial", serial);
+            Map<String, Object> arguments = new HashMap<>();
+            arguments.put("taskId", taskId);
+            arguments.put("errCode", errorCode);
+            map.put("arguments", arguments);
+            invokeMethod.invokeMethod("onOnceEvent", map);
+        });
+        IntValue result = new IntValue();
+        result.setValue((long) ret);
+        return result;
     }
 
     @Override
     public IntValue updateLiveStreamTask(AddOrUpdateLiveStreamTaskRequest arg) {
-        return null;
+        NERtcLiveStreamTaskInfo taskInfo = new NERtcLiveStreamTaskInfo();
+        Long serial = arg.getSerial();
+        if (arg.getTaskId() != null) {
+            taskInfo.taskId = arg.getTaskId();
+        }
+        if (arg.getUrl() != null) {
+            taskInfo.url = arg.getUrl();
+        }
+        if (arg.getServerRecordEnabled() != null) {
+            taskInfo.serverRecordEnabled = arg.getServerRecordEnabled();
+        }
+        if (arg.getLiveMode() != null) {
+            taskInfo.liveMode = FLTUtils.int2LiveStreamMode(arg.getLiveMode().intValue());
+        }
+        NERtcLiveStreamLayout layout = new NERtcLiveStreamLayout();
+        taskInfo.layout = layout;
+        if (arg.getLayoutWidth() != null) {
+            layout.width = arg.getLayoutWidth().intValue();
+        }
+        if (arg.getLayoutHeight() != null) {
+            layout.height = arg.getLayoutHeight().intValue();
+        }
+        if (arg.getLayoutBackgroundColor() != null) {
+            layout.backgroundColor = arg.getLayoutBackgroundColor().intValue();
+        }
+        NERtcLiveStreamImageInfo imageInfo = new NERtcLiveStreamImageInfo();
+        layout.backgroundImg = imageInfo;
+        if (arg.getLayoutImageUrl() != null) {
+            imageInfo.url = arg.getLayoutImageUrl();
+        }
+        if (arg.getLayoutImageWidth() != null) {
+            imageInfo.width = arg.getLayoutImageWidth().intValue();
+        }
+        if (arg.getLayoutImageHeight() != null) {
+            imageInfo.height = arg.getLayoutHeight().intValue();
+        }
+        if (arg.getLayoutImageX() != null) {
+            imageInfo.x = arg.getLayoutImageX().intValue();
+        }
+        if (arg.getLayoutImageY() != null) {
+            imageInfo.y = arg.getLayoutImageY().intValue();
+        }
+        ArrayList<NERtcLiveStreamUserTranscoding> userTranscodingList = new ArrayList<>();
+        layout.userTranscodingList = userTranscodingList;
+        if (arg.getLayoutUserTranscodingList() != null) {
+            ArrayList<Map<String, Object>> userList = arg.getLayoutUserTranscodingList();
+            for (Map<String, Object> user : userList) {
+                NERtcLiveStreamUserTranscoding userTranscoding = new NERtcLiveStreamUserTranscoding();
+                Object uid = user.get("uid");
+                if (uid instanceof Number) {
+                    userTranscoding.uid = ((Number) uid).longValue();
+                }
+                Object videoPush = user.get("videoPush");
+                if (videoPush instanceof Boolean) {
+                    userTranscoding.videoPush = (Boolean) videoPush;
+                }
+                Object audioPush = user.get("audioPush");
+                if (audioPush instanceof Boolean) {
+                    userTranscoding.audioPush = (Boolean) audioPush;
+                }
+                Object adaption = user.get("adaption");
+                if (adaption instanceof Number) {
+                    userTranscoding.adaption = FLTUtils.int2LiveStreamVideoScaleMode(((Number) adaption).intValue());
+                }
+                Object x = user.get("x");
+                if (x instanceof Number) {
+                    userTranscoding.x = ((Number) x).intValue();
+                }
+                Object y = user.get("y");
+                if (y instanceof Number) {
+                    userTranscoding.y = ((Number) y).intValue();
+                }
+                Object width = user.get("width");
+                if (width instanceof Number) {
+                    userTranscoding.width = ((Number) width).intValue();
+                }
+                Object height = user.get("height");
+                if (height instanceof Number) {
+                    userTranscoding.height = ((Number) height).intValue();
+                }
+                userTranscodingList.add(userTranscoding);
+            }
+        }
+        int ret = NERtcEx.getInstance().updateLiveStreamTask(taskInfo, (taskId, errorCode) -> {
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("serial", serial);
+            Map<String, Object> arguments = new HashMap<>();
+            arguments.put("taskId", taskId);
+            arguments.put("errCode", errorCode);
+            map.put("arguments", arguments);
+            invokeMethod.invokeMethod("onOnceEvent", map);
+        });
+        IntValue result = new IntValue();
+        result.setValue((long) ret);
+        return result;
     }
 
     @Override
     public IntValue removeLiveStreamTask(DeleteLiveStreamTaskRequest arg) {
-        return null;
+        IntValue result = new IntValue();
+        Long serial = arg.getSerial();
+        int ret = NERtcEx.getInstance().removeLiveStreamTask(arg.getTaskId(), (taskId, errorCode) -> {
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("serial", serial);
+            Map<String, Object> arguments = new HashMap<>();
+            arguments.put("taskId", taskId);
+            arguments.put("errCode", errorCode);
+            map.put("arguments", arguments);
+            invokeMethod.invokeMethod("onOnceEvent", map);
+        });
+        result.setValue((long) ret);
+        return result;
     }
 
 
@@ -939,9 +1150,9 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
 
     //支持外部输入eglContext
     private EglBase.Context getEglBaseContext(Object eglContext) {
-        if(eglContext instanceof android.opengl.EGLContext) {
+        if (eglContext instanceof android.opengl.EGLContext) {
             return new EglBase14.Context((EGLContext) eglContext);
-        } else if(eglContext instanceof javax.microedition.khronos.egl.EGLContext) {
+        } else if (eglContext instanceof javax.microedition.khronos.egl.EGLContext) {
             return new EglBase10.Context((javax.microedition.khronos.egl.EGLContext) eglContext);
         }
         return null;

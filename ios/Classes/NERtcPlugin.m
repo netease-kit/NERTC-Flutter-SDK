@@ -476,7 +476,7 @@
             
             NSNumber* adaption = dict[@"adaption"];
             if ((NSNull *)adaption == [NSNull null]) {
-                userTranscoding.adaption = adaption.boolValue;
+                userTranscoding.adaption = adaption.intValue;
             }
             
             
@@ -611,7 +611,7 @@
             
             NSNumber* adaption = dict[@"adaption"];
             if ((NSNull *)adaption == [NSNull null]) {
-                userTranscoding.adaption = adaption.boolValue;
+                userTranscoding.adaption = adaption.intValue;
             }
             
             

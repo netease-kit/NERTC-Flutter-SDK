@@ -264,7 +264,10 @@ enum NERtcAudioProfile {
   ///普通质量的音频编码，16000Hz，20Kbps
   profileStandard,
 
-  ///中等质量的音频编码，48000Hz，32Kbp
+  /// 普通质量的音频编码，16000Hz，32Kbps
+  profileStandardExtend,
+
+  ///中等质量的音频编码，48000Hz，32Kbps
   profileMiddleQuality,
 
   ///中等质量的立体声编码，48000Hz * 2，64Kbps

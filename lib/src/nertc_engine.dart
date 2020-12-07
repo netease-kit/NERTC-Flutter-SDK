@@ -2,8 +2,19 @@
 
 part of nertc;
 
+/// 添加直播任务结果回调
+/// [taskId] 任务id
+/// [errCode] 错误码， [NERtcLiveStreamErrorCode.ok] 操作成功 ， 其他失败
 typedef void AddLiveTaskCallback(String taskId, int errCode);
+
+/// 更新直播任务结果回调
+/// [taskId] 任务id
+/// [errCode] 错误码， [NERtcLiveStreamErrorCode.ok] 操作成功 ， 其他失败
 typedef void UpdateLiveTaskCallback(String taskId, int errCode);
+
+/// 删除直播任务结果回调
+/// [taskId] 任务id
+/// [errCode] 错误码， [NERtcLiveStreamErrorCode.ok] 操作成功 ， 其他失败
 typedef void DeleteLiveTaskCallback(String taskId, int errCode);
 
 class NERtcEngine {

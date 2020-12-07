@@ -260,14 +260,25 @@ public class NERtcCallbackImpl implements NERtcCallbackEx {
 
     @Override
     public void onLiveStreamState(String taskId, String pushUrl, int liveState) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("taskId", taskId);
+        map.put("pushUrl", pushUrl);
+        map.put("liveState", liveState);
+        callback.invokeMethod("onLiveStreamState", map);
+    }
 
-    }
     @Override
-    public void onConnectionStateChanged(int i, int i1) {
+    public void onConnectionStateChanged(int state,int reason) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("state", state);
+        map.put("reason", reason);
+        callback.invokeMethod("onConnectionStateChanged", map);
     }
+
     @Override
     public void onCameraFocusChanged(Rect rect) {
     }
+
     @Override
     public void onCameraExposureChanged(Rect rect) {
     }
