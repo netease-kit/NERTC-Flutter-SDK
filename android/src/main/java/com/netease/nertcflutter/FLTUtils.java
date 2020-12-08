@@ -1,5 +1,6 @@
 package com.netease.nertcflutter;
 
+import com.netease.lava.nertc.sdk.live.NERtcLiveStreamImageInfo;
 import com.netease.lava.nertc.sdk.live.NERtcLiveStreamTaskInfo.NERtcLiveStreamMode;
 import com.netease.lava.nertc.sdk.live.NERtcLiveStreamUserTranscoding.NERtcLiveStreamVideoScaleMode;
 

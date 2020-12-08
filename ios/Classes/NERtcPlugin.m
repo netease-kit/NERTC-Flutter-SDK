@@ -438,9 +438,10 @@
         layout.backgroundColor = input.layoutBackgroundColor.unsignedIntValue;
     }
     NERtcLiveStreamImageInfo* imageInfo = [[NERtcLiveStreamImageInfo alloc] init];
-    layout.bgImage = imageInfo;
     if(input.layoutImageUrl != nil) {
         imageInfo.url = input.layoutImageUrl;
+        //服务器根据Url来判断Image Info 是否合法, 不合法情况下不能有Image节点参数
+        layout.bgImage = imageInfo;
     }
     if(input.layoutImageX != nil) {
         imageInfo.x = input.layoutImageX.intValue;
@@ -573,9 +574,10 @@
         layout.backgroundColor = input.layoutBackgroundColor.unsignedIntValue;
     }
     NERtcLiveStreamImageInfo* imageInfo = [[NERtcLiveStreamImageInfo alloc] init];
-    layout.bgImage = imageInfo;
     if(input.layoutImageUrl != nil) {
         imageInfo.url = input.layoutImageUrl;
+        //服务器根据Url来判断Image Info 是否合法, 不合法情况下不能有Image节点参数
+        layout.bgImage = imageInfo;
     }
     if(input.layoutImageX != nil) {
         imageInfo.x = input.layoutImageX.intValue;

@@ -571,9 +571,10 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
             layout.backgroundColor = arg.getLayoutBackgroundColor().intValue();
         }
         NERtcLiveStreamImageInfo imageInfo = new NERtcLiveStreamImageInfo();
-        layout.backgroundImg = imageInfo;
         if (arg.getLayoutImageUrl() != null) {
             imageInfo.url = arg.getLayoutImageUrl();
+            //服务器根据Url来判断Image Info 是否合法, 不合法情况下不能有Image节点参数
+            layout.backgroundImg = imageInfo;
         }
         if (arg.getLayoutImageWidth() != null) {
             imageInfo.width = arg.getLayoutImageWidth().intValue();
@@ -670,9 +671,10 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
             layout.backgroundColor = arg.getLayoutBackgroundColor().intValue();
         }
         NERtcLiveStreamImageInfo imageInfo = new NERtcLiveStreamImageInfo();
-        layout.backgroundImg = imageInfo;
         if (arg.getLayoutImageUrl() != null) {
             imageInfo.url = arg.getLayoutImageUrl();
+            //服务器根据Url来判断Image Info 是否合法, 不合法情况下不能有Image节点参数
+            layout.backgroundImg = imageInfo;
         }
         if (arg.getLayoutImageWidth() != null) {
             imageInfo.width = arg.getLayoutImageWidth().intValue();
@@ -759,7 +761,7 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
     }
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////// AudioEffectApi /////////////////////////////////////////////
 
