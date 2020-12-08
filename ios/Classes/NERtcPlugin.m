@@ -483,7 +483,7 @@
             }
             NSNumber* x = dict[@"x"];
             if ((NSNull *)x != [NSNull null]) {
-                userTranscoding.x = videoPush.intValue;
+                userTranscoding.x = x.intValue;
             }
             NSNumber* y = dict[@"y"];
             if ((NSNull *)y != [NSNull null]) {
@@ -610,7 +610,7 @@
             }
             NSNumber* x = dict[@"x"];
             if ((NSNull *)x != [NSNull null]) {
-                userTranscoding.x = videoPush.intValue;
+                userTranscoding.x = x.intValue;
             }
             NSNumber* y = dict[@"y"];
             if ((NSNull *)y != [NSNull null]) {
