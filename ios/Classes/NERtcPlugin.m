@@ -456,6 +456,7 @@
         imageInfo.height = input.layoutImageHeight.intValue;
     }
     NSMutableArray *userTranscodingArray = [NSMutableArray array];
+    layout.users = userTranscodingArray;
     if(input.layoutUserTranscodingList != nil) {
         for(id dict in input.layoutUserTranscodingList) {
             NERtcLiveStreamUserTranscoding* userTranscoding = [[NERtcLiveStreamUserTranscoding alloc] init];
@@ -463,44 +464,34 @@
             if ((NSNull *)uid == [NSNull null]) {
                 userTranscoding.uid = uid.unsignedLongLongValue;
             }
-            
             NSNumber* videoPush = dict[@"videoPush"];
             if ((NSNull *)videoPush == [NSNull null]) {
                 userTranscoding.videoPush = videoPush.boolValue;
             }
-            
             NSNumber* audioPush = dict[@"audioPush"];
             if ((NSNull *)audioPush == [NSNull null]) {
                 userTranscoding.audioPush = audioPush.boolValue;
             }
-            
-            
             NSNumber* adaption = dict[@"adaption"];
             if ((NSNull *)adaption == [NSNull null]) {
                 userTranscoding.adaption = adaption.intValue;
             }
-            
-            
             NSNumber* x = dict[@"x"];
             if ((NSNull *)x == [NSNull null]) {
                 userTranscoding.x = videoPush.intValue;
             }
-            
             NSNumber* y = dict[@"y"];
             if ((NSNull *)y == [NSNull null]) {
                 userTranscoding.y = y.intValue;
             }
-            
             NSNumber* width = dict[@"width"];
             if ((NSNull *)width == [NSNull null]) {
                 userTranscoding.width = width.intValue;
             }
-            
             NSNumber* height = dict[@"height"];
             if ((NSNull *)height == [NSNull null]) {
                 userTranscoding.height = height.intValue;
             }
-            
             [userTranscodingArray addObject:userTranscoding];
         }
     }
@@ -592,6 +583,7 @@
         imageInfo.height = input.layoutImageHeight.intValue;
     }
     NSMutableArray *userTranscodingArray = [NSMutableArray array];
+    layout.users = userTranscodingArray;
     if(input.layoutUserTranscodingList != nil) {
         for(id dict in input.layoutUserTranscodingList) {
             NERtcLiveStreamUserTranscoding* userTranscoding = [[NERtcLiveStreamUserTranscoding alloc] init];
@@ -599,44 +591,34 @@
             if ((NSNull *)uid == [NSNull null]) {
                 userTranscoding.uid = uid.unsignedLongLongValue;
             }
-            
             NSNumber* videoPush = dict[@"videoPush"];
             if ((NSNull *)videoPush == [NSNull null]) {
                 userTranscoding.videoPush = videoPush.boolValue;
             }
-            
             NSNumber* audioPush = dict[@"audioPush"];
             if ((NSNull *)audioPush == [NSNull null]) {
                 userTranscoding.audioPush = audioPush.boolValue;
             }
-            
-            
             NSNumber* adaption = dict[@"adaption"];
             if ((NSNull *)adaption == [NSNull null]) {
                 userTranscoding.adaption = adaption.intValue;
             }
-            
-            
             NSNumber* x = dict[@"x"];
             if ((NSNull *)x == [NSNull null]) {
                 userTranscoding.x = videoPush.intValue;
             }
-            
             NSNumber* y = dict[@"y"];
             if ((NSNull *)y == [NSNull null]) {
                 userTranscoding.y = y.intValue;
             }
-            
             NSNumber* width = dict[@"width"];
             if ((NSNull *)width == [NSNull null]) {
                 userTranscoding.width = width.intValue;
             }
-            
             NSNumber* height = dict[@"height"];
             if ((NSNull *)height == [NSNull null]) {
                 userTranscoding.height = height.intValue;
             }
-            
             [userTranscodingArray addObject:userTranscoding];
         }
     }
