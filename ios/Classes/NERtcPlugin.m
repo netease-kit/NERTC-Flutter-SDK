@@ -440,7 +440,7 @@
         layout.height = input.layoutHeight.intValue;
     }
     if(input.layoutBackgroundColor != nil) {
-        layout.backgroundColor = input.layoutBackgroundColor.unsignedIntValue;
+        layout.backgroundColor = input.layoutBackgroundColor.intValue & 0x00FFFFFF;
     }
     NERtcLiveStreamImageInfo* imageInfo = [[NERtcLiveStreamImageInfo alloc] init];
     if(input.layoutImageUrl != nil) {
@@ -567,7 +567,7 @@
         layout.height = input.layoutHeight.intValue;
     }
     if(input.layoutBackgroundColor != nil) {
-        layout.backgroundColor = input.layoutBackgroundColor.unsignedIntValue;
+        layout.backgroundColor = input.layoutBackgroundColor.intValue & 0x00FFFFFF;
     }
     NERtcLiveStreamImageInfo* imageInfo = [[NERtcLiveStreamImageInfo alloc] init];
     if(input.layoutImageUrl != nil) {

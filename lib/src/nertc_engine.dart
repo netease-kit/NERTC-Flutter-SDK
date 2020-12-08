@@ -315,7 +315,7 @@ class NERtcEngine {
           ..liveMode = taskInfo.liveMode
           ..layoutWidth = taskInfo.layout?.width
           ..layoutHeight = taskInfo.layout?.height
-          ..layoutBackgroundColor = taskInfo.layout?.backgroundColor
+          ..layoutBackgroundColor = taskInfo.layout?.backgroundColor?.value
           ..layoutImageUrl = taskInfo.layout?.backgroundImg?.url
           ..layoutImageX = taskInfo.layout?.backgroundImg?.x
           ..layoutImageY = taskInfo.layout?.backgroundImg?.y
@@ -348,7 +348,7 @@ class NERtcEngine {
           ..liveMode = taskInfo.liveMode
           ..layoutWidth = taskInfo.layout?.width
           ..layoutHeight = taskInfo.layout?.height
-          ..layoutBackgroundColor = taskInfo.layout?.backgroundColor
+          ..layoutBackgroundColor = taskInfo.layout?.backgroundColor?.value
           ..layoutImageUrl = taskInfo.layout?.backgroundImg?.url
           ..layoutImageX = taskInfo.layout?.backgroundImg?.x
           ..layoutImageY = taskInfo.layout?.backgroundImg?.y

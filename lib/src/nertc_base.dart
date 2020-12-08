@@ -705,7 +705,7 @@ class NERtcLiveStreamLayout {
   int height;
 
   /// 视频推流背景色 RGB
-  int backgroundColor;
+  Color backgroundColor;
 
   /// 视频推流背景图
   NERtcLiveStreamImageInfo backgroundImg;
