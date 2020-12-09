@@ -1,4 +1,5 @@
-name: nertc_example
+name: FLTNERTC
+version: 0.3.8+1
 description: Demonstrates how to use the nertc plugin.
 
 # The following line prevents the package from being accidentally published to
@@ -26,6 +27,7 @@ dependencies:
   permission_handler: ^5.0.1+1
   http: ^0.12.2
   shared_preferences: ^0.5.12+4
+  package_info: ^0.4.3+2
 
 dev_dependencies:
   flutter_test:

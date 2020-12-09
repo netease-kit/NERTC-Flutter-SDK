@@ -17,6 +17,7 @@ typedef void UpdateLiveTaskCallback(String taskId, int errCode);
 /// [errCode] 错误码， [NERtcLiveStreamErrorCode.ok] 操作成功 ， 其他失败
 typedef void DeleteLiveTaskCallback(String taskId, int errCode);
 
+/// NERtc 核心接口
 class NERtcEngine {
   factory NERtcEngine() => _instance;
 

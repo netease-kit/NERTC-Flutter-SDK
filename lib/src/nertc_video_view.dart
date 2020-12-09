@@ -2,11 +2,13 @@
 
 part of nertc;
 
+/// 视频渲染视图
 class NERtcVideoView extends StatelessWidget {
   final NERtcVideoRenderer _renderer;
   final NERtcVideoViewFitType fitType;
   final bool mirror;
   final Color backgroundColor;
+
 
   NERtcVideoView(this._renderer,
       {Key key,

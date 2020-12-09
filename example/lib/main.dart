@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'settings.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'about.dart';
 import 'call.dart';
 
 void main() => runApp(RtcApp());
@@ -10,7 +12,7 @@ class RtcApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'NERTC Flutter Demo',
+      title: 'FLTNERTC',
       home: MainPage(),
     );
   }
@@ -23,7 +25,7 @@ class MainPage extends StatefulWidget {
   }
 }
 
-enum OptionsMenu { settings }
+enum OptionsMenu { SETTINGS, ABOUT }
 enum ConfirmAction { CANCEL, ACCEPT }
 
 class _MainPageState extends State<MainPage> {
@@ -44,7 +46,24 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('NERTC Flutter Demo'),
+        title: const Text('FLTNERTC'),
+        actions: <Widget>[
+          PopupMenuButton(
+              onSelected: (OptionsMenu result) {
+                _onOptionsItemSelected(result);
+              },
+              itemBuilder: (BuildContext context) =>
+                  <PopupMenuEntry<OptionsMenu>>[
+                    const PopupMenuItem<OptionsMenu>(
+                      value: OptionsMenu.SETTINGS,
+                      child: Text('Settings'),
+                    ),
+                    const PopupMenuItem<OptionsMenu>(
+                      value: OptionsMenu.ABOUT,
+                      child: Text('About'),
+                    ),
+                  ]),
+        ],
       ),
       body: Container(
         margin: const EdgeInsets.all(15.0),
@@ -113,12 +132,26 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
+  void _onOptionsItemSelected(OptionsMenu item) {
+    switch (item) {
+      case OptionsMenu.SETTINGS:
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => SettingsPage()));
+        break;
+      case OptionsMenu.ABOUT:
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => AboutPage()));
+        break;
+    }
+  }
+
   Future<void> _startRTC(BuildContext context) async {
-    //检查参数
-    setState(() {
-      _channelValidateError = _channelController.text.isEmpty;
-      _uidValidateError = _uidController.text.isEmpty;
-    });
+    _channelValidateError = _channelController.text.isEmpty;
+    _uidValidateError = _uidController.text.isEmpty;
+
+    setState(() {});
+
+    if (_channelValidateError || _uidValidateError) return;
 
     //检查权限
     final permissions = [Permission.camera, Permission.microphone];
