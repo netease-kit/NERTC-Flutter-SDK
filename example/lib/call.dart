@@ -1,3 +1,4 @@
+import 'package:FLTNERTC/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:nertc/nertc.dart';
 import 'config.dart';
@@ -16,6 +17,7 @@ class CallPage extends StatefulWidget {
 
 class _CallPageState extends State<CallPage>
     with NERtcChannelEventCallback, NERtcStatsEventCallback {
+  Settings _settings;
   NERtcEngine _engine = NERtcEngine();
   _UserSession _localSession = _UserSession();
   _UserSession _remoteSession = _UserSession();
@@ -23,8 +25,13 @@ class _CallPageState extends State<CallPage>
   @override
   void initState() {
     super.initState();
+    _initSettings();
     _initLocalUserSession();
     _initRtcEngine();
+  }
+
+  void _initSettings() async {
+    _settings = await Settings.getInstance();
   }
 
   @override
@@ -127,8 +134,16 @@ class _CallPageState extends State<CallPage>
   Future<void> _initParameters() async {
     NERtcOptions options = NERtcOptions(
         autoSubscribeAudio: true,
-        videoEncodeMode: NERtcMediaCodecMode.software,
-        videoDecodeMode: NERtcMediaCodecMode.software);
+        serverRecordSpeaker: _settings.serverRecordSpeaker,
+        serverRecordAudio: _settings.serverRecordAudio,
+        serverRecordVideo: _settings.serverRecordVideo,
+        serverRecordMode:
+            NERtcServerRecordMode.values[_settings.serverRecordMode],
+        videoSendMode: NERtcVideoSendMode.values[_settings.videoSendMode],
+        videoEncodeMode:
+            NERtcMediaCodecMode.values[_settings.videoEncodeMediaCodecMode],
+        videoDecodeMode:
+            NERtcMediaCodecMode.values[_settings.videoDecodeMediaCodecMode]);
     _engine.create(
         appKey: Config.APP_KEY, channelEventCallback: this, options: options);
     _engine.setStatsEventCallback(this);

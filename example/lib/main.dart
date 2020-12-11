@@ -40,6 +40,7 @@ class _MainPageState extends State<MainPage> {
   void initState() {
     super.initState();
     _uidController.text = Random().nextInt(1 << 32).toString();
+    Settings.getInstance();
   }
 
   @override

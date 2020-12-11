@@ -130,13 +130,13 @@ class NERtcVideoCropMode {
   static const int cropDefault = 0;
 
   ///16:9 裁剪
-  static const int CROP_16x9 = 1;
+  static const int crop_16x9 = 1;
 
   ///4:3 裁剪
-  static const int CROP_4x3 = 2;
+  static const int crop_4x3 = 2;
 
   ///1:1 裁剪
-  static const int CROP_1x1 = 3;
+  static const int crop_1x1 = 3;
 }
 
 ///网络类型定义
