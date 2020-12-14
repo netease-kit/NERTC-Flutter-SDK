@@ -135,6 +135,11 @@ class DeleteLiveStreamTaskRequest {
   String taskId;
 }
 
+class SetVideoRendererMirrorRequest {
+  int textureId;
+  bool mirror;
+}
+
 @HostApi()
 abstract class EngineApi {
   IntValue create(CreateEngineRequest request);
@@ -175,6 +180,7 @@ abstract class EngineApi {
 @HostApi()
 abstract class VideoRendererApi {
   IntValue createVideoRenderer();
+  IntValue setMirror(SetVideoRendererMirrorRequest request);
   IntValue setupLocalVideoRenderer(IntValue textureId);
   IntValue setupRemoteVideoRenderer(SetupRemoteVideoRendererRequest request);
   void disposeVideoRenderer(IntValue textureId);

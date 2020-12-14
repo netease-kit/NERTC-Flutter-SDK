@@ -39,7 +39,11 @@ abstract class NERtcVideoRenderer extends ValueNotifier<_NERtcVideoValue> {
   /// 添加本端用户渲染画布
   Future<int> addToLocalVideoSink();
 
+  /// 设置画面是否镜像
   Future<int> setMirror(bool mirror);
+
+  /// 获取画面是否镜像  
+  bool getMirrored();
 
   @override
   @mustCallSuper

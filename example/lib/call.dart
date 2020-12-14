@@ -16,11 +16,15 @@ class CallPage extends StatefulWidget {
 }
 
 class _CallPageState extends State<CallPage>
-    with NERtcChannelEventCallback, NERtcStatsEventCallback {
+    with
+        NERtcChannelEventCallback,
+        NERtcStatsEventCallback,
+        NERtcDeviceEventCallback {
   Settings _settings;
   NERtcEngine _engine = NERtcEngine();
   List<_UserSession> _remoteSessions = List();
   _UserSession _localSession = _UserSession();
+  // bool frontCamera = true;
 
   @override
   void initState() {
@@ -82,6 +86,16 @@ class _CallPageState extends State<CallPage>
   void _onCallEnd(BuildContext context) {
     Navigator.pop(context);
   }
+
+  // void _onSwitchCamera() {
+  //   _engine.deviceManager.switchCamera().then((value) {
+  //     if (value == 0) {
+  //       frontCamera = !frontCamera;
+  //       _localSession.renderer.setMirror(frontCamera);
+  //     }
+  //   });
+  //   _localSession.renderer.setMirror(!_localSession.renderer.getMirrored());
+  // }
 
   Widget buildVideoViews(BuildContext context) {
     return GridView.builder(
@@ -172,6 +186,8 @@ class _CallPageState extends State<CallPage>
 
   Future<void> _initRenderer() async {
     _localSession.renderer = await VideoRendererFactory.createVideoRenderer();
+    _localSession.renderer.setMirror(
+        _settings.frontFacingCamera && _settings.frontFacingCameraMirror);
     _localSession.renderer.addToLocalVideoSink();
     setState(() {});
   }
@@ -346,6 +362,15 @@ class _CallPageState extends State<CallPage>
 
   @override
   void onLiveStreamState(String taskId, String pushUrl, int liveState) {}
+
+  @override
+  void onAudioDeviceChanged(int selected) {}
+
+  @override
+  void onAudioDeviceStateChange(int deviceType, int deviceState) {}
+
+  @override
+  void onVideoDeviceStageChange(int deviceState) {}
 }
 
 class _UserSession {

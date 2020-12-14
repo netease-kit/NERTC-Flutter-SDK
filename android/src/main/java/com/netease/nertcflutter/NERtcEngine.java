@@ -1142,6 +1142,21 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
     }
 
     @Override
+    public IntValue setMirror(Messages.SetVideoRendererMirrorRequest arg) {
+        IntValue result = new IntValue();
+        int ret = -1;
+        if (arg.getTextureId() != null) {
+            FlutterVideoRenderer renderer = renderers.get(arg.getTextureId());
+            if(renderer != null) {
+                renderer.setMirror(arg.getMirror());
+                ret = 0;
+            }
+        }
+        result.setValue((long) ret);
+        return result;
+    }
+
+    @Override
     public IntValue setupLocalVideoRenderer(IntValue arg) {
         IntValue result = new IntValue();
         FlutterVideoRenderer renderer = null;

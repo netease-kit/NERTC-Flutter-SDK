@@ -9,6 +9,7 @@ class _NERtcVideoRendererImpl extends NERtcVideoRenderer {
   VideoRendererApi _api = VideoRendererApi();
 
   int _textureId;
+  bool _mirror = false;
   StreamSubscription<dynamic> _rendererEventSubscription;
 
   bool _local = false;
@@ -64,6 +65,13 @@ class _NERtcVideoRendererImpl extends NERtcVideoRenderer {
     if (local) {
       IntValue reply =
           await _api.setupLocalVideoRenderer(IntValue()..value = textureId);
+      if (Platform.isAndroid) {
+        if (_mirror == false) {
+          await _api.setMirror(SetVideoRendererMirrorRequest()
+            ..textureId = textureId
+            ..mirror = _mirror);
+        }
+      }
       return reply.value;
     } else {
       IntValue reply =
@@ -75,7 +83,19 @@ class _NERtcVideoRendererImpl extends NERtcVideoRenderer {
   }
 
   @override
-  Future<int> setMirror(bool mirror) {}
+  Future<int> setMirror(bool mirror) async {
+    if (textureId == null) return -1;
+    IntValue reply = await _api.setMirror(SetVideoRendererMirrorRequest()
+      ..textureId = textureId
+      ..mirror = mirror);
+    if (reply.value == 0) _mirror = mirror;
+    return reply.value;
+  }
+
+  @override
+  bool getMirrored() {
+    return _mirror;
+  }
 
   @override
   Future<void> dispose() async {
