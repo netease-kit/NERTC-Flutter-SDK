@@ -101,6 +101,9 @@ public class FlutterVideoRenderer implements IVideoRender, EventChannel.StreamHa
 
     @Override
     public void setMirror(boolean mirror) {
+        if(surfaceTextureRenderer!= null) {
+            surfaceTextureRenderer.setMirror(mirror);
+        }
     }
 
     @Override

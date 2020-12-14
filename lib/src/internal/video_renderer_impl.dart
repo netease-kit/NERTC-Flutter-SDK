@@ -75,6 +75,9 @@ class _NERtcVideoRendererImpl extends NERtcVideoRenderer {
   }
 
   @override
+  Future<int> setMirror(bool mirror) {}
+
+  @override
   Future<void> dispose() async {
     await _setSource(_local, _uid, null);
     await _rendererEventSubscription?.cancel();

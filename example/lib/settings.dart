@@ -154,6 +154,24 @@ class Settings {
   int get audioEffectLoopCount => _prefs?.getInt('audioEffectLoopCount') ?? 1;
   set audioEffectLoopCount(int value) =>
       _prefs?.setInt("audioEffectLoopCount", value);
+
+  bool get publishSelfStream => _prefs?.getBool('publishSelfStream') ?? false;
+  set publishSelfStream(bool value) =>
+      _prefs?.setBool("publishSelfStream", value);
+
+  bool get autoEnableAudio => _prefs?.getBool('autoEnableAudio') ?? true;
+  set autoEnableAudio(bool value) => _prefs?.setBool("autoEnableAudio", value);
+
+  bool get autoEnableVideo => _prefs?.getBool('autoEnableVideo') ?? true;
+  set autoEnableVideo(bool value) => _prefs?.setBool("autoEnableVideo", value);
+
+  bool get autoSubscribeAudio => _prefs?.getBool('autoSubscribeAudio') ?? true;
+  set autoSubscribeAudio(bool value) =>
+      _prefs?.setBool("autoSubscribeAudio", value);
+
+  bool get autoSubscribeVideo => _prefs?.getBool('autoSubscribeVideo') ?? true;
+  set autoSubscribeVideo(bool value) =>
+      _prefs?.setBool("autoSubscribeVideo", value);
 }
 
 class SettingsPage extends StatefulWidget {
@@ -199,6 +217,11 @@ class _SettingsPageState extends State<SettingsPage> {
   bool _audioEffectSendEnabled = true;
   bool _audioEffectPlayEnabled = true;
   int _audioEffectLoopCount = 1;
+  bool _publishSelfStream = false;
+  bool _autoEnableAudio = true;
+  bool _autoEnableVideo = true;
+  bool _autoSubscribeAudio = true;
+  bool _autoSubscribeVideo = true;
 
   @override
   void initState() {
@@ -237,6 +260,11 @@ class _SettingsPageState extends State<SettingsPage> {
       _audioEffectSendEnabled = settings.audioEffectSendEnabled;
       _audioEffectPlayEnabled = settings.audioEffectPlayEnabled;
       _audioEffectLoopCount = settings.audioEffectLoopCount;
+      _publishSelfStream = settings.publishSelfStream;
+      _autoEnableAudio = settings.autoEnableAudio;
+      _autoEnableVideo = settings.autoEnableVideo;
+      _autoSubscribeAudio = settings.autoSubscribeAudio;
+      _autoSubscribeVideo = settings.autoSubscribeVideo;
     });
   }
 
@@ -254,10 +282,96 @@ class _SettingsPageState extends State<SettingsPage> {
             buildAudioSettings(context),
             buildServerRecordSettings(context),
             buildAudioMixingSettings(context),
-            buildAudioEffectSettings(context)
+            buildAudioEffectSettings(context),
+            buildOtherSettings(context)
           ],
         ),
       ),
+    );
+  }
+
+  Widget buildOtherSettings(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          child: Text(
+            '其它',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          padding: const EdgeInsets.only(left: 15, top: 10, bottom: 6),
+        ),
+        Column(
+          children: [
+            SwitchListTile(
+              title: const Text('推送自身流'),
+              subtitle: Text('推送自身流'),
+              onChanged: (bool value) {
+                setState(() {
+                  _publishSelfStream = value;
+                  settings.publishSelfStream = _publishSelfStream;
+                });
+              },
+              value: _publishSelfStream,
+            ),
+            Divider(
+                height: 1, color: Colors.grey, indent: 15.0, endIndent: 15.0),
+            SwitchListTile(
+              title: const Text('自动开启音频'),
+              subtitle: Text('自动开启音频'),
+              onChanged: (bool value) {
+                setState(() {
+                  _autoEnableAudio = value;
+                  settings.autoEnableAudio = _autoEnableAudio;
+                });
+              },
+              value: _autoEnableAudio,
+            ),
+            Divider(
+                height: 1, color: Colors.grey, indent: 15.0, endIndent: 15.0),
+            SwitchListTile(
+              title: const Text('自动开启视频'),
+              subtitle: Text('自动开启视频'),
+              onChanged: (bool value) {
+                setState(() {
+                  _autoEnableVideo = value;
+                  settings.autoEnableVideo = _autoEnableVideo;
+                });
+              },
+              value: _autoEnableVideo,
+            ),
+            Divider(
+                height: 1, color: Colors.grey, indent: 15.0, endIndent: 15.0),
+            SwitchListTile(
+              title: const Text('自动订阅音频'),
+              subtitle: Text('自动订阅音频'),
+              onChanged: (bool value) {
+                setState(() {
+                  _autoSubscribeAudio = value;
+                  settings.autoSubscribeAudio = _autoSubscribeAudio;
+                });
+              },
+              value: _autoSubscribeAudio,
+            ),
+            Divider(
+                height: 1, color: Colors.grey, indent: 15.0, endIndent: 15.0),
+            SwitchListTile(
+              title: const Text('自动订阅视频'),
+              subtitle: Text('自动订阅视频'),
+              onChanged: (bool value) {
+                setState(() {
+                  _autoSubscribeVideo = value;
+                  settings.autoSubscribeVideo = _autoSubscribeVideo;
+                });
+              },
+              value: _autoSubscribeVideo,
+            ),
+            Divider(
+                height: 1, color: Colors.grey, indent: 15.0, endIndent: 15.0),
+          ],
+        )
+      ],
     );
   }
 

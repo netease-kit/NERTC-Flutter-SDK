@@ -19,18 +19,16 @@ class _CallPageState extends State<CallPage>
     with NERtcChannelEventCallback, NERtcStatsEventCallback {
   Settings _settings;
   NERtcEngine _engine = NERtcEngine();
+  List<_UserSession> _remoteSessions = List();
   _UserSession _localSession = _UserSession();
-  _UserSession _remoteSession = _UserSession();
 
   @override
   void initState() {
     super.initState();
-    _initSettings();
-    _initLocalUserSession();
-    _initRtcEngine();
+    _initSettings().then((value) => _initRtcEngine());
   }
 
-  void _initSettings() async {
+  Future<void> _initSettings() async {
     _settings = await Settings.getInstance();
   }
 
@@ -38,6 +36,11 @@ class _CallPageState extends State<CallPage>
   Widget build(BuildContext context) {
     return WillPopScope(
       child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          centerTitle: true,
+          title: Text(widget.cid),
+        ),
         body: buildCallingWidget(context),
       ),
       // ignore: missing_return
@@ -47,14 +50,9 @@ class _CallPageState extends State<CallPage>
     );
   }
 
-  Future<void> _initRenderers() async {
-    _localSession.renderer = await VideoRendererFactory.createVideoRenderer();
-    setState(() {});
-  }
-
   Widget buildCallingWidget(BuildContext context) {
     return Stack(children: <Widget>[
-      buildCallingVideoViewWidget(context),
+      buildVideoViews(context),
       Align(
           alignment: Alignment(0.0, 0.9),
           child: Flex(
@@ -85,55 +83,52 @@ class _CallPageState extends State<CallPage>
     Navigator.pop(context);
   }
 
-  Widget buildCallingVideoViewWidget(BuildContext context) {
-    if (_remoteSession.renderer != null && _localSession.renderer != null) {
-      NERtcVideoRenderer big = _remoteSession.renderer;
-      NERtcVideoRenderer small = _localSession.renderer;
-      return Stack(children: <Widget>[
-        NERtcVideoView(big),
-        Align(
-          alignment: Alignment(0.9, -0.9),
-          child: Container(
-            width: 150,
-            height: 200,
-            child: NERtcVideoView(small),
-          ),
-        ),
-      ]);
-    } else if (_localSession.renderer != null) {
-      return NERtcVideoView(_localSession.renderer);
-    } else {
-      return Container();
-    }
+  Widget buildVideoViews(BuildContext context) {
+    return GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            childAspectRatio: 9 / 16,
+            crossAxisSpacing: 2.0,
+            mainAxisSpacing: 2.0),
+        itemCount: _remoteSessions.length + 1,
+        itemBuilder: (BuildContext context, int index) {
+          if (index == 0) {
+            return buildVideoView(context, _localSession);
+          } else {
+            return buildVideoView(context, _remoteSessions[index - 1]);
+          }
+        });
+  }
+
+  Widget buildVideoView(BuildContext context, _UserSession session) {
+    return Container(
+      child: Stack(
+        children: [
+          session.renderer != null
+              ? NERtcVideoView(session.renderer)
+              : Container(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                '${session.uid}',
+                style: TextStyle(color: Colors.red),
+              )
+            ],
+          )
+        ],
+      ),
+    );
   }
 
   void _requestPop() {
     Navigator.pop(context);
   }
 
-  Future<void> _startLocalVideoPreview() async {
-    _engine.enableLocalVideo(true);
-    _localSession.renderer.addToLocalVideoSink();
-    NERtcVideoConfig config = NERtcVideoConfig();
-    config.videoProfile = NERtcVideoProfile.hd720p;
-    _engine.setLocalVideoConfig(config);
-    _engine.startVideoPreview();
-  }
-
-  void _initLocalUserSession() {
-    _localSession.uid = widget.uid;
-  }
-
   void _initRtcEngine() async {
-    await _initParameters();
-    await _initRenderers();
-    _startLocalVideoPreview();
-    _engine.joinChannel('', widget.cid, widget.uid);
-  }
-
-  Future<void> _initParameters() async {
+    _localSession.uid = widget.uid;
     NERtcOptions options = NERtcOptions(
-        autoSubscribeAudio: true,
+        autoSubscribeAudio: _settings.autoSubscribeAudio,
         serverRecordSpeaker: _settings.serverRecordSpeaker,
         serverRecordAudio: _settings.serverRecordAudio,
         serverRecordVideo: _settings.serverRecordVideo,
@@ -144,9 +139,41 @@ class _CallPageState extends State<CallPage>
             NERtcMediaCodecMode.values[_settings.videoEncodeMediaCodecMode],
         videoDecodeMode:
             NERtcMediaCodecMode.values[_settings.videoDecodeMediaCodecMode]);
-    _engine.create(
-        appKey: Config.APP_KEY, channelEventCallback: this, options: options);
-    _engine.setStatsEventCallback(this);
+    _engine
+        .create(
+            appKey: Config.APP_KEY,
+            channelEventCallback: this,
+            options: options)
+        .then((value) => _engine.setStatsEventCallback(this))
+        .then((value) => _initAudio())
+        .then((value) => _initVideo())
+        .then((value) => _initRenderer())
+        .then((value) => _engine.joinChannel('', widget.cid, widget.uid));
+  }
+
+  Future<int> _initAudio() async {
+    await _engine.enableLocalAudio(_settings.autoEnableAudio);
+    return _engine.setAudioProfile(
+        NERtcAudioProfile.values[_settings.audioProfile],
+        NERtcAudioScenario.values[_settings.audioScenario]);
+  }
+
+  Future<int> _initVideo() async {
+    await _engine.enableLocalVideo(_settings.autoEnableVideo);
+    await _engine.enableDualStreamMode(_settings.enableDualStreamMode);
+    NERtcVideoConfig config = NERtcVideoConfig();
+    config.videoProfile = _settings.videoProfile;
+    config.frameRate = _settings.videoFrameRate;
+    config.degradationPrefer = _settings.degradationPreference;
+    config.frontCamera = _settings.frontFacingCamera;
+    config.videoCropMode = _settings.videoCropMode;
+    return _engine.setLocalVideoConfig(config);
+  }
+
+  Future<void> _initRenderer() async {
+    _localSession.renderer = await VideoRendererFactory.createVideoRenderer();
+    _localSession.renderer.addToLocalVideoSink();
+    setState(() {});
   }
 
   void _releaseRtcEngine() {
@@ -161,9 +188,9 @@ class _CallPageState extends State<CallPage>
       _localSession.renderer.dispose();
       _localSession.renderer = null;
     }
-    if (_remoteSession.renderer != null) {
-      _remoteSession.renderer.dispose();
-      _remoteSession.renderer = null;
+    for (_UserSession session in _remoteSessions) {
+      session.renderer?.dispose();
+      session.renderer = null;
     }
     _engine.leaveChannel();
   }
@@ -218,7 +245,10 @@ class _CallPageState extends State<CallPage>
   @override
   void onUserJoined(int uid) {
     print('onUserJoined->' + uid.toString());
-    _remoteSession.uid = uid;
+    _UserSession session = _UserSession();
+    session.uid = uid;
+    _remoteSessions.add(session);
+    setState(() {});
   }
 
   @override
@@ -246,10 +276,19 @@ class _CallPageState extends State<CallPage>
   }
 
   Future<void> setupVideoView(int uid, int maxProfile) async {
-    _remoteSession.renderer = await VideoRendererFactory.createVideoRenderer();
-    _remoteSession.renderer.addToRemoteVideoSink(uid);
-    _engine.subscribeRemoteVideoStream(
-        uid, NERtcRemoteVideoStreamType.high, true);
+    NERtcVideoRenderer renderer =
+        await VideoRendererFactory.createVideoRenderer();
+    for (_UserSession session in _remoteSessions) {
+      if (session.uid == uid) {
+        session.renderer = renderer;
+        session.renderer.addToRemoteVideoSink(uid);
+        if (_settings.autoSubscribeVideo) {
+          _engine.subscribeRemoteVideoStream(
+              uid, NERtcRemoteVideoStreamType.high, true);
+        }
+        break;
+      }
+    }
     setState(() {});
   }
 

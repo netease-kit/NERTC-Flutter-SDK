@@ -4,7 +4,6 @@ part of nertc;
 
 /// 视频画布创建工厂
 class VideoRendererFactory {
-
   /// 创建 [NERtcVideoRenderer], 同时进行初始化
   static Future<NERtcVideoRenderer> createVideoRenderer(
       {NERtcVideoRendererEventListener listener}) async {
@@ -39,6 +38,8 @@ abstract class NERtcVideoRenderer extends ValueNotifier<_NERtcVideoValue> {
 
   /// 添加本端用户渲染画布
   Future<int> addToLocalVideoSink();
+
+  Future<int> setMirror(bool mirror);
 
   @override
   @mustCallSuper
