@@ -694,6 +694,22 @@
     return result;
 }
 
+- (nullable FLTIntValue *)setMirror:(nonnull FLTSetVideoRendererMirrorRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+#ifdef DEBUG
+    NSLog(@"FlutterCalled:VideoRendererApi#setMirror");
+#endif
+    FLTIntValue* result = [[FLTIntValue alloc] init];
+    FlutterVideoRenderer *renderer = self.renderers[input.textureId];
+    int ret = -1;
+    if(renderer) {
+        [renderer setMirror:input.mirror.boolValue];
+        ret = 0;
+    }
+    result.value = @(ret);
+    return result;
+}
+
+
 #pragma mark - FLTDeviceManagerApi
 
 - (nullable FLTIntValue *)setDeviceEventCallback:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {

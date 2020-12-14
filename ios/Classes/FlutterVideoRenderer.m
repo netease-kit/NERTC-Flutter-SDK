@@ -11,12 +11,12 @@
 
 @implementation FlutterVideoRenderer {
     CVPixelBufferRef _pixelBufferRef;
-    void * _i420Buffer;
     CGSize _frameSize;
     CGSize _renderSize;
     NERtcVideoRotationType _rotation;
     FlutterEventChannel* _eventChannel;
     bool _isFirstFrameRendered;
+    bool _mirror;
 }
 
 
@@ -27,13 +27,13 @@
     self = [super init];
     if (self){
         _isFirstFrameRendered = false;
-        _i420Buffer = NULL;
         _registry = registry;
         _pixelBufferRef = nil;
         _eventSink = nil;
         _rotation  = kNERtcVideoRotation_0;
         _frameSize = CGSizeZero;
         _renderSize = CGSizeZero;
+        _mirror = false;
         _textureId  = [registry registerTexture:self];
         _eventChannel = [FlutterEventChannel
                          eventChannelWithName:[NSString stringWithFormat:@"NERtcFlutterRenderer/Texture%lld", _textureId]
@@ -47,9 +47,6 @@
     if(_pixelBufferRef){
         CVBufferRelease(_pixelBufferRef);
     }
-    if(_i420Buffer) {
-        free(_i420Buffer);
-    }
 }
 
 - (CVPixelBufferRef)copyPixelBuffer {
@@ -59,39 +56,41 @@
     return nil;
 }
 
--(void)dispose{
+- (void)dispose{
     [_registry unregisterTexture:_textureId];
+}
+
+- (void)setMirror:(BOOL)mirror {
+    _mirror = mirror;
 }
 
 
 -(void)copyI420BufferToCVPixelBuffer:(CVPixelBufferRef)pixelBuffer
                       withI420Buffer:(void*)i420Buffer
-                         bufferWidth:(int)width bufferHeight:(int)height {
-    const uint8_t* src_y = i420Buffer;
-    int src_stride_y = width;
-    const uint8_t* src_u = src_y + src_stride_y * height;
-    int src_stride_u = (int)(width + 1) / 2;
-    const uint8_t* src_v = src_y + src_stride_y * height + src_stride_u * (int)((height + 1) / 2);
-    int src_stride_v = (int)(width + 1) / 2;
+                         bufferWidth:(int)width
+                        bufferHeight:(int)height
+                       frameRotation:(int)rotation {
     
     CVPixelBufferLockBaseAddress(pixelBuffer, 0);
     
     const OSType pixelFormat = CVPixelBufferGetPixelFormatType(pixelBuffer);
     uint8_t* dst = CVPixelBufferGetBaseAddress(pixelBuffer);
-    const size_t bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer);
+    size_t bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer);
     
     if (pixelFormat == kCVPixelFormatType_32BGRA) {
         // Corresponds to libyuv::FOURCC_ARGB
-        I420ToARGB(src_y,
-                   src_stride_y,
-                   src_u,
-                   src_stride_u,
-                   src_v,
-                   src_stride_v,
-                   dst,
-                   (int)bytesPerRow,
-                   width,
-                   height);
+        ConvertToARGB((const uint8_t*)i420Buffer,
+                      0,
+                      dst,
+                      (int)bytesPerRow,
+                      0,
+                      0,
+                      width,
+                      _mirror ? -height : height,
+                      width,
+                      height,
+                      _mirror ? (RotationModeEnum)((rotation+180)%360) : (RotationModeEnum)rotation,
+                      FOURCC_I420);
     }
     
     CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
@@ -113,35 +112,9 @@
         [self setSize:current_size];
     }
     
-    // I420Rotate
-    if (frame.rotation == kNERtcVideoRotation_0) {
-        [self copyI420BufferToCVPixelBuffer:_pixelBufferRef withI420Buffer:frame.buffer bufferWidth:frame.width bufferHeight:frame.height];
-    } else {
-        const uint8_t* src_y =  frame.buffer;
-        int src_stride_y = frame.width;
-        const uint8_t* src_u =  src_y + src_stride_y * frame.height;
-        int src_stride_u = (int)((frame.width + 1) / 2);
-        const uint8_t* src_v =  src_y + src_stride_y * frame.height + src_stride_u * ((frame.height + 1) / 2);
-        int src_stride_v = (int)((frame.width + 1) / 2);
-        
-        uint8_t* dst_y = _i420Buffer;
-        int dst_stride_y = _frameSize.width;
-        uint8_t* dst_u = dst_y + (int)(dst_stride_y * _frameSize.height);
-        int dst_stride_u = (_frameSize.width + 1) / 2;
-        uint8_t* dst_v = dst_y + (int)(dst_stride_y * _frameSize.height) + (int)(dst_stride_u * (int)((_frameSize.height + 1) / 2));
-        int dst_stride_v = (_frameSize.width + 1) / 2;
-        
-        I420Rotate(src_y, src_stride_y,
-                   src_u, src_stride_u,
-                   src_v, src_stride_v,
-                   (uint8_t*)dst_y, dst_stride_y,
-                   (uint8_t*)dst_u, dst_stride_u,
-                   (uint8_t*)dst_v, dst_stride_v,
-                   frame.width, frame.height,
-                   (RotationModeEnum)frame.rotation);
-        
-        [self copyI420BufferToCVPixelBuffer:_pixelBufferRef withI420Buffer:_i420Buffer bufferWidth:_frameSize.width bufferHeight:_frameSize.height];    }
+    [self copyI420BufferToCVPixelBuffer:_pixelBufferRef withI420Buffer:frame.buffer bufferWidth:frame.width bufferHeight:frame.height frameRotation:(int)frame.rotation];
     
+
     __weak FlutterVideoRenderer *weakSelf = self;
     if(_renderSize.width != frame.width || _renderSize.height != frame.height || _rotation != frame.rotation){
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -193,17 +166,6 @@
                             (__bridge CFDictionaryRef)(pixelAttributes), &_pixelBufferRef);
         
         CVBufferRetain(_pixelBufferRef);
-        
-        
-        // I420 Buffer
-        if(_i420Buffer != NULL) {
-            free(_i420Buffer);
-        }
-        int stride_y = size.width;
-        int stride_u = (size.width + 1) / 2;
-        int stride_v = (size.width + 1) / 2;
-        size_t dataSize = stride_y * size.height + (stride_u + stride_v) * ((size.height + 1) / 2);
-        _i420Buffer = malloc(dataSize);
         
         _frameSize = size;
     }
