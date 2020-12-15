@@ -79,12 +79,25 @@ class _CallPageState extends State<CallPage>
   }
 
   Widget buildControlPanel(BuildContext context) {
-    return Align(
-        alignment: Alignment(0.0, 0.9),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [buildControlPanel1(context)],
-        ));
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [buildControlPanel1(context), buildControlPanel3(context)],
+    );
+  }
+
+  Widget buildControlPanel3(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: RaisedButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text('离开房间'),
+          ),
+        ),
+      ],
+    );
   }
 
   Widget buildControlPanel1(BuildContext context) {
@@ -292,47 +305,57 @@ class _CallPageState extends State<CallPage>
   void onConnectionTypeChanged(int newConnectionType) {
     Fluttertoast.showToast(
         msg:
-            'onConnectionTypeChanged#${Utils.connectionType2String(newConnectionType)}');
+            'onConnectionTypeChanged#${Utils.connectionType2String(newConnectionType)}',
+        gravity: ToastGravity.CENTER);
   }
 
   @override
   void onDisconnect(int reason) {
-    Fluttertoast.showToast(msg: 'onDisconnect#$reason');
+    Fluttertoast.showToast(
+        msg: 'onDisconnect#$reason', gravity: ToastGravity.CENTER);
   }
 
   @override
   void onFirstAudioDataReceived(int uid) {
-    Fluttertoast.showToast(msg: 'onFirstAudioDataReceived#$uid');
+    Fluttertoast.showToast(
+        msg: 'onFirstAudioDataReceived#$uid', gravity: ToastGravity.CENTER);
   }
 
   @override
   void onFirstVideoDataReceived(int uid) {
-    Fluttertoast.showToast(msg: 'onFirstVideoDataReceived#$uid');
+    Fluttertoast.showToast(
+        msg: 'onFirstVideoDataReceived#$uid', gravity: ToastGravity.CENTER);
   }
 
   @override
   void onLeaveChannel(int result) {
-    Fluttertoast.showToast(msg: 'onLeaveChannel#$result');
+    Fluttertoast.showToast(
+        msg: 'onLeaveChannel#$result', gravity: ToastGravity.CENTER);
   }
 
   @override
   void onUserAudioMute(int uid, bool muted) {
-    Fluttertoast.showToast(msg: 'onUserAudioStart#uid:$uid, muted:$muted');
+    Fluttertoast.showToast(
+        msg: 'onUserAudioStart#uid:$uid, muted:$muted',
+        gravity: ToastGravity.CENTER);
   }
 
   @override
   void onUserAudioStart(int uid) {
-    Fluttertoast.showToast(msg: 'onUserAudioStart#$uid');
+    Fluttertoast.showToast(
+        msg: 'onUserAudioStart#$uid', gravity: ToastGravity.CENTER);
   }
 
   @override
   void onUserAudioStop(int uid) {
-    Fluttertoast.showToast(msg: 'onUserAudioStop#$uid');
+    Fluttertoast.showToast(
+        msg: 'onUserAudioStop#$uid', gravity: ToastGravity.CENTER);
   }
 
   @override
   void onUserJoined(int uid) {
-    Fluttertoast.showToast(msg: 'onUserJoined#$uid');
+    Fluttertoast.showToast(
+        msg: 'onUserJoined#$uid', gravity: ToastGravity.CENTER);
     _UserSession session = _UserSession();
     session.uid = uid;
     _remoteSessions.add(session);
@@ -341,7 +364,9 @@ class _CallPageState extends State<CallPage>
 
   @override
   void onUserLeave(int uid, int reason) {
-    Fluttertoast.showToast(msg: 'onUserLeave#uid:$uid, reason:$reason');
+    Fluttertoast.showToast(
+        msg: 'onUserLeave#uid:$uid, reason:$reason',
+        gravity: ToastGravity.CENTER);
     for (_UserSession session in _remoteSessions) {
       if (session.uid == uid) {
         NERtcVideoRenderer renderer = session.renderer;
@@ -356,21 +381,24 @@ class _CallPageState extends State<CallPage>
   @override
   void onUserVideoMute(int uid, bool muted) {
     Fluttertoast.showToast(
-        msg: 'onUserVideoProfileUpdate#uid:$uid, muted:$muted');
+        msg: 'onUserVideoProfileUpdate#uid:$uid, muted:$muted',
+        gravity: ToastGravity.CENTER);
   }
 
   @override
   void onUserVideoProfileUpdate(int uid, int maxProfile) {
     Fluttertoast.showToast(
         msg:
-            'onUserVideoProfileUpdate#uid:$uid, maxProfile:${Utils.videoProfile2String(maxProfile)}');
+            'onUserVideoProfileUpdate#uid:$uid, maxProfile:${Utils.videoProfile2String(maxProfile)}',
+        gravity: ToastGravity.CENTER);
   }
 
   @override
   void onUserVideoStart(int uid, int maxProfile) {
     Fluttertoast.showToast(
         msg:
-            'onUserVideoStart#uid:$uid, maxProfile:${Utils.videoProfile2String(maxProfile)}');
+            'onUserVideoStart#uid:$uid, maxProfile:${Utils.videoProfile2String(maxProfile)}',
+        gravity: ToastGravity.CENTER);
     setupVideoView(uid, maxProfile);
   }
 
@@ -393,7 +421,8 @@ class _CallPageState extends State<CallPage>
 
   @override
   void onUserVideoStop(int uid) {
-    Fluttertoast.showToast(msg: 'onUserVideoStop#$uid');
+    Fluttertoast.showToast(
+        msg: 'onUserVideoStop#$uid', gravity: ToastGravity.CENTER);
   }
 
   @override
@@ -413,30 +442,34 @@ class _CallPageState extends State<CallPage>
 
   @override
   void onReJoinChannel(int result) {
-    Fluttertoast.showToast(msg: 'onReJoinChannel#$result');
+    Fluttertoast.showToast(
+        msg: 'onReJoinChannel#$result', gravity: ToastGravity.CENTER);
   }
 
   @override
   void onError(int code) {
-    Fluttertoast.showToast(msg: 'onError#$code');
+    Fluttertoast.showToast(msg: 'onError#$code', gravity: ToastGravity.CENTER);
   }
 
   @override
   void onFirstAudioFrameDecoded(int uid) {
-    Fluttertoast.showToast(msg: 'onFirstAudioFrameDecoded#$uid');
+    Fluttertoast.showToast(
+        msg: 'onFirstAudioFrameDecoded#$uid', gravity: ToastGravity.CENTER);
   }
 
   @override
   void onFirstVideoFrameDecoded(int uid, int width, int height) {
     Fluttertoast.showToast(
-        msg: 'onFirstVideoFrameDecoded#uid:$uid, width:$width, height:$height');
+        msg: 'onFirstVideoFrameDecoded#uid:$uid, width:$width, height:$height',
+        gravity: ToastGravity.CENTER);
   }
 
   @override
   void onJoinChannel(int result, int channelId, int elapsed) {
     Fluttertoast.showToast(
         msg:
-            'onJoinChannel#result:$result, channelId:$channelId, elapsed:$elapsed');
+            'onJoinChannel#result:$result, channelId:$channelId, elapsed:$elapsed',
+        gravity: ToastGravity.CENTER);
     updateSettings().then((value) {
       setState(() {});
     });
@@ -451,7 +484,8 @@ class _CallPageState extends State<CallPage>
 
   @override
   void onWarning(int code) {
-    Fluttertoast.showToast(msg: 'onWarning#$code');
+    Fluttertoast.showToast(
+        msg: 'onWarning#$code', gravity: ToastGravity.CENTER);
   }
 
   @override
@@ -459,41 +493,47 @@ class _CallPageState extends State<CallPage>
 
   @override
   void onReconnectingStart() {
-    Fluttertoast.showToast(msg: 'onReconnectingStart');
+    Fluttertoast.showToast(
+        msg: 'onReconnectingStart', gravity: ToastGravity.CENTER);
   }
 
   @override
   void onConnectionStateChanged(int state, int reason) {
     Fluttertoast.showToast(
         msg:
-            'onConnectionStateChanged#state:${Utils.connectionState2String(state)}, reason:${Utils.connectionStateChangeReason2String(reason)}');
+            'onConnectionStateChanged#state:${Utils.connectionState2String(state)}, reason:${Utils.connectionStateChangeReason2String(reason)}',
+        gravity: ToastGravity.CENTER);
   }
 
   @override
   void onLiveStreamState(String taskId, String pushUrl, int liveState) {
     Fluttertoast.showToast(
         msg:
-            'onLiveStreamState#taskId:$taskId, liveState:${Utils.liveStreamState2String(liveState)}');
+            'onLiveStreamState#taskId:$taskId, liveState:${Utils.liveStreamState2String(liveState)}',
+        gravity: ToastGravity.CENTER);
   }
 
   @override
   void onAudioDeviceChanged(int selected) {
     Fluttertoast.showToast(
-        msg: 'onAudioDeviceChanged#${Utils.audioDevice2String(selected)}');
+        msg: 'onAudioDeviceChanged#${Utils.audioDevice2String(selected)}',
+        gravity: ToastGravity.CENTER);
   }
 
   @override
   void onAudioDeviceStateChange(int deviceType, int deviceState) {
     Fluttertoast.showToast(
         msg:
-            'onAudioDeviceStateChange#deviceType:${Utils.audioDeviceType2String(deviceType)}, deviceState:${Utils.audioDeviceState2String(deviceState)}');
+            'onAudioDeviceStateChange#deviceType:${Utils.audioDeviceType2String(deviceType)}, deviceState:${Utils.audioDeviceState2String(deviceState)}',
+        gravity: ToastGravity.CENTER);
   }
 
   @override
   void onVideoDeviceStageChange(int deviceState) {
     Fluttertoast.showToast(
         msg:
-            'onVideoDeviceStageChange#${Utils.videoDeviceState2String(deviceState)}');
+            'onVideoDeviceStageChange#${Utils.videoDeviceState2String(deviceState)}',
+        gravity: ToastGravity.CENTER);
   }
 }
 
