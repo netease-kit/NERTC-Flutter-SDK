@@ -1,5 +1,8 @@
+// Copyright (c) 2019-2020 NetEase, Inc. All right reserved.
+
 part of nertc;
 
+/// 设备管理模块
 class NERtcDeviceManager {
   final _DeviceEventHandler _handler = _DeviceEventHandler();
 
@@ -9,6 +12,7 @@ class NERtcDeviceManager {
 
   DeviceManagerApi _api = DeviceManagerApi();
 
+  /// 设置设备事件回调
   Future<int> setEventCallback(NERtcDeviceEventCallback callback) async {
     assert(callback != null);
     _handler.setCallback(callback);
@@ -16,6 +20,7 @@ class NERtcDeviceManager {
     return reply.value;
   }
 
+  /// 取消设备事件回调
   Future<int> clearEventCallback() async {
     _handler.setCallback(null);
     IntValue reply = await _api.clearDeviceEventCallback();

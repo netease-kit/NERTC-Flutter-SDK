@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
+import android.opengl.EGLContext;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -21,15 +22,21 @@ import com.netease.lava.nertc.sdk.NERtcOption;
 import com.netease.lava.nertc.sdk.NERtcParameters;
 import com.netease.lava.nertc.sdk.audio.NERtcCreateAudioEffectOption;
 import com.netease.lava.nertc.sdk.audio.NERtcCreateAudioMixingOption;
-import com.netease.lava.nertc.sdk.video.NERtcRemoteVideoStreamType;
+import com.netease.lava.nertc.sdk.live.NERtcLiveStreamImageInfo;
+import com.netease.lava.nertc.sdk.live.NERtcLiveStreamLayout;
+import com.netease.lava.nertc.sdk.live.NERtcLiveStreamTaskInfo;
+import com.netease.lava.nertc.sdk.live.NERtcLiveStreamUserTranscoding;
+import com.netease.lava.nertc.sdk.video.NERtcEglContextWrapper;
 import com.netease.lava.nertc.sdk.video.NERtcVideoConfig;
-import com.netease.lava.nertc.sdk.video.NERtcVideoConfig.NERtcDegradationPreference;
-import com.netease.lava.nertc.sdk.video.NERtcVideoConfig.NERtcVideoFrameRate;
 import com.netease.lava.webrtc.EglBase;
+import com.netease.lava.webrtc.EglBase10;
+import com.netease.lava.webrtc.EglBase14;
+import com.netease.nertcflutter.Messages.AddOrUpdateLiveStreamTaskRequest;
 import com.netease.nertcflutter.Messages.AudioEffectApi;
 import com.netease.nertcflutter.Messages.AudioMixingApi;
 import com.netease.nertcflutter.Messages.BoolValue;
 import com.netease.nertcflutter.Messages.CreateEngineRequest;
+import com.netease.nertcflutter.Messages.DeleteLiveStreamTaskRequest;
 import com.netease.nertcflutter.Messages.DeviceManagerApi;
 import com.netease.nertcflutter.Messages.DoubleValue;
 import com.netease.nertcflutter.Messages.EnableAudioVolumeIndicationRequest;
@@ -50,9 +57,7 @@ import com.netease.nertcflutter.Messages.SubscribeRemoteVideoStreamRequest;
 import com.netease.nertcflutter.Messages.VideoRendererApi;
 import com.netease.yunxin.base.utils.StringUtils;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,8 +65,6 @@ import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.view.TextureRegistry;
 
-import static com.netease.lava.nertc.sdk.NERtcConstants.MediaCodecMode.MEDIA_CODEC_HARDWARE;
-import static com.netease.lava.nertc.sdk.NERtcConstants.MediaCodecMode.MEDIA_CODEC_SOFTWARE;
 
 public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, DeviceManagerApi, VideoRendererApi {
 
@@ -69,9 +72,9 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
 
     private final NERtcStatsObserverImpl observer;
 
-    private EglBase.Context sharedEglContext = null;
+    private NERtcEglContextWrapper sharedEglContext = null;
 
-    private Context applicationContext;
+    private final Context applicationContext;
 
     private AddActivityResultListener addActivityResultListener;
 
@@ -83,7 +86,9 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
 
     private final BinaryMessenger messenger;
 
-    private Map<Long, FlutterVideoRenderer> renderers = new HashMap<>();
+    private final Map<Long, FlutterVideoRenderer> renderers = new HashMap<>();
+
+    private CallbackMethod invokeMethod;
 
 
     @FunctionalInterface
@@ -114,6 +119,7 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
 
     NERtcEngine(@NonNull Context applicationContext, @NonNull BinaryMessenger messenger,
                 @NonNull CallbackMethod method, @NonNull TextureRegistry registry) {
+        this.invokeMethod = method;
         this.callback = new NERtcCallbackImpl(method);
         this.observer = new NERtcStatsObserverImpl(method);
         this.applicationContext = applicationContext;
@@ -201,15 +207,19 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
         if (arg.getLogLevel() != null) {
             option.logLevel = arg.getLogLevel().intValue();
         }
+
+        sharedEglContext = NERtcEglContextWrapper.createEglContext();
+        option.eglContext = sharedEglContext.getEglContext();
+
         NERtcParameters parameters = new NERtcParameters();
         if (arg.getAutoSubscribeAudio() != null) {
             parameters.setBoolean(NERtcParameters.KEY_AUTO_SUBSCRIBE_AUDIO, arg.getAutoSubscribeAudio());
         }
         if (arg.getVideoEncodeMode() != null) {
-            parameters.setString(NERtcParameters.KEY_VIDEO_ENCODE_MODE, arg.getVideoEncodeMode() == 0 ? MEDIA_CODEC_HARDWARE : MEDIA_CODEC_SOFTWARE);
+            parameters.setString(NERtcParameters.KEY_VIDEO_ENCODE_MODE, FLTUtils.int2VideoEncodeDecodeMode(arg.getVideoEncodeMode().intValue()));
         }
         if (arg.getVideoDecodeMode() != null) {
-            parameters.setString(NERtcParameters.KEY_VIDEO_DECODE_MODE, arg.getVideoDecodeMode() == 0 ? MEDIA_CODEC_HARDWARE : MEDIA_CODEC_SOFTWARE);
+            parameters.setString(NERtcParameters.KEY_VIDEO_DECODE_MODE, FLTUtils.int2VideoEncodeDecodeMode(arg.getVideoDecodeMode().intValue()));
         }
         if (arg.getServerRecordAudio() != null) {
             parameters.setBoolean(NERtcParameters.KEY_SERVER_RECORD_AUDIO, arg.getServerRecordAudio());
@@ -226,17 +236,13 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
         if (arg.getPublishSelfStream() != null) {
             parameters.setBoolean(NERtcParameters.KEY_PUBLISH_SELF_STREAM, arg.getPublishSelfStream());
         }
-        if(arg.getVideoSendMode() != null) {
+        if (arg.getVideoSendMode() != null) {
             parameters.setInteger(NERtcParameters.KEY_VIDEO_SEND_MODE, arg.getVideoSendMode().intValue());
         }
 
         try {
             NERtcEx.getInstance().setParameters(parameters);
             NERtcEx.getInstance().init(applicationContext, appKey, callback, option);
-            EglBase.Context localSharedEglContext = getEglSharedContext();
-            if (localSharedEglContext != null) {
-                sharedEglContext = EglBase.create(localSharedEglContext, EglBase.CONFIG_PLAIN).getEglBaseContext();
-            }
         } catch (Exception e) {
             Log.e("NERtcEngine", "Create RTC engine exception:" + e.toString());
             result.setValue(-3L);
@@ -250,7 +256,6 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
         callback.setAudioMixingCallbackEnabled(false);
         callback.setDeviceCallbackEnabled(false);
         callback.setAudioEffectCallbackEnabled(false);
-        sharedEglContext = null;
         NERtc.getInstance().release();
 //        for (Iterator<FlutterVideoRenderer> iterator = renderers.values().iterator(); iterator.hasNext(); ) {
 //            FlutterVideoRenderer renderer = iterator.next();
@@ -259,6 +264,10 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
 //            }
 //            iterator.remove();
 //        }
+        if (sharedEglContext != null) {
+            sharedEglContext.release();
+            sharedEglContext = null;
+        }
         IntValue result = new IntValue();
         result.setValue(0L);
         return result;
@@ -354,44 +363,19 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
         config.videoProfile = arg.getVideoProfile().intValue();
         config.videoCropMode = arg.getVideoCropMode().intValue();
         config.frontCamera = arg.getFrontCamera();
-        config.frameRate = toVideoFrameRate(arg.getFrameRate().intValue());
+        config.frameRate = FLTUtils.int2VideoFrameRate(arg.getFrameRate().intValue());
         config.minFramerate = arg.getMinFrameRate().intValue();
         config.bitrate = arg.getBitrate().intValue();
         config.minBitrate = arg.getMinBitrate().intValue();
-        config.degradationPrefer = toDegradationPreference(arg.getDegradationPrefer().intValue());
+        config.degradationPrefer = FLTUtils.int2DegradationPreference(arg.getDegradationPrefer().intValue());
 
         int ret = NERtcEx.getInstance().setLocalVideoConfig(config);
         result.setValue((long) ret);
         return result;
     }
 
-    private NERtcVideoFrameRate toVideoFrameRate(int value) {
-        switch (value) {
-            case 7:
-                return NERtcVideoFrameRate.FRAME_RATE_FPS_7;
-            case 10:
-                return NERtcVideoFrameRate.FRAME_RATE_FPS_10;
-            case 15:
-                return NERtcVideoFrameRate.FRAME_RATE_FPS_15;
-            case 24:
-                return NERtcVideoFrameRate.FRAME_RATE_FPS_24;
-            default:
-                return NERtcVideoFrameRate.FRAME_RATE_FPS_30;
-        }
-    }
 
-    private NERtcDegradationPreference toDegradationPreference(int value) {
-        switch (value) {
-            case 1:
-                return NERtcDegradationPreference.DEGRADATION_MAINTAIN_FRAMERATE;
-            case 2:
-                return NERtcDegradationPreference.DEGRADATION_MAINTAIN_QUALITY;
-            case 3:
-                return NERtcDegradationPreference.DEGRADATION_BALANCED;
-            default:
-                return NERtcDegradationPreference.DEGRADATION_DEFAULT;
-        }
-    }
+
 
     @Override
     public IntValue startVideoPreview() {
@@ -464,8 +448,7 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
     @Override
     public IntValue subscribeRemoteVideoStream(SubscribeRemoteVideoStreamRequest arg) {
         IntValue result = new IntValue();
-        int ret = NERtcEx.getInstance().subscribeRemoteVideoStream(arg.getUid(),
-                arg.getStreamType() == 0 ? NERtcRemoteVideoStreamType.kNERtcRemoteVideoStreamTypeHigh : NERtcRemoteVideoStreamType.kNERtcRemoteVideoStreamTypeLow,
+        int ret = NERtcEx.getInstance().subscribeRemoteVideoStream(arg.getUid(), FLTUtils.int2RemoteVideoStreamType(arg.getStreamType().intValue()),
                 arg.getSubscribe());
         result.setValue((long) ret);
         return result;
@@ -527,8 +510,225 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
         return result;
     }
 
+    @Override
+    public IntValue addLiveStreamTask(AddOrUpdateLiveStreamTaskRequest arg) {
+        NERtcLiveStreamTaskInfo taskInfo = new NERtcLiveStreamTaskInfo();
+        Long serial = arg.getSerial();
+        if (arg.getTaskId() != null) {
+            taskInfo.taskId = arg.getTaskId();
+        }
+        if (arg.getUrl() != null) {
+            taskInfo.url = arg.getUrl();
+        }
+        if (arg.getServerRecordEnabled() != null) {
+            taskInfo.serverRecordEnabled = arg.getServerRecordEnabled();
+        }
+        if (arg.getLiveMode() != null) {
+            taskInfo.liveMode = FLTUtils.int2LiveStreamMode(arg.getLiveMode().intValue());
+        }
+        NERtcLiveStreamLayout layout = new NERtcLiveStreamLayout();
+        taskInfo.layout = layout;
+        if (arg.getLayoutWidth() != null) {
+            layout.width = arg.getLayoutWidth().intValue();
+        }
+        if (arg.getLayoutHeight() != null) {
+            layout.height = arg.getLayoutHeight().intValue();
+        }
+        if (arg.getLayoutBackgroundColor() != null) {
+            layout.backgroundColor = arg.getLayoutBackgroundColor().intValue();
+        }
+        NERtcLiveStreamImageInfo imageInfo = new NERtcLiveStreamImageInfo();
+        if (arg.getLayoutImageUrl() != null) {
+            imageInfo.url = arg.getLayoutImageUrl();
+            //服务器根据Url来判断Image Info 是否合法, 不合法情况下不能有Image节点参数
+            layout.backgroundImg = imageInfo;
+        }
+        if (arg.getLayoutImageWidth() != null) {
+            imageInfo.width = arg.getLayoutImageWidth().intValue();
+        }
+        if (arg.getLayoutImageHeight() != null) {
+            imageInfo.height = arg.getLayoutHeight().intValue();
+        }
+        if (arg.getLayoutImageX() != null) {
+            imageInfo.x = arg.getLayoutImageX().intValue();
+        }
+        if (arg.getLayoutImageY() != null) {
+            imageInfo.y = arg.getLayoutImageY().intValue();
+        }
+        ArrayList<NERtcLiveStreamUserTranscoding> userTranscodingList = new ArrayList<>();
+        layout.userTranscodingList = userTranscodingList;
+        if (arg.getLayoutUserTranscodingList() != null) {
+            ArrayList<Map<String, Object>> userList = arg.getLayoutUserTranscodingList();
+            for (Map<String, Object> user : userList) {
+                NERtcLiveStreamUserTranscoding userTranscoding = new NERtcLiveStreamUserTranscoding();
+                Object uid = user.get("uid");
+                if (uid instanceof Number) {
+                    userTranscoding.uid = ((Number) uid).longValue();
+                }
+                Object videoPush = user.get("videoPush");
+                if (videoPush instanceof Boolean) {
+                    userTranscoding.videoPush = (Boolean) videoPush;
+                }
+                Object audioPush = user.get("audioPush");
+                if (audioPush instanceof Boolean) {
+                    userTranscoding.audioPush = (Boolean) audioPush;
+                }
+                Object adaption = user.get("adaption");
+                if (adaption instanceof Number) {
+                    userTranscoding.adaption = FLTUtils.int2LiveStreamVideoScaleMode(((Number) adaption).intValue());
+                }
+                Object x = user.get("x");
+                if (x instanceof Number) {
+                    userTranscoding.x = ((Number) x).intValue();
+                }
+                Object y = user.get("y");
+                if (y instanceof Number) {
+                    userTranscoding.y = ((Number) y).intValue();
+                }
+                Object width = user.get("width");
+                if (width instanceof Number) {
+                    userTranscoding.width = ((Number) width).intValue();
+                }
+                Object height = user.get("height");
+                if (height instanceof Number) {
+                    userTranscoding.height = ((Number) height).intValue();
+                }
+                userTranscodingList.add(userTranscoding);
+            }
+        }
+        int ret = NERtcEx.getInstance().addLiveStreamTask(taskInfo, (taskId, errorCode) -> {
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("serial", serial);
+            Map<String, Object> arguments = new HashMap<>();
+            arguments.put("taskId", taskId);
+            arguments.put("errCode", errorCode);
+            map.put("arguments", arguments);
+            invokeMethod.invokeMethod("onOnceEvent", map);
+        });
+        IntValue result = new IntValue();
+        result.setValue((long) ret);
+        return result;
+    }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+    @Override
+    public IntValue updateLiveStreamTask(AddOrUpdateLiveStreamTaskRequest arg) {
+        NERtcLiveStreamTaskInfo taskInfo = new NERtcLiveStreamTaskInfo();
+        Long serial = arg.getSerial();
+        if (arg.getTaskId() != null) {
+            taskInfo.taskId = arg.getTaskId();
+        }
+        if (arg.getUrl() != null) {
+            taskInfo.url = arg.getUrl();
+        }
+        if (arg.getServerRecordEnabled() != null) {
+            taskInfo.serverRecordEnabled = arg.getServerRecordEnabled();
+        }
+        if (arg.getLiveMode() != null) {
+            taskInfo.liveMode = FLTUtils.int2LiveStreamMode(arg.getLiveMode().intValue());
+        }
+        NERtcLiveStreamLayout layout = new NERtcLiveStreamLayout();
+        taskInfo.layout = layout;
+        if (arg.getLayoutWidth() != null) {
+            layout.width = arg.getLayoutWidth().intValue();
+        }
+        if (arg.getLayoutHeight() != null) {
+            layout.height = arg.getLayoutHeight().intValue();
+        }
+        if (arg.getLayoutBackgroundColor() != null) {
+            layout.backgroundColor = arg.getLayoutBackgroundColor().intValue();
+        }
+        NERtcLiveStreamImageInfo imageInfo = new NERtcLiveStreamImageInfo();
+        if (arg.getLayoutImageUrl() != null) {
+            imageInfo.url = arg.getLayoutImageUrl();
+            //服务器根据Url来判断Image Info 是否合法, 不合法情况下不能有Image节点参数
+            layout.backgroundImg = imageInfo;
+        }
+        if (arg.getLayoutImageWidth() != null) {
+            imageInfo.width = arg.getLayoutImageWidth().intValue();
+        }
+        if (arg.getLayoutImageHeight() != null) {
+            imageInfo.height = arg.getLayoutHeight().intValue();
+        }
+        if (arg.getLayoutImageX() != null) {
+            imageInfo.x = arg.getLayoutImageX().intValue();
+        }
+        if (arg.getLayoutImageY() != null) {
+            imageInfo.y = arg.getLayoutImageY().intValue();
+        }
+        ArrayList<NERtcLiveStreamUserTranscoding> userTranscodingList = new ArrayList<>();
+        layout.userTranscodingList = userTranscodingList;
+        if (arg.getLayoutUserTranscodingList() != null) {
+            ArrayList<Map<String, Object>> userList = arg.getLayoutUserTranscodingList();
+            for (Map<String, Object> user : userList) {
+                NERtcLiveStreamUserTranscoding userTranscoding = new NERtcLiveStreamUserTranscoding();
+                Object uid = user.get("uid");
+                if (uid instanceof Number) {
+                    userTranscoding.uid = ((Number) uid).longValue();
+                }
+                Object videoPush = user.get("videoPush");
+                if (videoPush instanceof Boolean) {
+                    userTranscoding.videoPush = (Boolean) videoPush;
+                }
+                Object audioPush = user.get("audioPush");
+                if (audioPush instanceof Boolean) {
+                    userTranscoding.audioPush = (Boolean) audioPush;
+                }
+                Object adaption = user.get("adaption");
+                if (adaption instanceof Number) {
+                    userTranscoding.adaption = FLTUtils.int2LiveStreamVideoScaleMode(((Number) adaption).intValue());
+                }
+                Object x = user.get("x");
+                if (x instanceof Number) {
+                    userTranscoding.x = ((Number) x).intValue();
+                }
+                Object y = user.get("y");
+                if (y instanceof Number) {
+                    userTranscoding.y = ((Number) y).intValue();
+                }
+                Object width = user.get("width");
+                if (width instanceof Number) {
+                    userTranscoding.width = ((Number) width).intValue();
+                }
+                Object height = user.get("height");
+                if (height instanceof Number) {
+                    userTranscoding.height = ((Number) height).intValue();
+                }
+                userTranscodingList.add(userTranscoding);
+            }
+        }
+        int ret = NERtcEx.getInstance().updateLiveStreamTask(taskInfo, (taskId, errorCode) -> {
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("serial", serial);
+            Map<String, Object> arguments = new HashMap<>();
+            arguments.put("taskId", taskId);
+            arguments.put("errCode", errorCode);
+            map.put("arguments", arguments);
+            invokeMethod.invokeMethod("onOnceEvent", map);
+        });
+        IntValue result = new IntValue();
+        result.setValue((long) ret);
+        return result;
+    }
+
+    @Override
+    public IntValue removeLiveStreamTask(DeleteLiveStreamTaskRequest arg) {
+        IntValue result = new IntValue();
+        Long serial = arg.getSerial();
+        int ret = NERtcEx.getInstance().removeLiveStreamTask(arg.getTaskId(), (taskId, errorCode) -> {
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("serial", serial);
+            Map<String, Object> arguments = new HashMap<>();
+            arguments.put("taskId", taskId);
+            arguments.put("errCode", errorCode);
+            map.put("arguments", arguments);
+            invokeMethod.invokeMethod("onOnceEvent", map);
+        });
+        result.setValue((long) ret);
+        return result;
+    }
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////// AudioEffectApi /////////////////////////////////////////////
 
@@ -917,17 +1117,42 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
 
     /////////////////////////////////// VideoRendererApi /////////////////////////////////////////////
 
+    //支持外部输入eglContext
+    private EglBase.Context getEglBaseContext(Object eglContext) {
+        if (eglContext instanceof android.opengl.EGLContext) {
+            return new EglBase14.Context((EGLContext) eglContext);
+        } else if (eglContext instanceof javax.microedition.khronos.egl.EGLContext) {
+            return new EglBase10.Context((javax.microedition.khronos.egl.EGLContext) eglContext);
+        }
+        return null;
+    }
+
     @Override
     public IntValue createVideoRenderer() {
         IntValue result = new IntValue();
         TextureRegistry.SurfaceTextureEntry entry = registry.createSurfaceTexture();
         if (sharedEglContext != null) {
-            FlutterVideoRenderer renderer = new FlutterVideoRenderer(messenger, entry, sharedEglContext);
+            FlutterVideoRenderer renderer = new FlutterVideoRenderer(messenger, entry, getEglBaseContext(sharedEglContext.getEglContext()));
             renderers.put(entry.id(), renderer);
             result.setValue(renderer.id());
         } else {
             result.setValue(-1L);
         }
+        return result;
+    }
+
+    @Override
+    public IntValue setMirror(Messages.SetVideoRendererMirrorRequest arg) {
+        IntValue result = new IntValue();
+        int ret = -1;
+        if (arg.getTextureId() != null) {
+            FlutterVideoRenderer renderer = renderers.get(arg.getTextureId());
+            if(renderer != null) {
+                renderer.setMirror(arg.getMirror());
+                ret = 0;
+            }
+        }
+        result.setValue((long) ret);
         return result;
     }
 
@@ -965,21 +1190,5 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-
-    @SuppressWarnings("rawtypes")
-    private EglBase.Context getEglSharedContext() {
-        try {
-            Class clazzNERtc = NERtc.getInstance().getClass();
-            Field fieldRtcEngine = clazzNERtc.getDeclaredField("mRtcEngine");
-            fieldRtcEngine.setAccessible(true);
-            Object rtcEngine = fieldRtcEngine.get(NERtc.getInstance());
-            Class clazzRtcEngine = rtcEngine.getClass();
-            Method method = clazzRtcEngine.getMethod("getEglSharedContext");
-            return (EglBase.Context) method.invoke(rtcEngine);
-        } catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 
 }

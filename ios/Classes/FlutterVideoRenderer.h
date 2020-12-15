@@ -9,6 +9,9 @@
 
 - (instancetype)initWithTextureRegistry:(id<FlutterTextureRegistry>)registry
                               messenger:(NSObject<FlutterBinaryMessenger>*)messenger;
+
+- (void)setMirror:(BOOL)mirror;
+
 - (void)dispose;
 
 @end

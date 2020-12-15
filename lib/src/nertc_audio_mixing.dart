@@ -1,6 +1,8 @@
+// Copyright (c) 2019-2020 NetEase, Inc. All right reserved.
+
 part of nertc;
 
-/// 伴音
+/// 伴音管理模块
 class NERtcAudioMixingManager {
   final _AudioMixingEventHandler _handler = _AudioMixingEventHandler();
 
