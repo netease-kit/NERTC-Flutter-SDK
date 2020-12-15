@@ -29,6 +29,7 @@ dependencies:
   shared_preferences: ^0.5.12+4
   package_info: ^0.4.3+2
   file_picker: ^2.1.1
+  fluttertoast: ^7.1.5
 
 dev_dependencies:
   flutter_test:

@@ -1,5 +1,7 @@
 import 'package:FLTNERTC/settings.dart';
+import 'package:FLTNERTC/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:nertc/nertc.dart';
 import 'config.dart';
 
@@ -24,7 +26,13 @@ class _CallPageState extends State<CallPage>
   NERtcEngine _engine = NERtcEngine();
   List<_UserSession> _remoteSessions = List();
   _UserSession _localSession = _UserSession();
-  // bool frontCamera = true;
+
+  bool _showControlPanel = false;
+  bool isAudioEnabled = false;
+  bool isVideoEnabled = false;
+  bool isFrontCamera = true;
+  bool isFrontCameraMirror = true;
+  bool isSpeakerphoneOn = false;
 
   @override
   void initState() {
@@ -34,6 +42,15 @@ class _CallPageState extends State<CallPage>
 
   Future<void> _initSettings() async {
     _settings = await Settings.getInstance();
+    isAudioEnabled = _settings.autoEnableAudio;
+    isVideoEnabled = _settings.autoEnableVideo;
+    isFrontCamera = _settings.frontFacingCamera;
+    isFrontCameraMirror = _settings.frontFacingCameraMirror;
+  }
+
+  Future<void> updateSettings() async {
+    isSpeakerphoneOn = await _engine.deviceManager.isSpeakerphoneOn();
+    _showControlPanel = true;
   }
 
   @override
@@ -57,45 +74,94 @@ class _CallPageState extends State<CallPage>
   Widget buildCallingWidget(BuildContext context) {
     return Stack(children: <Widget>[
       buildVideoViews(context),
-      Align(
-          alignment: Alignment(0.0, 0.9),
-          child: Flex(
-            direction: Axis.horizontal,
-            children: <Widget>[
-              Expanded(
-                  flex: 1,
-                  child: RawMaterialButton(
-                    onPressed: () {
-                      _onCallEnd(context);
-                    },
-                    child: new Icon(
-                      Icons.call_end,
-                      color: Colors.white,
-                      size: 35,
-                    ),
-                    shape: new CircleBorder(),
-                    elevation: 1.0,
-                    fillColor: Colors.redAccent,
-                    padding: const EdgeInsets.all(12.0),
-                  )),
-            ],
-          ))
+      if (_showControlPanel) buildControlPanel(context)
     ]);
   }
 
-  void _onCallEnd(BuildContext context) {
-    Navigator.pop(context);
+  Widget buildControlPanel(BuildContext context) {
+    return Align(
+        alignment: Alignment(0.0, 0.9),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [buildControlPanel1(context)],
+        ));
   }
 
-  // void _onSwitchCamera() {
-  //   _engine.deviceManager.switchCamera().then((value) {
-  //     if (value == 0) {
-  //       frontCamera = !frontCamera;
-  //       _localSession.renderer.setMirror(frontCamera);
-  //     }
-  //   });
-  //   _localSession.renderer.setMirror(!_localSession.renderer.getMirrored());
-  // }
+  Widget buildControlPanel1(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: RaisedButton(
+            onPressed: () {
+              bool audioEnabled = !isAudioEnabled;
+              _engine.enableLocalAudio(audioEnabled).then((value) {
+                if (value == 0) {
+                  setState(() {
+                    isAudioEnabled = audioEnabled;
+                  });
+                }
+              });
+            },
+            child: Text(isAudioEnabled ? '关闭语音' : '打开语音'),
+          ),
+        ),
+        Expanded(
+          child: RaisedButton(
+            onPressed: () {
+              bool videoEnabled = !isVideoEnabled;
+              _engine.enableLocalVideo(videoEnabled).then((value) {
+                if (value == 0) {
+                  setState(() {
+                    isVideoEnabled = videoEnabled;
+                  });
+                }
+              });
+            },
+            child: Text(isVideoEnabled ? '关闭视频' : '打开视频'),
+          ),
+        ),
+        Expanded(
+          child: RaisedButton(
+            onPressed: () {
+              _engine.deviceManager.switchCamera().then((value) {
+                if (value == 0) {
+                  isFrontCamera = !isFrontCamera;
+                  _localSession.renderer
+                      .setMirror(isFrontCamera && isFrontCameraMirror);
+                }
+              });
+            },
+            child: Text(
+              '切换摄像头',
+              softWrap: false,
+              style: TextStyle(fontSize: 12.0),
+            ),
+          ),
+        ),
+        Expanded(
+          child: RaisedButton(
+            onPressed: () {
+              bool speakerphoneOn = !isSpeakerphoneOn;
+              _engine.deviceManager
+                  .setSpeakerphoneOn(speakerphoneOn)
+                  .then((value) {
+                if (value == 0) {
+                  setState(() {
+                    isSpeakerphoneOn = speakerphoneOn;
+                  });
+                }
+              });
+            },
+            child: Text(
+              isSpeakerphoneOn ? '关闭扬声器' : '打开扬声器',
+              softWrap: false,
+              style: TextStyle(fontSize: 12.0),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 
   Widget buildVideoViews(BuildContext context) {
     return GridView.builder(
@@ -158,22 +224,27 @@ class _CallPageState extends State<CallPage>
             appKey: Config.APP_KEY,
             channelEventCallback: this,
             options: options)
-        .then((value) => _engine.setStatsEventCallback(this))
+        .then((value) => _initCallbacks())
         .then((value) => _initAudio())
         .then((value) => _initVideo())
         .then((value) => _initRenderer())
         .then((value) => _engine.joinChannel('', widget.cid, widget.uid));
   }
 
+  Future<int> _initCallbacks() async {
+    await _engine.setStatsEventCallback(this);
+    return _engine.deviceManager.setEventCallback(this);
+  }
+
   Future<int> _initAudio() async {
-    await _engine.enableLocalAudio(_settings.autoEnableAudio);
+    await _engine.enableLocalAudio(isAudioEnabled);
     return _engine.setAudioProfile(
         NERtcAudioProfile.values[_settings.audioProfile],
         NERtcAudioScenario.values[_settings.audioScenario]);
   }
 
   Future<int> _initVideo() async {
-    await _engine.enableLocalVideo(_settings.autoEnableVideo);
+    await _engine.enableLocalVideo(isVideoEnabled);
     await _engine.enableDualStreamMode(_settings.enableDualStreamMode);
     NERtcVideoConfig config = NERtcVideoConfig();
     config.videoProfile = _settings.videoProfile;
@@ -186,8 +257,7 @@ class _CallPageState extends State<CallPage>
 
   Future<void> _initRenderer() async {
     _localSession.renderer = await VideoRendererFactory.createVideoRenderer();
-    _localSession.renderer.setMirror(
-        _settings.frontFacingCamera && _settings.frontFacingCameraMirror);
+    _localSession.renderer.setMirror(isFrontCamera && isFrontCameraMirror);
     _localSession.renderer.addToLocalVideoSink();
     setState(() {});
   }
@@ -220,47 +290,49 @@ class _CallPageState extends State<CallPage>
 
   @override
   void onConnectionTypeChanged(int newConnectionType) {
-    print('onConnectionTypeChanged->' + newConnectionType.toString());
+    Fluttertoast.showToast(
+        msg:
+            'onConnectionTypeChanged#${Utils.connectionType2String(newConnectionType)}');
   }
 
   @override
   void onDisconnect(int reason) {
-    print('onDisconnect->' + reason.toString());
+    Fluttertoast.showToast(msg: 'onDisconnect#$reason');
   }
 
   @override
   void onFirstAudioDataReceived(int uid) {
-    print('onFirstAudioDataReceived->' + uid.toString());
+    Fluttertoast.showToast(msg: 'onFirstAudioDataReceived#$uid');
   }
 
   @override
   void onFirstVideoDataReceived(int uid) {
-    print('onFirstVideoDataReceived->' + uid.toString());
+    Fluttertoast.showToast(msg: 'onFirstVideoDataReceived#$uid');
   }
 
   @override
   void onLeaveChannel(int result) {
-    print('onLeaveChannel->' + result.toString());
+    Fluttertoast.showToast(msg: 'onLeaveChannel#$result');
   }
 
   @override
   void onUserAudioMute(int uid, bool muted) {
-    print('onUserAudioMute->' + uid.toString() + ', ' + muted.toString());
+    Fluttertoast.showToast(msg: 'onUserAudioStart#uid:$uid, muted:$muted');
   }
 
   @override
   void onUserAudioStart(int uid) {
-    print('onUserAudioStart->' + uid.toString());
+    Fluttertoast.showToast(msg: 'onUserAudioStart#$uid');
   }
 
   @override
   void onUserAudioStop(int uid) {
-    print('onUserAudioStop->' + uid.toString());
+    Fluttertoast.showToast(msg: 'onUserAudioStop#$uid');
   }
 
   @override
   void onUserJoined(int uid) {
-    print('onUserJoined->' + uid.toString());
+    Fluttertoast.showToast(msg: 'onUserJoined#$uid');
     _UserSession session = _UserSession();
     session.uid = uid;
     _remoteSessions.add(session);
@@ -269,25 +341,36 @@ class _CallPageState extends State<CallPage>
 
   @override
   void onUserLeave(int uid, int reason) {
-    print('onUserLeave->' + uid.toString() + ', ' + reason.toString());
+    Fluttertoast.showToast(msg: 'onUserLeave#uid:$uid, reason:$reason');
+    for (_UserSession session in _remoteSessions) {
+      if (session.uid == uid) {
+        NERtcVideoRenderer renderer = session.renderer;
+        renderer?.dispose();
+        _remoteSessions.remove(session);
+        break;
+      }
+    }
+    setState(() {});
   }
 
   @override
   void onUserVideoMute(int uid, bool muted) {
-    print('onUserVideoMute->' + uid.toString() + ', ' + muted.toString());
+    Fluttertoast.showToast(
+        msg: 'onUserVideoProfileUpdate#uid:$uid, muted:$muted');
   }
 
   @override
   void onUserVideoProfileUpdate(int uid, int maxProfile) {
-    print('onUserVideoProfileUpdate->' +
-        uid.toString() +
-        ', ' +
-        maxProfile.toString());
+    Fluttertoast.showToast(
+        msg:
+            'onUserVideoProfileUpdate#uid:$uid, maxProfile:${Utils.videoProfile2String(maxProfile)}');
   }
 
   @override
   void onUserVideoStart(int uid, int maxProfile) {
-    print('onUserVideoStart->' + uid.toString() + ', ' + maxProfile.toString());
+    Fluttertoast.showToast(
+        msg:
+            'onUserVideoStart#uid:$uid, maxProfile:${Utils.videoProfile2String(maxProfile)}');
     setupVideoView(uid, maxProfile);
   }
 
@@ -309,7 +392,9 @@ class _CallPageState extends State<CallPage>
   }
 
   @override
-  void onUserVideoStop(int uid) {}
+  void onUserVideoStop(int uid) {
+    Fluttertoast.showToast(msg: 'onUserVideoStop#$uid');
+  }
 
   @override
   void onRemoteVideoStats(List<NERtcVideoRecvStats> statsList) {}
@@ -327,19 +412,35 @@ class _CallPageState extends State<CallPage>
   void onRtcStats(NERtcStats stats) {}
 
   @override
-  void onReJoinChannel(int result) {}
+  void onReJoinChannel(int result) {
+    Fluttertoast.showToast(msg: 'onReJoinChannel#$result');
+  }
 
   @override
-  void onError(int code) {}
+  void onError(int code) {
+    Fluttertoast.showToast(msg: 'onError#$code');
+  }
 
   @override
-  void onFirstAudioFrameDecoded(int uid) {}
+  void onFirstAudioFrameDecoded(int uid) {
+    Fluttertoast.showToast(msg: 'onFirstAudioFrameDecoded#$uid');
+  }
 
   @override
-  void onFirstVideoFrameDecoded(int uid, int width, int height) {}
+  void onFirstVideoFrameDecoded(int uid, int width, int height) {
+    Fluttertoast.showToast(
+        msg: 'onFirstVideoFrameDecoded#uid:$uid, width:$width, height:$height');
+  }
 
   @override
-  void onJoinChannel(int result, int channelId, int elapsed) {}
+  void onJoinChannel(int result, int channelId, int elapsed) {
+    Fluttertoast.showToast(
+        msg:
+            'onJoinChannel#result:$result, channelId:$channelId, elapsed:$elapsed');
+    updateSettings().then((value) {
+      setState(() {});
+    });
+  }
 
   @override
   void onLocalAudioVolumeIndication(int volume) {}
@@ -349,28 +450,51 @@ class _CallPageState extends State<CallPage>
       List<NERtcAudioVolumeInfo> volumeList, int totalVolume) {}
 
   @override
-  void onWarning(int code) {}
+  void onWarning(int code) {
+    Fluttertoast.showToast(msg: 'onWarning#$code');
+  }
 
   @override
   void onNetworkQuality(List<NERtcNetworkQualityInfo> statsList) {}
 
   @override
-  void onReconnectingStart() {}
+  void onReconnectingStart() {
+    Fluttertoast.showToast(msg: 'onReconnectingStart');
+  }
 
   @override
-  void onConnectionStateChanged(int state, int reason) {}
+  void onConnectionStateChanged(int state, int reason) {
+    Fluttertoast.showToast(
+        msg:
+            'onConnectionStateChanged#state:${Utils.connectionState2String(state)}, reason:${Utils.connectionStateChangeReason2String(reason)}');
+  }
 
   @override
-  void onLiveStreamState(String taskId, String pushUrl, int liveState) {}
+  void onLiveStreamState(String taskId, String pushUrl, int liveState) {
+    Fluttertoast.showToast(
+        msg:
+            'onLiveStreamState#taskId:$taskId, liveState:${Utils.liveStreamState2String(liveState)}');
+  }
 
   @override
-  void onAudioDeviceChanged(int selected) {}
+  void onAudioDeviceChanged(int selected) {
+    Fluttertoast.showToast(
+        msg: 'onAudioDeviceChanged#${Utils.audioDevice2String(selected)}');
+  }
 
   @override
-  void onAudioDeviceStateChange(int deviceType, int deviceState) {}
+  void onAudioDeviceStateChange(int deviceType, int deviceState) {
+    Fluttertoast.showToast(
+        msg:
+            'onAudioDeviceStateChange#deviceType:${Utils.audioDeviceType2String(deviceType)}, deviceState:${Utils.audioDeviceState2String(deviceState)}');
+  }
 
   @override
-  void onVideoDeviceStageChange(int deviceState) {}
+  void onVideoDeviceStageChange(int deviceState) {
+    Fluttertoast.showToast(
+        msg:
+            'onVideoDeviceStageChange#${Utils.videoDeviceState2String(deviceState)}');
+  }
 }
 
 class _UserSession {

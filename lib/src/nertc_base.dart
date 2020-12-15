@@ -673,21 +673,6 @@ class NERtcLiveStreamErrorCode {
   static const int userPictureError = 1502;
 }
 
-/// 直播推流状态
-class LiveStreamState {
-  /// 推流中
-  static const int pushing = 505;
-
-  /// 互动直播推流失败
-  static const int push_fail = 506;
-
-  /// 推流结束
-  static const int push_stopped = 511;
-
-  /// 背景图片设置出错
-  static const int image_error = 512;
-}
-
 /// 直播布局
 class NERtcLiveStreamLayout {
   NERtcLiveStreamLayout({
@@ -819,7 +804,7 @@ class NERtcLiveStreamTaskInfo {
 }
 
 /// 频道连接状态
-class ConnectionState {
+class NERtcConnectionState {
   /// 未知
   static const int unknown = 0;
 
@@ -840,37 +825,37 @@ class ConnectionState {
 }
 
 /// 频道连接状态变更原因
-class ConnectionStateChangeReason {
+class NERtcConnectionStateChangeReason {
   /// 离开房间
-  static const int leave_channel = 1;
+  static const int leaveChannel = 1;
 
   /// 房间被关闭
-  static const int channel_closed = 2;
+  static const int channelClosed = 2;
 
   /// 用户被踢
-  static const int server_kicked = 3;
+  static const int serverKicked = 3;
 
   /// 超时离开
-  static const int time_out = 4;
+  static const int timeout = 4;
 
   /// 加入房间
-  static const int join_channel = 5;
+  static const int joinChannel = 5;
 
   /// 加入房间成功
-  static const int join_succeed = 6;
+  static const int joinSucceed = 6;
 
   /// 重新加入房间成功（重连）
-  static const int rejoin_succeed = 7;
+  static const int rejoinSucceed = 7;
 
   /// 媒体连接断开
-  static const int media_connection_disconnected = 8;
+  static const int mediaConnectionDisconnected = 8;
 
   /// 信令连接断开
-  static const int signal_disconnected = 9;
+  static const int signalDisconnected = 9;
 
   /// 请求频道失败
-  static const int request_channel_failed = 10;
+  static const int requestChannelFailed = 10;
 
   /// 加入频道失败
-  static const int join_channel_failed = 11;
+  static const int joinChannelFailed = 11;
 }
