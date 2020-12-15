@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2019 NetEase, Inc. All right reserved.
+// Copyright (c) 2019-2020 NetEase, Inc. All right reserved.
 
 part of nertc;
 
@@ -93,7 +93,7 @@ abstract class NERtcChannelEventCallback {
 
   /// 网络断开或者连上提示
   ///
-  /// [newConnectionType] 参考 [ConnectionType]
+  /// [newConnectionType] 参考 [NERtcConnectionType]
   void onConnectionTypeChanged(int newConnectionType);
 
   /// 重连开始回调，SDK内部进行重连时回调，重连结果参考 [onReJoinChannel]、[onDisconnect]
@@ -127,6 +127,17 @@ abstract class NERtcChannelEventCallback {
   void onRemoteAudioVolumeIndication(
       List<NERtcAudioVolumeInfo> volumeList, int totalVolume);
 
+  /// 频道连接状态回调
+  /// [state] 当前的网络连接状态 [NERtcConnectionState]
+  /// [reason] 引起当前网络连接状态发生改变的原因 [ConnectionStateChangeReason]
+  void onConnectionStateChanged(int state, int reason);
+
+  /// 直播状态回调
+  /// [taskId] 直播task id
+  /// [pushUrl] 直播推流url
+  /// [liveState] 直播状态 [NERtcLiveStreamState]
+  void onLiveStreamState(String taskId, String pushUrl, int liveState);
+
   /// 发生警告回调
   /// 该回调方法表示 SDK 运行时出现了（网络或媒体相关的）警告。
   /// 通常情况下，SDK 上报的警告信息 App 可以忽略，SDK 会自动恢复
@@ -146,13 +157,13 @@ abstract class NERtcDeviceEventCallback {
 
   ///音频设备状态回调
   ///
-  /// [deviceType] 选择的设备 [AudioDeviceType]
-  /// [deviceState] 选择的设备 [AudioDeviceState]
+  /// [deviceType] 选择的设备 [NERtcAudioDeviceType]
+  /// [deviceState] 选择的设备 [NERtcAudioDeviceState]
   void onAudioDeviceStateChange(int deviceType, int deviceState);
 
   ///视频设备状态回调
   ///
-  /// [deviceState] 选择的设备 [VideoDeviceState]
+  /// [deviceState] 选择的设备 [NERtcVideoDeviceState]
   void onVideoDeviceStageChange(int deviceState);
 }
 

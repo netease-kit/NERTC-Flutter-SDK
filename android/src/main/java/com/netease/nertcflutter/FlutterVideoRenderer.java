@@ -23,12 +23,12 @@ import io.flutter.view.TextureRegistry;
 public class FlutterVideoRenderer implements IVideoRender, EventChannel.StreamHandler {
 
     private final TextureRegistry.SurfaceTextureEntry entry;
-    private long id = -1;
+    private final long id ;
     private final EventChannel eventChannel;
     private EventChannel.EventSink eventSink;
     private SurfaceTextureRenderer surfaceTextureRenderer;
     private final SurfaceTexture texture;
-    private EglBase.Context sharedEglContext;
+    private final EglBase.Context sharedEglContext;
 
     private boolean isInitializeCalled = false;
     private boolean isInitialized = false;
@@ -101,6 +101,9 @@ public class FlutterVideoRenderer implements IVideoRender, EventChannel.StreamHa
 
     @Override
     public void setMirror(boolean mirror) {
+        if(surfaceTextureRenderer!= null) {
+            surfaceTextureRenderer.setMirror(mirror);
+        }
     }
 
     @Override

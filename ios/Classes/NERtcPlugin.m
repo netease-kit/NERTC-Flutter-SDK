@@ -56,17 +56,6 @@
 #ifdef DEBUG
     NSLog(@"FlutterCalled:EngineApi#create");
 #endif
-    NERtcEngineContext *context = [[NERtcEngineContext alloc] init];
-    context.appKey = input.appKey;
-    context.logSetting = [[NERtcLogSetting alloc] init];
-    if(input.logDir != nil) {
-        context.logSetting.logDir = input.logDir;
-    }
-    if(input.logLevel != nil) {
-        context.logSetting.logLevel = input.logLevel.intValue;
-    }
-    context.engineDelegate = self;
-    int ret = [[NERtcEngine sharedEngine] setupEngineWithContext:context];
     
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     
@@ -94,15 +83,32 @@
         [params setObject:input.videoEncodeMode == 0 ? @(YES) : @(NO) forKey:kNERtcKeyVideoPreferHWEncode];
     }
     if(input.videoDecodeMode != nil) {
-        [params setObject:input.videoEncodeMode == 0 ? @(YES) : @(NO) forKey:kNERtcKeyVideoPreferHWDecode];
+        [params setObject:input.videoDecodeMode == 0 ? @(YES) : @(NO) forKey:kNERtcKeyVideoPreferHWDecode];
     }
     if(input.videoSendMode != nil) {
         [params setObject:input.videoSendMode forKey:kNERtcKeyVideoSendOnPubType];
     }
-
+    
     [params setObject:@(YES) forKey:kNERtcKeyVideoPreferMetalRender];
     
+    //Live Stream
+    if(input.publishSelfStream != nil) {
+        [params setObject:input.publishSelfStream forKey:kNERtcKeyPublishSelfStreamEnabled];
+    }
+    
     [[NERtcEngine sharedEngine] setParameters: params];
+    
+    NERtcEngineContext *context = [[NERtcEngineContext alloc] init];
+    context.appKey = input.appKey;
+    context.logSetting = [[NERtcLogSetting alloc] init];
+    if(input.logDir != nil) {
+        context.logSetting.logDir = input.logDir;
+    }
+    if(input.logLevel != nil) {
+        context.logSetting.logLevel = input.logLevel.intValue;
+    }
+    context.engineDelegate = self;
+    int ret = [[NERtcEngine sharedEngine] setupEngineWithContext:context];
     
     FLTIntValue* result = [[FLTIntValue alloc] init];
     result.value = @(ret);
@@ -377,9 +383,11 @@
     _audioEffetCallbackEnabled = NO;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [NERtcEngine destroyEngine];
-        if(completion) {
-            completion();
-        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if(completion) {
+                completion();
+            }
+        });
     });
 }
 
@@ -403,6 +411,237 @@
     result.value = @(ret);
     return result;
 }
+
+- (nullable FLTIntValue *)addLiveStreamTask:(nonnull FLTAddOrUpdateLiveStreamTaskRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+#ifdef DEBUG
+    NSLog(@"FlutterCalled:EngineApi#addLiveStreamTask");
+#endif
+    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NERtcLiveStreamTaskInfo* taskInfo = [[NERtcLiveStreamTaskInfo alloc] init];
+    NSNumber* serial = input.serial;
+    if(input.taskId != nil) {
+        taskInfo.taskID = input.taskId;
+    }
+    if(input.url != nil) {
+        taskInfo.streamURL = input.url;
+    }
+    if(input.serverRecordEnabled != nil) {
+        taskInfo.serverRecordEnabled = input.serverRecordEnabled.boolValue;
+    }
+    if(input.liveMode != nil) {
+        taskInfo.lsMode = input.liveMode.intValue;
+    }
+    NERtcLiveStreamLayout* layout = [[NERtcLiveStreamLayout alloc] init];
+    taskInfo.layout = layout;
+    if(input.layoutWidth != nil) {
+        layout.width = input.layoutWidth.intValue;
+    }
+    if(input.layoutHeight != nil) {
+        layout.height = input.layoutHeight.intValue;
+    }
+    if(input.layoutBackgroundColor != nil) {
+        layout.backgroundColor = input.layoutBackgroundColor.intValue & 0x00FFFFFF;
+    }
+    NERtcLiveStreamImageInfo* imageInfo = [[NERtcLiveStreamImageInfo alloc] init];
+    if(input.layoutImageUrl != nil) {
+        imageInfo.url = input.layoutImageUrl;
+        //服务器根据Url来判断Image Info 是否合法, 不合法情况下不能有Image节点参数
+        layout.bgImage = imageInfo;
+    }
+    if(input.layoutImageX != nil) {
+        imageInfo.x = input.layoutImageX.intValue;
+    }
+    if(input.layoutImageY != nil) {
+        imageInfo.y = input.layoutImageY.intValue;
+    }
+    if(input.layoutImageWidth != nil) {
+        imageInfo.width = input.layoutImageWidth.intValue;
+    }
+    if(input.layoutImageHeight != nil) {
+        imageInfo.height = input.layoutImageHeight.intValue;
+    }
+    NSMutableArray *userTranscodingArray = [NSMutableArray array];
+    layout.users = userTranscodingArray;
+    if(input.layoutUserTranscodingList != nil) {
+        for(id dict in input.layoutUserTranscodingList) {
+            NERtcLiveStreamUserTranscoding* userTranscoding = [[NERtcLiveStreamUserTranscoding alloc] init];
+            NSNumber* uid = dict[@"uid"];
+            if ((NSNull *)uid != [NSNull null]) {
+                userTranscoding.uid = uid.unsignedLongLongValue;
+            }
+            NSNumber* videoPush = dict[@"videoPush"];
+            if ((NSNull *)videoPush != [NSNull null]) {
+                userTranscoding.videoPush = videoPush.boolValue;
+            }
+            NSNumber* audioPush = dict[@"audioPush"];
+            if ((NSNull *)audioPush != [NSNull null]) {
+                userTranscoding.audioPush = audioPush.boolValue;
+            }
+            NSNumber* adaption = dict[@"adaption"];
+            if ((NSNull *)adaption != [NSNull null]) {
+                userTranscoding.adaption = adaption.intValue;
+            }
+            NSNumber* x = dict[@"x"];
+            if ((NSNull *)x != [NSNull null]) {
+                userTranscoding.x = x.intValue;
+            }
+            NSNumber* y = dict[@"y"];
+            if ((NSNull *)y != [NSNull null]) {
+                userTranscoding.y = y.intValue;
+            }
+            NSNumber* width = dict[@"width"];
+            if ((NSNull *)width != [NSNull null]) {
+                userTranscoding.width = width.intValue;
+            }
+            NSNumber* height = dict[@"height"];
+            if ((NSNull *)height != [NSNull null]) {
+                userTranscoding.height = height.intValue;
+            }
+            [userTranscodingArray addObject:userTranscoding];
+        }
+    }
+    
+    int ret =  [[NERtcEngine sharedEngine] addLiveStreamTask:taskInfo compeltion:^(NSString * _Nonnull taskId, kNERtcLiveStreamError errorCode) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+            [dictionary setValue:serial forKey:@"serial"];
+            NSMutableDictionary *arguments = [[NSMutableDictionary alloc] init];
+            [arguments setValue:taskId forKey:@"taskId"];
+            [arguments setValue:[NSNumber numberWithInt:errorCode] forKey:@"errCode"];
+            [dictionary setValue:arguments forKey:@"arguments"];
+            [self->_channel invokeMethod:@"onOnceEvent" arguments:dictionary];
+        });
+    }];
+    result.value = @(ret);
+    return result;
+}
+
+
+- (nullable FLTIntValue *)removeLiveStreamTask:(nonnull FLTDeleteLiveStreamTaskRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+#ifdef DEBUG
+    NSLog(@"FlutterCalled:EngineApi#removeLiveStreamTask");
+#endif
+    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NSNumber* serial = input.serial;
+    int ret = [[NERtcEngine sharedEngine] removeLiveStreamTask:input.taskId compeltion:^(NSString * _Nonnull taskId, kNERtcLiveStreamError errorCode) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+            [dictionary setValue:serial forKey:@"serial"];
+            NSMutableDictionary *arguments = [[NSMutableDictionary alloc] init];
+            [arguments setValue:taskId forKey:@"taskId"];
+            [arguments setValue:[NSNumber numberWithInt:errorCode] forKey:@"errCode"];
+            [dictionary setValue:arguments forKey:@"arguments"];
+            [self->_channel invokeMethod:@"onOnceEvent" arguments:dictionary];
+        });
+    }];
+    result.value = @(ret);
+    return result;
+}
+
+
+- (nullable FLTIntValue *)updateLiveStreamTask:(nonnull FLTAddOrUpdateLiveStreamTaskRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+#ifdef DEBUG
+    NSLog(@"FlutterCalled:EngineApi#updateLiveStreamTask");
+#endif
+    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NERtcLiveStreamTaskInfo* taskInfo = [[NERtcLiveStreamTaskInfo alloc] init];
+    NSNumber* serial = input.serial;
+    if(input.taskId != nil) {
+        taskInfo.taskID = input.taskId;
+    }
+    if(input.url != nil) {
+        taskInfo.streamURL = input.url;
+    }
+    if(input.serverRecordEnabled != nil) {
+        taskInfo.serverRecordEnabled = input.serverRecordEnabled.boolValue;
+    }
+    if(input.liveMode != nil) {
+        taskInfo.lsMode = input.liveMode.intValue;
+    }
+    NERtcLiveStreamLayout* layout = [[NERtcLiveStreamLayout alloc] init];
+    taskInfo.layout = layout;
+    if(input.layoutWidth != nil) {
+        layout.width = input.layoutWidth.intValue;
+    }
+    if(input.layoutHeight != nil) {
+        layout.height = input.layoutHeight.intValue;
+    }
+    if(input.layoutBackgroundColor != nil) {
+        layout.backgroundColor = input.layoutBackgroundColor.intValue & 0x00FFFFFF;
+    }
+    NERtcLiveStreamImageInfo* imageInfo = [[NERtcLiveStreamImageInfo alloc] init];
+    if(input.layoutImageUrl != nil) {
+        imageInfo.url = input.layoutImageUrl;
+        //服务器根据Url来判断Image Info 是否合法, 不合法情况下不能有Image节点参数
+        layout.bgImage = imageInfo;
+    }
+    if(input.layoutImageX != nil) {
+        imageInfo.x = input.layoutImageX.intValue;
+    }
+    if(input.layoutImageY != nil) {
+        imageInfo.y = input.layoutImageY.intValue;
+    }
+    if(input.layoutImageWidth != nil) {
+        imageInfo.width = input.layoutImageWidth.intValue;
+    }
+    if(input.layoutImageHeight != nil) {
+        imageInfo.height = input.layoutImageHeight.intValue;
+    }
+    NSMutableArray *userTranscodingArray = [NSMutableArray array];
+    layout.users = userTranscodingArray;
+    if(input.layoutUserTranscodingList != nil) {
+        for(id dict in input.layoutUserTranscodingList) {
+            NERtcLiveStreamUserTranscoding* userTranscoding = [[NERtcLiveStreamUserTranscoding alloc] init];
+            NSNumber* uid = dict[@"uid"];
+            if ((NSNull *)uid != [NSNull null]) {
+                userTranscoding.uid = uid.unsignedLongLongValue;
+            }
+            NSNumber* videoPush = dict[@"videoPush"];
+            if ((NSNull *)videoPush != [NSNull null]) {
+                userTranscoding.videoPush = videoPush.boolValue;
+            }
+            NSNumber* audioPush = dict[@"audioPush"];
+            if ((NSNull *)audioPush != [NSNull null]) {
+                userTranscoding.audioPush = audioPush.boolValue;
+            }
+            NSNumber* adaption = dict[@"adaption"];
+            if ((NSNull *)adaption != [NSNull null]) {
+                userTranscoding.adaption = adaption.intValue;
+            }
+            NSNumber* x = dict[@"x"];
+            if ((NSNull *)x != [NSNull null]) {
+                userTranscoding.x = x.intValue;
+            }
+            NSNumber* y = dict[@"y"];
+            if ((NSNull *)y != [NSNull null]) {
+                userTranscoding.y = y.intValue;
+            }
+            NSNumber* width = dict[@"width"];
+            if ((NSNull *)width != [NSNull null]) {
+                userTranscoding.width = width.intValue;
+            }
+            NSNumber* height = dict[@"height"];
+            if ((NSNull *)height != [NSNull null]) {
+                userTranscoding.height = height.intValue;
+            }
+            [userTranscodingArray addObject:userTranscoding];
+        }
+    }
+    int ret = [[NERtcEngine sharedEngine] updateLiveStreamTask:taskInfo compeltion:^(NSString * _Nonnull taskId, kNERtcLiveStreamError errorCode) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+            [dictionary setValue:serial forKey:@"serial"];
+            NSMutableDictionary *arguments = [[NSMutableDictionary alloc] init];
+            [arguments setValue:taskId forKey:@"taskId"];
+            [arguments setValue:[NSNumber numberWithInt:errorCode] forKey:@"errCode"];
+            [dictionary setValue:arguments forKey:@"arguments"];
+            [self->_channel invokeMethod:@"onOnceEvent" arguments:dictionary];
+        });
+    }];
+    result.value = @(ret);
+    return result;
+}
+
 
 
 #pragma mark - FLTVideoRendererApi
@@ -454,6 +693,22 @@
     result.value = @(ret);
     return result;
 }
+
+- (nullable FLTIntValue *)setMirror:(nonnull FLTSetVideoRendererMirrorRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+#ifdef DEBUG
+    NSLog(@"FlutterCalled:VideoRendererApi#setMirror");
+#endif
+    FLTIntValue* result = [[FLTIntValue alloc] init];
+    FlutterVideoRenderer *renderer = self.renderers[input.textureId];
+    int ret = -1;
+    if(renderer) {
+        [renderer setMirror:input.mirror.boolValue];
+        ret = 0;
+    }
+    result.value = @(ret);
+    return result;
+}
+
 
 #pragma mark - FLTDeviceManagerApi
 
@@ -976,6 +1231,11 @@
     [_channel invokeMethod:@"onError" arguments:@{@"code":@(errCode)}];
 }
 
+- (void)onNERtcEngineConnectionStateChangeWithState:(NERtcConnectionStateType)state
+                                             reason:(NERtcReasonConnectionChangedType)reason {
+    [_channel invokeMethod:@"onConnectionStateChanged" arguments:@{@"state": @(state), @"reason":@(reason)}];
+}
+
 - (void)onJoinChannel:(long)result channelId:(uint64_t)channelId elapsed:(uint64_t)elapesd {
     [_channel invokeMethod:@"onJoinChannel" arguments:@{@"result": @(result), @"channelId": @(channelId), @"elapesd":@(elapesd)}];
 }
@@ -1021,7 +1281,11 @@
 }
 
 
+#pragma mark - LiveStreamDelegate
 
+- (void)onNERTCEngineLiveStreamState:(NERtcLiveStreamStateCode)state taskID:(NSString *)taskID url:(NSString *)url {
+    [_channel invokeMethod:@"onLiveStreamState" arguments:@{@"taskId":taskID, @"pushUrl": url, @"liveState":@(state)}];
+}
 
 
 #pragma mark - AudioEffectDelegate
@@ -1046,6 +1310,28 @@
 
 
 #pragma mark - DeviceDelegate
+
+- (void)onNERtcEngineAudioDeviceRoutingDidChange:(NERtcAudioOutputRouting)routing {
+    if(_deviceCallbackEnabled == NO) return;
+    int selected = 0;
+    switch (routing) {
+        case kNERtcAudioOutputRoutingHeadset:
+            selected = 1;
+            break;
+        case kNERtcAudioOutputRoutingEarpiece:
+            selected = 2;
+            break;
+        case kNERtcAudioOutputRoutingLoudspeaker:
+            selected = 0;
+            break;
+        case kNERtcAudioOutputRoutingBluetooth:
+            selected = 3;
+            break;
+        default:
+            break;
+    }
+    [_channel invokeMethod:@"onAudioDeviceChanged" arguments:@{@"selected":@(selected)}];
+}
 
 - (void)onNERtcEngineAudioDeviceStateChangeWithDeviceID:(nonnull NSString *)deviceID deviceType:(NERtcAudioDeviceType)deviceType deviceState:(NERtcAudioDeviceState)deviceState {
     if(_deviceCallbackEnabled == NO) return;
@@ -1192,7 +1478,7 @@
 #pragma mark - NERtcEngineMediaStatsObserver
 
 
-- (void)onLocalAudioStat:(nonnull NERtcAudioSendStats *)stat { 
+- (void)onLocalAudioStat:(nonnull NERtcAudioSendStats *)stat {
     if(!stat) return;
     NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
     [dictionary setValue:[NSNumber numberWithLongLong:stat.sentBitrate] forKey:@"kbps"];
@@ -1205,7 +1491,7 @@
 }
 
 
-- (void)onLocalVideoStat:(nonnull NERtcVideoSendStats *)stat { 
+- (void)onLocalVideoStat:(nonnull NERtcVideoSendStats *)stat {
     if(!stat) return;
     NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
     [dictionary setValue:[NSNumber numberWithInt:stat.encodedFrameWidth] forKey:@"width"];
@@ -1218,7 +1504,7 @@
     [_channel invokeMethod:@"onLocalVideoStats" arguments:dictionary];
 }
 
-- (void)onNetworkQuality:(nonnull NSArray<NERtcNetworkQualityStats *> *)stats { 
+- (void)onNetworkQuality:(nonnull NSArray<NERtcNetworkQualityStats *> *)stats {
     if([stats isKindOfClass:[NSArray class]] && stats.count > 0) {
         NSMutableArray* array = [[NSMutableArray alloc] init];
         for(NERtcNetworkQualityStats* stat in stats) {
@@ -1233,7 +1519,7 @@
 }
 
 
-- (void)onRemoteAudioStats:(nonnull NSArray<NERtcAudioRecvStats *> *)stats { 
+- (void)onRemoteAudioStats:(nonnull NSArray<NERtcAudioRecvStats *> *)stats {
     if([stats isKindOfClass:[NSArray class]] && stats.count > 0) {
         NSMutableArray* array = [[NSMutableArray alloc] init];
         for(NERtcAudioRecvStats* stat in stats) {
@@ -1251,7 +1537,7 @@
 }
 
 
-- (void)onRemoteVideoStats:(nonnull NSArray<NERtcVideoRecvStats *> *)stats { 
+- (void)onRemoteVideoStats:(nonnull NSArray<NERtcVideoRecvStats *> *)stats {
     if([stats isKindOfClass:[NSArray class]] && stats.count > 0) {
         NSMutableArray* array = [[NSMutableArray alloc] init];
         for(NERtcVideoRecvStats* stat in stats) {
@@ -1272,7 +1558,7 @@
     
 }
 
-- (void)onRtcStats:(nonnull NERtcStats *)stat { 
+- (void)onRtcStats:(nonnull NERtcStats *)stat {
     if(!stat) return;
     NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
     [dictionary setValue:[NSNumber numberWithLongLong:stat.txBytes] forKey:@"txBytes"];
@@ -1305,7 +1591,4 @@
     [_channel invokeMethod:@"onRtcStats" arguments:dictionary];
 }
 
-
-
 @end
-

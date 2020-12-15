@@ -1,4 +1,5 @@
-name: nertc_example
+name: FLTNERTC
+version: 0.3.8+1
 description: Demonstrates how to use the nertc plugin.
 
 # The following line prevents the package from being accidentally published to
@@ -23,9 +24,12 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.3
-  permission_handler: ^5.0.0+hotfix.5
-  http: ^0.12.1
-  shared_preferences: ^0.5.8
+  permission_handler: ^5.0.1+1
+  http: ^0.12.2
+  shared_preferences: ^0.5.12+4
+  package_info: ^0.4.3+2
+  file_picker: ^2.1.1
+  fluttertoast: ^7.1.5
 
 dev_dependencies:
   flutter_test:

@@ -1,7 +1,23 @@
-// Copyright (c) 2014-2019 NetEase, Inc. All right reserved.
+// Copyright (c) 2019-2020 NetEase, Inc. All right reserved.
 
 part of nertc;
 
+/// 添加直播任务结果回调
+/// [taskId] 任务id
+/// [errCode] 错误码， [NERtcLiveStreamErrorCode.ok] 操作成功 ， 其他失败
+typedef void AddLiveTaskCallback(String taskId, int errCode);
+
+/// 更新直播任务结果回调
+/// [taskId] 任务id
+/// [errCode] 错误码， [NERtcLiveStreamErrorCode.ok] 操作成功 ， 其他失败
+typedef void UpdateLiveTaskCallback(String taskId, int errCode);
+
+/// 删除直播任务结果回调
+/// [taskId] 任务id
+/// [errCode] 错误码， [NERtcLiveStreamErrorCode.ok] 操作成功 ， 其他失败
+typedef void DeleteLiveTaskCallback(String taskId, int errCode);
+
+/// NERtc 核心接口
 class NERtcEngine {
   factory NERtcEngine() => _instance;
 
@@ -19,6 +35,7 @@ class NERtcEngine {
 
   final _StatsEventHandler _statsEventHandler = _StatsEventHandler();
   final _ChannelEventHandler _channelEventHandler = _ChannelEventHandler();
+  final _OnceEventHandler _onceEventHandler = _OnceEventHandler();
 
   /// Audio Mixing Manager
   NERtcAudioMixingManager get audioMixingManager => _audioMixingManager;
@@ -58,10 +75,10 @@ class NERtcEngine {
   Future<int> release() async {
     this._channelEventHandler.setCallback(null);
     this.clearStatsEventCallback();
+    IntValue reply = await _api.release();
     this._deviceManager.clearEventCallback();
     this._audioEffectManager.clearEventCallback();
     this._audioMixingManager.clearEventCallback();
-    IntValue reply = await _api.release();
     return reply.value;
   }
 
@@ -77,18 +94,6 @@ class NERtcEngine {
   Future<int> clearStatsEventCallback() async {
     _statsEventHandler.setCallback(null);
     IntValue reply = await _api.clearStatsEventCallback();
-    return reply.value;
-  }
-
-  ///设置频道场景
-  ///只能在加入频道之前调用
-  ///SDK 会根据不同的使用场景采用不同的优化策略，通信场景偏好流畅，直播场景偏好画质。
-  ///
-  /// [channelProfile] - 频道场景. [NERtcChannelProfile]
-  Future<int> setChannelProfile(int channelProfile) async {
-    assert(channelProfile != null);
-    IntValue reply =
-        await _api.setChannelProfile(IntValue()..value = channelProfile);
     return reply.value;
   }
 
@@ -156,15 +161,6 @@ class NERtcEngine {
     IntValue reply = await _api.setAudioProfile(SetAudioProfileRequest()
       ..profile = profile.index
       ..scenario = scenario.index);
-    return reply.value;
-  }
-
-  /// 是否开启双流模式
-  ///
-  /// [enable] - true:开启小流（默认），false: 关闭小流
-  Future<int> enableDualStreamMode(bool enable) async {
-    IntValue reply =
-        await _api.enableDualStreamMode(BoolValue()..value = enable);
     return reply.value;
   }
 
@@ -276,14 +272,115 @@ class NERtcEngine {
     return reply.value;
   }
 
-  Future<NERtcVideoRenderer> createVideoRenderer() async {
-    NERtcVideoRenderer renderer = NERtcVideoRenderer();
-    await renderer.initialize();
-    return renderer;
+  ///设置频道场景
+  ///只能在加入频道之前调用
+  ///SDK 会根据不同的使用场景采用不同的优化策略，通信场景偏好流畅，直播场景偏好画质。
+  ///
+  /// [channelProfile] - 频道场景. [NERtcChannelProfile]
+  Future<int> setChannelProfile(int channelProfile) async {
+    assert(channelProfile != null);
+    IntValue reply =
+        await _api.setChannelProfile(IntValue()..value = channelProfile);
+    return reply.value;
+  }
+
+  /// 是否开启双流模式
+  ///
+  /// [enable] - true:开启小流（默认），false: 关闭小流
+  Future<int> enableDualStreamMode(bool enable) async {
+    IntValue reply =
+        await _api.enableDualStreamMode(BoolValue()..value = enable);
+    return reply.value;
+  }
+
+  /// 添加房间推流任务，成功添加后当前用户可以收到该直播流的状态通知。通话中有效。
+  /// [taskInfo] 直播任务信息
+  /// [AddLiveTaskCallback]  操作结果回调，方法调用成功才有回调
+  Future<int> addLiveStreamTask(
+      NERtcLiveStreamTaskInfo taskInfo, AddLiveTaskCallback callback) async {
+    assert(taskInfo != null);
+    int serial = -1;
+    if (callback != null) {
+      serial = _onceEventHandler.addOnceCallback((args) {
+        callback(args['taskId'], args['errCode']);
+      });
+    }
+    List<Map<dynamic, dynamic>> userTranscodingList =
+        taskInfo?.layout?.userTranscodingList?.map((e) => e._toMap())?.toList();
+    IntValue reply =
+        await _api.addLiveStreamTask(AddOrUpdateLiveStreamTaskRequest()
+          ..serial = serial
+          ..taskId = taskInfo.taskId
+          ..url = taskInfo.url
+          ..serverRecordEnabled = taskInfo.serverRecordEnabled
+          ..liveMode = taskInfo.liveMode
+          ..layoutWidth = taskInfo.layout?.width
+          ..layoutHeight = taskInfo.layout?.height
+          ..layoutBackgroundColor = taskInfo.layout?.backgroundColor?.value
+          ..layoutImageUrl = taskInfo.layout?.backgroundImg?.url
+          ..layoutImageX = taskInfo.layout?.backgroundImg?.x
+          ..layoutImageY = taskInfo.layout?.backgroundImg?.y
+          ..layoutImageWidth = taskInfo.layout?.backgroundImg?.width
+          ..layoutImageHeight = taskInfo.layout?.backgroundImg?.height
+          ..layoutUserTranscodingList = userTranscodingList);
+    return reply.value;
+  }
+
+  /// 更新修改房间推流任务。通话中有效。
+  /// [taskInfo] 直播任务信息
+  /// [UpdateLiveTaskCallback]  操作结果回调，方法调用成功才有回调
+  Future<int> updateLiveStreamTask(
+      NERtcLiveStreamTaskInfo taskInfo, UpdateLiveTaskCallback callback) async {
+    assert(taskInfo != null);
+    int serial = -1;
+    if (callback != null) {
+      serial = _onceEventHandler.addOnceCallback((args) {
+        callback(args['taskId'], args['errCode']);
+      });
+    }
+    List<Map<dynamic, dynamic>> userTranscodingList =
+        taskInfo?.layout?.userTranscodingList?.map((e) => e._toMap())?.toList();
+    IntValue reply =
+        await _api.updateLiveStreamTask(AddOrUpdateLiveStreamTaskRequest()
+          ..serial = serial
+          ..taskId = taskInfo.taskId
+          ..url = taskInfo.url
+          ..serverRecordEnabled = taskInfo.serverRecordEnabled
+          ..liveMode = taskInfo.liveMode
+          ..layoutWidth = taskInfo.layout?.width
+          ..layoutHeight = taskInfo.layout?.height
+          ..layoutBackgroundColor = taskInfo.layout?.backgroundColor?.value
+          ..layoutImageUrl = taskInfo.layout?.backgroundImg?.url
+          ..layoutImageX = taskInfo.layout?.backgroundImg?.x
+          ..layoutImageY = taskInfo.layout?.backgroundImg?.y
+          ..layoutImageWidth = taskInfo.layout?.backgroundImg?.width
+          ..layoutImageHeight = taskInfo.layout?.backgroundImg?.height
+          ..layoutUserTranscodingList = userTranscodingList);
+    return reply.value;
+  }
+
+  /// 删除房间推流任务。通话中有效
+  /// [taskId]   直播任务id
+  /// [DeleteLiveTaskCallback]  操作结果回调，方法调用成功才有回调
+  Future<int> removeLiveStreamTask(
+      String taskId, DeleteLiveTaskCallback callback) async {
+    assert(taskId != null);
+    int serial = -1;
+    if (callback != null) {
+      serial = _onceEventHandler.addOnceCallback((args) {
+        callback(args['taskId'], args['errCode']);
+      });
+    }
+    IntValue reply =
+        await _api.removeLiveStreamTask(DeleteLiveStreamTaskRequest()
+          ..serial = serial
+          ..taskId = taskId);
+    return reply.value;
   }
 
   Future<dynamic> _handleCallbacks(MethodCall call) async {
-    bool handled = _channelEventHandler.handler(call) ||
+    bool handled = _onceEventHandler.handler(call) ||
+        _channelEventHandler.handler(call) ||
         _deviceManager._eventHandler().handler(call) ||
         _audioMixingManager._eventHandler().handler(call) ||
         _statsEventHandler.handler(call) ||

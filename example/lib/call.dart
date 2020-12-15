@@ -1,4 +1,7 @@
+import 'package:FLTNERTC/settings.dart';
+import 'package:FLTNERTC/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:nertc/nertc.dart';
 import 'config.dart';
 
@@ -15,22 +18,50 @@ class CallPage extends StatefulWidget {
 }
 
 class _CallPageState extends State<CallPage>
-    with NERtcChannelEventCallback, NERtcStatsEventCallback {
+    with
+        NERtcChannelEventCallback,
+        NERtcStatsEventCallback,
+        NERtcDeviceEventCallback {
+  Settings _settings;
   NERtcEngine _engine = NERtcEngine();
+  List<_UserSession> _remoteSessions = List();
   _UserSession _localSession = _UserSession();
-  _UserSession _remoteSession = _UserSession();
+
+  bool _showControlPanel = false;
+  bool isAudioEnabled = false;
+  bool isVideoEnabled = false;
+  bool isFrontCamera = true;
+  bool isFrontCameraMirror = true;
+  bool isSpeakerphoneOn = false;
 
   @override
   void initState() {
     super.initState();
-    _initLocalUserSession();
-    _initRtcEngine();
+    _initSettings().then((value) => _initRtcEngine());
+  }
+
+  Future<void> _initSettings() async {
+    _settings = await Settings.getInstance();
+    isAudioEnabled = _settings.autoEnableAudio;
+    isVideoEnabled = _settings.autoEnableVideo;
+    isFrontCamera = _settings.frontFacingCamera;
+    isFrontCameraMirror = _settings.frontFacingCameraMirror;
+  }
+
+  Future<void> updateSettings() async {
+    isSpeakerphoneOn = await _engine.deviceManager.isSpeakerphoneOn();
+    _showControlPanel = true;
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          centerTitle: true,
+          title: Text(widget.cid),
+        ),
         body: buildCallingWidget(context),
       ),
       // ignore: missing_return
@@ -40,100 +71,195 @@ class _CallPageState extends State<CallPage>
     );
   }
 
-  Future<void> _initRenderers() async {
-    _localSession.renderer = await _engine.createVideoRenderer();
-    setState(() {});
-  }
-
   Widget buildCallingWidget(BuildContext context) {
     return Stack(children: <Widget>[
-      buildCallingVideoViewWidget(context),
-      Align(
-          alignment: Alignment(0.0, 0.9),
-          child: Flex(
-            direction: Axis.horizontal,
-            children: <Widget>[
-              Expanded(
-                  flex: 1,
-                  child: RawMaterialButton(
-                    onPressed: () {
-                      _onCallEnd(context);
-                    },
-                    child: new Icon(
-                      Icons.call_end,
-                      color: Colors.white,
-                      size: 35,
-                    ),
-                    shape: new CircleBorder(),
-                    elevation: 1.0,
-                    fillColor: Colors.redAccent,
-                    padding: const EdgeInsets.all(12.0),
-                  )),
-            ],
-          ))
+      buildVideoViews(context),
+      if (_showControlPanel) buildControlPanel(context)
     ]);
   }
 
-  void _onCallEnd(BuildContext context) {
-    Navigator.pop(context);
+  Widget buildControlPanel(BuildContext context) {
+    return Align(
+        alignment: Alignment(0.0, 0.9),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [buildControlPanel1(context)],
+        ));
   }
 
-  Widget buildCallingVideoViewWidget(BuildContext context) {
-    if (_remoteSession.renderer != null && _localSession.renderer != null) {
-      NERtcVideoRenderer big = _remoteSession.renderer;
-      NERtcVideoRenderer small = _localSession.renderer;
-      return Stack(children: <Widget>[
-        NERtcVideoView(big),
-        Align(
-          alignment: Alignment(0.9, -0.9),
-          child: Container(
-            width: 150,
-            height: 200,
-            child: NERtcVideoView(small),
+  Widget buildControlPanel1(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: RaisedButton(
+            onPressed: () {
+              bool audioEnabled = !isAudioEnabled;
+              _engine.enableLocalAudio(audioEnabled).then((value) {
+                if (value == 0) {
+                  setState(() {
+                    isAudioEnabled = audioEnabled;
+                  });
+                }
+              });
+            },
+            child: Text(isAudioEnabled ? '关闭语音' : '打开语音'),
           ),
         ),
-      ]);
-    } else if (_localSession.renderer != null) {
-      return NERtcVideoView(_localSession.renderer);
-    } else {
-      return Container();
-    }
+        Expanded(
+          child: RaisedButton(
+            onPressed: () {
+              bool videoEnabled = !isVideoEnabled;
+              _engine.enableLocalVideo(videoEnabled).then((value) {
+                if (value == 0) {
+                  setState(() {
+                    isVideoEnabled = videoEnabled;
+                  });
+                }
+              });
+            },
+            child: Text(isVideoEnabled ? '关闭视频' : '打开视频'),
+          ),
+        ),
+        Expanded(
+          child: RaisedButton(
+            onPressed: () {
+              _engine.deviceManager.switchCamera().then((value) {
+                if (value == 0) {
+                  isFrontCamera = !isFrontCamera;
+                  _localSession.renderer
+                      .setMirror(isFrontCamera && isFrontCameraMirror);
+                }
+              });
+            },
+            child: Text(
+              '切换摄像头',
+              softWrap: false,
+              style: TextStyle(fontSize: 12.0),
+            ),
+          ),
+        ),
+        Expanded(
+          child: RaisedButton(
+            onPressed: () {
+              bool speakerphoneOn = !isSpeakerphoneOn;
+              _engine.deviceManager
+                  .setSpeakerphoneOn(speakerphoneOn)
+                  .then((value) {
+                if (value == 0) {
+                  setState(() {
+                    isSpeakerphoneOn = speakerphoneOn;
+                  });
+                }
+              });
+            },
+            child: Text(
+              isSpeakerphoneOn ? '关闭扬声器' : '打开扬声器',
+              softWrap: false,
+              style: TextStyle(fontSize: 12.0),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildVideoViews(BuildContext context) {
+    return GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            childAspectRatio: 9 / 16,
+            crossAxisSpacing: 2.0,
+            mainAxisSpacing: 2.0),
+        itemCount: _remoteSessions.length + 1,
+        itemBuilder: (BuildContext context, int index) {
+          if (index == 0) {
+            return buildVideoView(context, _localSession);
+          } else {
+            return buildVideoView(context, _remoteSessions[index - 1]);
+          }
+        });
+  }
+
+  Widget buildVideoView(BuildContext context, _UserSession session) {
+    return Container(
+      child: Stack(
+        children: [
+          session.renderer != null
+              ? NERtcVideoView(session.renderer)
+              : Container(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                '${session.uid}',
+                style: TextStyle(color: Colors.red),
+              )
+            ],
+          )
+        ],
+      ),
+    );
   }
 
   void _requestPop() {
     Navigator.pop(context);
   }
 
-  Future<void> _startLocalVideoPreview() async {
-    _engine.enableLocalVideo(true);
-    _localSession.renderer.fitType = NERtcVideoViewFitType.cover;
-    _localSession.renderer.mirror = true;
-    _localSession.renderer.addToLocalVideoSink();
-    NERtcVideoConfig config = NERtcVideoConfig();
-    config.videoProfile = NERtcVideoProfile.hd720p;
-    _engine.setLocalVideoConfig(config);
-    _engine.startVideoPreview();
-  }
-
-  void _initLocalUserSession() {
-    _localSession.uid = widget.uid;
-  }
-
   void _initRtcEngine() async {
-    await _initParameters();
-    await _initRenderers();
-    _startLocalVideoPreview();
-    _engine.joinChannel('', widget.cid, widget.uid);
+    _localSession.uid = widget.uid;
+    NERtcOptions options = NERtcOptions(
+        autoSubscribeAudio: _settings.autoSubscribeAudio,
+        serverRecordSpeaker: _settings.serverRecordSpeaker,
+        serverRecordAudio: _settings.serverRecordAudio,
+        serverRecordVideo: _settings.serverRecordVideo,
+        serverRecordMode:
+            NERtcServerRecordMode.values[_settings.serverRecordMode],
+        videoSendMode: NERtcVideoSendMode.values[_settings.videoSendMode],
+        videoEncodeMode:
+            NERtcMediaCodecMode.values[_settings.videoEncodeMediaCodecMode],
+        videoDecodeMode:
+            NERtcMediaCodecMode.values[_settings.videoDecodeMediaCodecMode]);
+    _engine
+        .create(
+            appKey: Config.APP_KEY,
+            channelEventCallback: this,
+            options: options)
+        .then((value) => _initCallbacks())
+        .then((value) => _initAudio())
+        .then((value) => _initVideo())
+        .then((value) => _initRenderer())
+        .then((value) => _engine.joinChannel('', widget.cid, widget.uid));
   }
 
-  Future<void> _initParameters() async {
-    NERtcOptions options = NERtcOptions(
-        autoSubscribeAudio: true,
-        videoEncodeMode: NERtcMediaCodecMode.software,
-        videoDecodeMode: NERtcMediaCodecMode.software);
-    _engine.create(
-        appKey: Config.APP_KEY, channelEventCallback: this, options: options);
-    _engine.setStatsEventCallback(this);
+  Future<int> _initCallbacks() async {
+    await _engine.setStatsEventCallback(this);
+    return _engine.deviceManager.setEventCallback(this);
+  }
+
+  Future<int> _initAudio() async {
+    await _engine.enableLocalAudio(isAudioEnabled);
+    return _engine.setAudioProfile(
+        NERtcAudioProfile.values[_settings.audioProfile],
+        NERtcAudioScenario.values[_settings.audioScenario]);
+  }
+
+  Future<int> _initVideo() async {
+    await _engine.enableLocalVideo(isVideoEnabled);
+    await _engine.enableDualStreamMode(_settings.enableDualStreamMode);
+    NERtcVideoConfig config = NERtcVideoConfig();
+    config.videoProfile = _settings.videoProfile;
+    config.frameRate = _settings.videoFrameRate;
+    config.degradationPrefer = _settings.degradationPreference;
+    config.frontCamera = _settings.frontFacingCamera;
+    config.videoCropMode = _settings.videoCropMode;
+    return _engine.setLocalVideoConfig(config);
+  }
+
+  Future<void> _initRenderer() async {
+    _localSession.renderer = await VideoRendererFactory.createVideoRenderer();
+    _localSession.renderer.setMirror(isFrontCamera && isFrontCameraMirror);
+    _localSession.renderer.addToLocalVideoSink();
+    setState(() {});
   }
 
   void _releaseRtcEngine() {
@@ -148,9 +274,9 @@ class _CallPageState extends State<CallPage>
       _localSession.renderer.dispose();
       _localSession.renderer = null;
     }
-    if (_remoteSession.renderer != null) {
-      _remoteSession.renderer.dispose();
-      _remoteSession.renderer = null;
+    for (_UserSession session in _remoteSessions) {
+      session.renderer?.dispose();
+      session.renderer = null;
     }
     _engine.leaveChannel();
   }
@@ -164,84 +290,111 @@ class _CallPageState extends State<CallPage>
 
   @override
   void onConnectionTypeChanged(int newConnectionType) {
-    print('onConnectionTypeChanged->' + newConnectionType.toString());
+    Fluttertoast.showToast(
+        msg:
+            'onConnectionTypeChanged#${Utils.connectionType2String(newConnectionType)}');
   }
 
   @override
   void onDisconnect(int reason) {
-    print('onDisconnect->' + reason.toString());
+    Fluttertoast.showToast(msg: 'onDisconnect#$reason');
   }
 
   @override
   void onFirstAudioDataReceived(int uid) {
-    print('onFirstAudioDataReceived->' + uid.toString());
+    Fluttertoast.showToast(msg: 'onFirstAudioDataReceived#$uid');
   }
 
   @override
   void onFirstVideoDataReceived(int uid) {
-    print('onFirstVideoDataReceived->' + uid.toString());
+    Fluttertoast.showToast(msg: 'onFirstVideoDataReceived#$uid');
   }
 
   @override
   void onLeaveChannel(int result) {
-    print('onLeaveChannel->' + result.toString());
+    Fluttertoast.showToast(msg: 'onLeaveChannel#$result');
   }
 
   @override
   void onUserAudioMute(int uid, bool muted) {
-    print('onUserAudioMute->' + uid.toString() + ', ' + muted.toString());
+    Fluttertoast.showToast(msg: 'onUserAudioStart#uid:$uid, muted:$muted');
   }
 
   @override
   void onUserAudioStart(int uid) {
-    print('onUserAudioStart->' + uid.toString());
+    Fluttertoast.showToast(msg: 'onUserAudioStart#$uid');
   }
 
   @override
   void onUserAudioStop(int uid) {
-    print('onUserAudioStop->' + uid.toString());
+    Fluttertoast.showToast(msg: 'onUserAudioStop#$uid');
   }
 
   @override
   void onUserJoined(int uid) {
-    print('onUserJoined->' + uid.toString());
-    _remoteSession.uid = uid;
-  }
-
-  @override
-  void onUserLeave(int uid, int reason) {
-    print('onUserLeave->' + uid.toString() + ', ' + reason.toString());
-  }
-
-  @override
-  void onUserVideoMute(int uid, bool muted) {
-    print('onUserVideoMute->' + uid.toString() + ', ' + muted.toString());
-  }
-
-  @override
-  void onUserVideoProfileUpdate(int uid, int maxProfile) {
-    print('onUserVideoProfileUpdate->' +
-        uid.toString() +
-        ', ' +
-        maxProfile.toString());
-  }
-
-  @override
-  void onUserVideoStart(int uid, int maxProfile) {
-    print('onUserVideoStart->' + uid.toString() + ', ' + maxProfile.toString());
-    setupVideoView(uid, maxProfile);
-  }
-
-  Future<void> setupVideoView(int uid, int maxProfile) async {
-    _remoteSession.renderer = await _engine.createVideoRenderer();
-    _remoteSession.renderer.addToRemoteVideoSink(uid);
-    _engine.subscribeRemoteVideoStream(
-        uid, NERtcRemoteVideoStreamType.high, true);
+    Fluttertoast.showToast(msg: 'onUserJoined#$uid');
+    _UserSession session = _UserSession();
+    session.uid = uid;
+    _remoteSessions.add(session);
     setState(() {});
   }
 
   @override
-  void onUserVideoStop(int uid) {}
+  void onUserLeave(int uid, int reason) {
+    Fluttertoast.showToast(msg: 'onUserLeave#uid:$uid, reason:$reason');
+    for (_UserSession session in _remoteSessions) {
+      if (session.uid == uid) {
+        NERtcVideoRenderer renderer = session.renderer;
+        renderer?.dispose();
+        _remoteSessions.remove(session);
+        break;
+      }
+    }
+    setState(() {});
+  }
+
+  @override
+  void onUserVideoMute(int uid, bool muted) {
+    Fluttertoast.showToast(
+        msg: 'onUserVideoProfileUpdate#uid:$uid, muted:$muted');
+  }
+
+  @override
+  void onUserVideoProfileUpdate(int uid, int maxProfile) {
+    Fluttertoast.showToast(
+        msg:
+            'onUserVideoProfileUpdate#uid:$uid, maxProfile:${Utils.videoProfile2String(maxProfile)}');
+  }
+
+  @override
+  void onUserVideoStart(int uid, int maxProfile) {
+    Fluttertoast.showToast(
+        msg:
+            'onUserVideoStart#uid:$uid, maxProfile:${Utils.videoProfile2String(maxProfile)}');
+    setupVideoView(uid, maxProfile);
+  }
+
+  Future<void> setupVideoView(int uid, int maxProfile) async {
+    NERtcVideoRenderer renderer =
+        await VideoRendererFactory.createVideoRenderer();
+    for (_UserSession session in _remoteSessions) {
+      if (session.uid == uid) {
+        session.renderer = renderer;
+        session.renderer.addToRemoteVideoSink(uid);
+        if (_settings.autoSubscribeVideo) {
+          _engine.subscribeRemoteVideoStream(
+              uid, NERtcRemoteVideoStreamType.high, true);
+        }
+        break;
+      }
+    }
+    setState(() {});
+  }
+
+  @override
+  void onUserVideoStop(int uid) {
+    Fluttertoast.showToast(msg: 'onUserVideoStop#$uid');
+  }
 
   @override
   void onRemoteVideoStats(List<NERtcVideoRecvStats> statsList) {}
@@ -259,19 +412,35 @@ class _CallPageState extends State<CallPage>
   void onRtcStats(NERtcStats stats) {}
 
   @override
-  void onReJoinChannel(int result) {}
+  void onReJoinChannel(int result) {
+    Fluttertoast.showToast(msg: 'onReJoinChannel#$result');
+  }
 
   @override
-  void onError(int code) {}
+  void onError(int code) {
+    Fluttertoast.showToast(msg: 'onError#$code');
+  }
 
   @override
-  void onFirstAudioFrameDecoded(int uid) {}
+  void onFirstAudioFrameDecoded(int uid) {
+    Fluttertoast.showToast(msg: 'onFirstAudioFrameDecoded#$uid');
+  }
 
   @override
-  void onFirstVideoFrameDecoded(int uid, int width, int height) {}
+  void onFirstVideoFrameDecoded(int uid, int width, int height) {
+    Fluttertoast.showToast(
+        msg: 'onFirstVideoFrameDecoded#uid:$uid, width:$width, height:$height');
+  }
 
   @override
-  void onJoinChannel(int result, int channelId, int elapsed) {}
+  void onJoinChannel(int result, int channelId, int elapsed) {
+    Fluttertoast.showToast(
+        msg:
+            'onJoinChannel#result:$result, channelId:$channelId, elapsed:$elapsed');
+    updateSettings().then((value) {
+      setState(() {});
+    });
+  }
 
   @override
   void onLocalAudioVolumeIndication(int volume) {}
@@ -281,13 +450,51 @@ class _CallPageState extends State<CallPage>
       List<NERtcAudioVolumeInfo> volumeList, int totalVolume) {}
 
   @override
-  void onWarning(int code) {}
+  void onWarning(int code) {
+    Fluttertoast.showToast(msg: 'onWarning#$code');
+  }
 
   @override
   void onNetworkQuality(List<NERtcNetworkQualityInfo> statsList) {}
 
   @override
-  void onReconnectingStart() {}
+  void onReconnectingStart() {
+    Fluttertoast.showToast(msg: 'onReconnectingStart');
+  }
+
+  @override
+  void onConnectionStateChanged(int state, int reason) {
+    Fluttertoast.showToast(
+        msg:
+            'onConnectionStateChanged#state:${Utils.connectionState2String(state)}, reason:${Utils.connectionStateChangeReason2String(reason)}');
+  }
+
+  @override
+  void onLiveStreamState(String taskId, String pushUrl, int liveState) {
+    Fluttertoast.showToast(
+        msg:
+            'onLiveStreamState#taskId:$taskId, liveState:${Utils.liveStreamState2String(liveState)}');
+  }
+
+  @override
+  void onAudioDeviceChanged(int selected) {
+    Fluttertoast.showToast(
+        msg: 'onAudioDeviceChanged#${Utils.audioDevice2String(selected)}');
+  }
+
+  @override
+  void onAudioDeviceStateChange(int deviceType, int deviceState) {
+    Fluttertoast.showToast(
+        msg:
+            'onAudioDeviceStateChange#deviceType:${Utils.audioDeviceType2String(deviceType)}, deviceState:${Utils.audioDeviceState2String(deviceState)}');
+  }
+
+  @override
+  void onVideoDeviceStageChange(int deviceState) {
+    Fluttertoast.showToast(
+        msg:
+            'onVideoDeviceStageChange#${Utils.videoDeviceState2String(deviceState)}');
+  }
 }
 
 class _UserSession {

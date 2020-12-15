@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2019 NetEase, Inc. All right reserved.
+// Copyright (c) 2019-2020 NetEase, Inc. All right reserved.
 
 part of nertc;
 
@@ -130,13 +130,13 @@ class NERtcVideoCropMode {
   static const int cropDefault = 0;
 
   ///16:9 裁剪
-  static const int CROP_16x9 = 1;
+  static const int crop_16x9 = 1;
 
   ///4:3 裁剪
-  static const int CROP_4x3 = 2;
+  static const int crop_4x3 = 2;
 
   ///1:1 裁剪
-  static const int CROP_1x1 = 3;
+  static const int crop_1x1 = 3;
 }
 
 ///网络类型定义
@@ -264,7 +264,10 @@ enum NERtcAudioProfile {
   ///普通质量的音频编码，16000Hz，20Kbps
   profileStandard,
 
-  ///中等质量的音频编码，48000Hz，32Kbp
+  /// 普通质量的音频编码，16000Hz，32Kbps
+  profileStandardExtend,
+
+  ///中等质量的音频编码，48000Hz，32Kbps
   profileMiddleQuality,
 
   ///中等质量的立体声编码，48000Hz * 2，64Kbps
@@ -608,4 +611,251 @@ class NERtcVideoFrameRate {
   static const int fps_15 = 15;
   static const int fps_24 = 24;
   static const int fps_30 = 30;
+}
+
+/// 直播推流模式
+class NERtcLiveStreamMode {
+  /// 推流带视频
+  static const int liveStreamModeVideo = 0;
+
+  /// 推流纯音频
+  static const int liveStreamModeAudio = 1;
+}
+
+/// 直播推流状态
+class NERtcLiveStreamState {
+  /// 推流中
+  static const int pushing = 505;
+
+  /// 互动直播推流失败
+  static const int pushFail = 506;
+
+  /// 推流结束
+  static const int pushStopped = 511;
+
+  /// 背景图片设置出错
+  static const int imageError = 512;
+}
+
+/// LiveStream Error Code
+class NERtcLiveStreamErrorCode {
+  /// 成功
+  static const int ok = 0;
+
+  /// Task请求无效，被后续操作覆盖
+  static const int requestIsInvaild = 1301;
+
+  /// Task参数格式错误
+  static const int invaild = 1400;
+
+  /// 房间已经退出
+  static const int roomExited = 1401;
+
+  /// 推流任务超出上限
+  static const int numLimit = 1402;
+
+  /// 推流ID重复
+  static const int duplicateId = 1403;
+
+  /// TaskId任务不存在，或频道不存在
+  static const int notFound = 1404;
+
+  /// 请求失败
+  static const int requestError = 1417;
+
+  /// 服务器内部错误
+  static const int internalServerErr = 1500;
+
+  /// 布局参数错误
+  static const int invalidLayout = 1501;
+
+  /// 用户图片错误
+  static const int userPictureError = 1502;
+}
+
+/// 直播布局
+class NERtcLiveStreamLayout {
+  NERtcLiveStreamLayout({
+    this.width,
+    this.height,
+    this.backgroundImg,
+    this.userTranscodingList,
+    this.backgroundColor,
+  });
+
+  /// 视频推流宽度
+  int width;
+
+  /// 视频推流高度
+  int height;
+
+  /// 视频推流背景色 RGB
+  Color backgroundColor;
+
+  /// 视频推流背景图
+  NERtcLiveStreamImageInfo backgroundImg;
+
+  /// 成员布局数组
+  List<NERtcLiveStreamUserTranscoding> userTranscodingList;
+}
+
+class NERtcLiveStreamVideoScaleMode {
+  /// 视频尺寸等比缩放。优先保证视频内容全部显示。因视频尺寸与显示视窗尺寸不一致造成的视窗未被填满的区域填充背景色。
+  static const int liveStreamModeVideoScaleFit = 0;
+
+  /// 视频尺寸等比缩放。优先保证视窗被填满。因视频尺寸与显示视窗尺寸不一致而多出的视频将被截掉。
+  static const int liveStreamModeVideoScaleCropFill = 1;
+}
+
+/// 直播成员布局
+class NERtcLiveStreamUserTranscoding {
+  NERtcLiveStreamUserTranscoding(
+      {@required this.uid,
+      this.videoPush = true,
+      this.audioPush = true,
+      this.adaption = NERtcLiveStreamVideoScaleMode.liveStreamModeVideoScaleFit,
+      this.x = 0,
+      this.y = 0,
+      this.width = 0,
+      this.height = 0});
+
+  /// 用户uid
+  int uid;
+
+  /// 是否推送该用户视频流，推流模式为 [NERtcLiveStreamMode.liveStreamModeAudio] 时无效
+  bool videoPush;
+
+  /// 是否推送该用户音频流
+  bool audioPush;
+
+  /// 视频流裁剪模式, 参考 [NERtcLiveStreamVideoScaleMode]
+  int adaption;
+
+  /// 画面离主画面左边距
+  int x;
+
+  /// 画面离主画面上边距
+  int y;
+
+  /// 画面在主画面的显示宽度，画面右边超出主画面会失败
+  int width;
+
+  /// 画面在主画面的显示高度，画面底边超出主画面会失败
+  int height;
+
+  Map<dynamic, dynamic> _toMap() {
+    final Map<dynamic, dynamic> map = <dynamic, dynamic>{};
+    map['uid'] = uid;
+    map['videoPush'] = videoPush;
+    map['audioPush'] = audioPush;
+    map['adaption'] = adaption;
+    map['x'] = x;
+    map['y'] = y;
+    map['width'] = width;
+    map['height'] = height;
+    return map;
+  }
+}
+
+/// 推流背景图片设置
+class NERtcLiveStreamImageInfo {
+  NERtcLiveStreamImageInfo(
+      {this.url, this.x = 0, this.y = 0, this.width = 0, this.height = 0});
+
+  /// 图片地址url
+  String url;
+
+  /// 图片离主画面左边距 ， 默认 0
+  int x;
+
+  /// 图片离主画面上边距 ， 默认 0
+  int y;
+
+  /// 图片在主画面的显示宽度，图片右边超出主画面会失败 ， 默认主画面宽度
+  int width;
+
+  /// 图片在主画面的显示高度，图片底边超出主画面会失败， 默认主画面高度
+  int height;
+}
+
+/// 房间推流任务参数
+class NERtcLiveStreamTaskInfo {
+  NERtcLiveStreamTaskInfo(
+      {this.taskId,
+      this.url,
+      this.serverRecordEnabled = false,
+      this.liveMode = NERtcLiveStreamMode.liveStreamModeVideo,
+      this.layout});
+
+  /// 推流任务ID，为推流任务的唯一标识，用于过程中增删任务操作
+  String taskId;
+
+  /// 直播推流地址
+  String url;
+
+  /// 服务器录制功能是否开启
+  bool serverRecordEnabled;
+
+  /// 直播推流模式 [NERtcLiveStreamMode]
+  int liveMode;
+
+  /// 视频布局
+  NERtcLiveStreamLayout layout;
+}
+
+/// 频道连接状态
+class NERtcConnectionState {
+  /// 未知
+  static const int unknown = 0;
+
+  /// 网络连接断开
+  static const int disconnected = 1;
+
+  ///建立网络连接中
+  static const int connecting = 2;
+
+  /// 网络已连接
+  static const int connected = 3;
+
+  /// 重新建立网络连接中
+  static const int reconnecting = 4;
+
+  /// 网络连接失败
+  static const int failed = 5;
+}
+
+/// 频道连接状态变更原因
+class NERtcConnectionStateChangeReason {
+  /// 离开房间
+  static const int leaveChannel = 1;
+
+  /// 房间被关闭
+  static const int channelClosed = 2;
+
+  /// 用户被踢
+  static const int serverKicked = 3;
+
+  /// 超时离开
+  static const int timeout = 4;
+
+  /// 加入房间
+  static const int joinChannel = 5;
+
+  /// 加入房间成功
+  static const int joinSucceed = 6;
+
+  /// 重新加入房间成功（重连）
+  static const int rejoinSucceed = 7;
+
+  /// 媒体连接断开
+  static const int mediaConnectionDisconnected = 8;
+
+  /// 信令连接断开
+  static const int signalDisconnected = 9;
+
+  /// 请求频道失败
+  static const int requestChannelFailed = 10;
+
+  /// 加入频道失败
+  static const int joinChannelFailed = 11;
 }

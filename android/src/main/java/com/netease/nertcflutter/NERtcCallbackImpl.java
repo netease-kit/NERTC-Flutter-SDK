@@ -5,6 +5,8 @@
 
 package com.netease.nertcflutter;
 
+import android.graphics.Rect;
+
 import com.netease.lava.nertc.sdk.NERtcCallbackEx;
 import com.netease.lava.nertc.sdk.stats.NERtcAudioVolumeInfo;
 import com.netease.nertcflutter.NERtcEngine.CallbackMethod;
@@ -124,12 +126,6 @@ public class NERtcCallbackImpl implements NERtcCallbackEx {
         map.put("muted", muted);
         callback.invokeMethod("onUserVideoMute", map);
     }
-
-    @Override
-    public void onClientRoleChange(int old, int newRole) {
-
-    }
-
 
     @Override
     public void onFirstAudioDataReceived(long uid) {
@@ -264,7 +260,27 @@ public class NERtcCallbackImpl implements NERtcCallbackEx {
 
     @Override
     public void onLiveStreamState(String taskId, String pushUrl, int liveState) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("taskId", taskId);
+        map.put("pushUrl", pushUrl);
+        map.put("liveState", liveState);
+        callback.invokeMethod("onLiveStreamState", map);
+    }
 
+    @Override
+    public void onConnectionStateChanged(int state,int reason) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("state", state);
+        map.put("reason", reason);
+        callback.invokeMethod("onConnectionStateChanged", map);
+    }
+
+    @Override
+    public void onCameraFocusChanged(Rect rect) {
+    }
+
+    @Override
+    public void onCameraExposureChanged(Rect rect) {
     }
 
     @Override

@@ -1,6 +1,8 @@
+// Copyright (c) 2019-2020 NetEase, Inc. All right reserved.
+
 part of nertc;
 
-///音效
+///音效管理模块
 class NERtcAudioEffectManager {
   final _AudioEffectEventHandler _handler = _AudioEffectEventHandler();
 
@@ -10,6 +12,7 @@ class NERtcAudioEffectManager {
 
   AudioEffectApi _api = AudioEffectApi();
 
+  /// 设置音效事件回调
   Future<int> setEventCallback(NERtcAudioEffectEventCallback callback) async {
     assert(callback != null);
     _handler.setCallback(callback);
@@ -17,6 +20,7 @@ class NERtcAudioEffectManager {
     return reply.value;
   }
 
+  /// 取消音效事件回调
   Future<int> clearEventCallback() async {
     _handler.setCallback(null);
     IntValue reply = await _api.clearAudioEffectEventCallback();
