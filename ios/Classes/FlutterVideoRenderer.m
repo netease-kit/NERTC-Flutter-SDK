@@ -89,7 +89,7 @@
                       _mirror ? -height : height,
                       width,
                       height,
-                      _mirror ? (RotationModeEnum)((rotation+180)%360) : (RotationModeEnum)rotation,
+                      (RotationModeEnum)(_mirror ? (rotation+(rotation== 90 ? 0 : 180))%360 : rotation),
                       FOURCC_I420);
     }
     
