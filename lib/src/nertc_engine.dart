@@ -68,6 +68,7 @@ class NERtcEngine {
       ..serverRecordMode = options?.serverRecordMode?.index
       ..serverRecordSpeaker = options?.serverRecordSpeaker
       ..publishSelfStream = options?.publishSelfStream
+      ..videoCaptureObserver = options?.videoCaptureObserver
       ..videoSendMode = options?.videoSendMode?.index);
   }
 
