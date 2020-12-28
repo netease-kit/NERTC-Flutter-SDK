@@ -333,16 +333,6 @@
     }
 }
 
-// 在代理方法中对视频数据进行处理
-
-//- (int)setVideoFrameObserver:(nullable id<NERtcEngineVideoFrameObserver>)observer
-//{
-//#ifdef DEBUG
-//    NSLog(@"FlutterCalled:EngineApi#setVideoFrameObserver");
-//#endif
-//    _videoFrameObserver = observer;
-//}
-
 
 - (nullable FLTIntValue *)adjustPlaybackSignalVolume:(nonnull FLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
