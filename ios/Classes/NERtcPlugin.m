@@ -2,10 +2,11 @@
 #import "messages.h"
 #import <NERtcSDK/NERtcSDK.h>
 #import <FlutterVideoRenderer.h>
-
+#import "FLNERtcEngineVideoFrameDelegate.h"
 
 @interface NERtcPlugin () <FLTEngineApi, FLTDeviceManagerApi, FLTAudioMixingApi, FLTAudioEffectApi, FLTVideoRendererApi, NERtcEngineDelegateEx, NERtcEngineMediaStatsObserver>
 @property(nonatomic, strong) NSMutableDictionary<NSNumber *, FlutterVideoRenderer *> *renderers;
+
 @end
 
 
@@ -96,6 +97,8 @@
         [params setObject:input.publishSelfStream forKey:kNERtcKeyPublishSelfStreamEnabled];
     }
     
+    [params setObject:@(YES) forKey:kNERtcKeyVideoCaptureObserverEnabled];
+   
     [[NERtcEngine sharedEngine] setParameters: params];
     
     NERtcEngineContext *context = [[NERtcEngineContext alloc] init];
@@ -109,7 +112,6 @@
     }
     context.engineDelegate = self;
     int ret = [[NERtcEngine sharedEngine] setupEngineWithContext:context];
-    
     FLTIntValue* result = [[FLTIntValue alloc] init];
     result.value = @(ret);
     return result;
@@ -316,6 +318,28 @@
     result.value = @(ret);
     return result;
 }
+
+
+// 在代理方法中对视频数据进行处理
+- (void)onNERtcEngineVideoFrameCaptured:(CVPixelBufferRef)bufferRef rotation:(NERtcVideoRotationType)rotation
+{
+#ifdef DEBUG
+    NSLog(@"FlutterCalled:EngineApi#onNERtcEngineVideoFrameCaptured");
+#endif
+    if ([[FLNERtcEngineVideoFrameDelegate sharedCenter].observer respondsToSelector:@selector(onNERtcEngineVideoFrameCaptured:rotation:)]) {
+        [[FLNERtcEngineVideoFrameDelegate sharedCenter].observer onNERtcEngineVideoFrameCaptured:bufferRef rotation:(NERtcVideoRotationType)rotation];
+    }
+}
+
+// 在代理方法中对视频数据进行处理
+
+//- (int)setVideoFrameObserver:(nullable id<NERtcEngineVideoFrameObserver>)observer
+//{
+//#ifdef DEBUG
+//    NSLog(@"FlutterCalled:EngineApi#setVideoFrameObserver");
+//#endif
+//    _videoFrameObserver = observer;
+//}
 
 
 - (nullable FLTIntValue *)adjustPlaybackSignalVolume:(nonnull FLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
