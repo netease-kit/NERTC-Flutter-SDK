@@ -96,8 +96,10 @@
     if(input.publishSelfStream != nil) {
         [params setObject:input.publishSelfStream forKey:kNERtcKeyPublishSelfStreamEnabled];
     }
-    
-    [params setObject:@(YES) forKey:kNERtcKeyVideoCaptureObserverEnabled];
+
+    if(input.videoCaptureObserver!= nil) {
+        [params setObject:input.videoCaptureObserver forKey:kNERtcKeyVideoCaptureObserverEnabled];
+    }
    
     [[NERtcEngine sharedEngine] setParameters: params];
     

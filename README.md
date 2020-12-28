@@ -29,9 +29,3 @@ Change the minimum Android sdk version to 21 (or higher) in your `android/app/bu
 ```
 minSdkVersion 21
 ```
-
-### pigeon
-
-```
-flutter pub run pigeon  --input pigeons/message.dart  --dart_out lib/pigeon.dart  --objc_header_out ios/Runner/messages.h --objc_source_out ios/Runner/messages.m --java_out android/app/src/main/java/com/netease/nertcflutter/Messages.java --java_package "com.netease.nertcflutter"
-```
