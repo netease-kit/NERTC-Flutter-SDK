@@ -268,6 +268,7 @@ class CreateEngineRequest {
   int serverRecordMode;
   bool serverRecordSpeaker;
   bool publishSelfStream;
+  bool videoCaptureObserver;
   int videoSendMode;
 
   // ignore: unused_element
@@ -284,6 +285,7 @@ class CreateEngineRequest {
     pigeonMap['serverRecordMode'] = serverRecordMode;
     pigeonMap['serverRecordSpeaker'] = serverRecordSpeaker;
     pigeonMap['publishSelfStream'] = publishSelfStream;
+    pigeonMap['videoCaptureObserver'] = videoCaptureObserver;
     pigeonMap['videoSendMode'] = videoSendMode;
     return pigeonMap;
   }
@@ -303,6 +305,7 @@ class CreateEngineRequest {
       ..serverRecordMode = pigeonMap['serverRecordMode'] as int
       ..serverRecordSpeaker = pigeonMap['serverRecordSpeaker'] as bool
       ..publishSelfStream = pigeonMap['publishSelfStream'] as bool
+      ..videoCaptureObserver = pigeonMap['videoCaptureObserver'] as bool
       ..videoSendMode = pigeonMap['videoSendMode'] as int;
   }
 }

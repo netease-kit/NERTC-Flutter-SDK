@@ -12,6 +12,7 @@ class CreateEngineRequest {
   int serverRecordMode;
   bool serverRecordSpeaker;
   bool publishSelfStream;
+  bool videoCaptureObserver;
   int videoSendMode;
 }
 

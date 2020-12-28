@@ -101,6 +101,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong, nullable) NSNumber * serverRecordMode;
 @property(nonatomic, strong, nullable) NSNumber * serverRecordSpeaker;
 @property(nonatomic, strong, nullable) NSNumber * publishSelfStream;
+@property(nonatomic, strong, nullable) NSNumber * videoCaptureObserver;
 @property(nonatomic, strong, nullable) NSNumber * videoSendMode;
 @end
 
