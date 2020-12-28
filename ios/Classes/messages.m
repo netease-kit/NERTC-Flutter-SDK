@@ -1414,22 +1414,26 @@ void FLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTEngineA
       [channel setMessageHandler:nil];
     }
   }
-  {
-    FlutterBasicMessageChannel *channel =
-      [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.EngineApi.release"
-        binaryMessenger:binaryMessenger];
-    if (api) {
-      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        FlutterError *error;
-        FLTIntValue *output = [api release:&error];
-        callback(wrapResult([output toMap], error));
-      }];
+    {
+        FlutterBasicMessageChannel *channel =
+        [FlutterBasicMessageChannel
+         messageChannelWithName:@"dev.flutter.pigeon.EngineApi.release"
+         binaryMessenger:binaryMessenger];
+        if (api) {
+            [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+                FlutterError *error;
+                [api release:&error withCompletion:^() {
+                    FLTIntValue* output = [[FLTIntValue alloc] init];
+                    output.value = @(0);
+                    callback(wrapResult([output toMap], error));
+                }];
+
+            }];
+        }
+        else {
+            [channel setMessageHandler:nil];
+        }
     }
-    else {
-      [channel setMessageHandler:nil];
-    }
-  }
   {
     FlutterBasicMessageChannel *channel =
       [FlutterBasicMessageChannel
