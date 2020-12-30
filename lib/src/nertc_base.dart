@@ -48,7 +48,7 @@ class NERtcOptions {
   /// 是否允许在房间推流时推送自身的视频流
   final bool publishSelfStream;
 
-  /// 是否允许视频帧回调
+  /// 是否允许视频帧回调（该字段仅对IOS平台有效，Android默认支持该视频帧回调）
   final bool videoCaptureObserver;
 
   /// 视频发布模式
