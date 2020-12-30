@@ -389,6 +389,10 @@ public class Messages {
     public Boolean getPublishSelfStream() { return publishSelfStream; }
     public void setPublishSelfStream(Boolean setterArg) { this.publishSelfStream = setterArg; }
 
+    private Boolean videoCaptureObserver;
+    public Boolean getVideoCaptureObserver() { return videoCaptureObserver; }
+    public void setVideoCaptureObserver(Boolean setterArg) { this.videoCaptureObserver = setterArg; }
+
     private Long videoSendMode;
     public Long getVideoSendMode() { return videoSendMode; }
     public void setVideoSendMode(Long setterArg) { this.videoSendMode = setterArg; }
@@ -406,6 +410,7 @@ public class Messages {
       toMapResult.put("serverRecordMode", serverRecordMode);
       toMapResult.put("serverRecordSpeaker", serverRecordSpeaker);
       toMapResult.put("publishSelfStream", publishSelfStream);
+      toMapResult.put("videoCaptureObserver", videoCaptureObserver);
       toMapResult.put("videoSendMode", videoSendMode);
       return toMapResult;
     }
@@ -433,6 +438,8 @@ public class Messages {
       fromMapResult.serverRecordSpeaker = (Boolean)serverRecordSpeaker;
       Object publishSelfStream = map.get("publishSelfStream");
       fromMapResult.publishSelfStream = (Boolean)publishSelfStream;
+      Object videoCaptureObserver = map.get("videoCaptureObserver");
+      fromMapResult.videoCaptureObserver = (Boolean)videoCaptureObserver;
       Object videoSendMode = map.get("videoSendMode");
       fromMapResult.videoSendMode = (videoSendMode == null) ? null : ((videoSendMode instanceof Integer) ? (Integer)videoSendMode : (Long)videoSendMode);
       return fromMapResult;
