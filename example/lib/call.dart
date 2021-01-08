@@ -71,6 +71,13 @@ class _CallPageState extends State<CallPage>
     );
   }
 
+  Widget buildControlButton(VoidCallback onPressed, Widget child) {
+    return RaisedButton(
+      onPressed: onPressed,
+      child: child,
+    );
+  }
+
   Widget buildCallingWidget(BuildContext context) {
     return Stack(children: <Widget>[
       buildVideoViews(context),
@@ -86,94 +93,99 @@ class _CallPageState extends State<CallPage>
   }
 
   Widget buildControlPanel3(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: RaisedButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: Text('离开房间'),
-          ),
-        ),
-      ],
-    );
+    return Container(
+        height: 50,
+        child: Row(
+          children: [
+            Expanded(
+              child: buildControlButton(() {
+                Navigator.pop(context);
+              },
+                  Text(
+                    '离开房间',
+                    style: TextStyle(fontSize: 12),
+                  )),
+            ),
+          ],
+        ));
   }
 
   Widget buildControlPanel1(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: RaisedButton(
-            onPressed: () {
-              bool audioEnabled = !isAudioEnabled;
-              _engine.enableLocalAudio(audioEnabled).then((value) {
-                if (value == 0) {
-                  setState(() {
-                    isAudioEnabled = audioEnabled;
-                  });
-                }
-              });
-            },
-            child: Text(isAudioEnabled ? '关闭语音' : '打开语音'),
-          ),
-        ),
-        Expanded(
-          child: RaisedButton(
-            onPressed: () {
-              bool videoEnabled = !isVideoEnabled;
-              _engine.enableLocalVideo(videoEnabled).then((value) {
-                if (value == 0) {
-                  setState(() {
-                    isVideoEnabled = videoEnabled;
-                  });
-                }
-              });
-            },
-            child: Text(isVideoEnabled ? '关闭视频' : '打开视频'),
-          ),
-        ),
-        Expanded(
-          child: RaisedButton(
-            onPressed: () {
-              _engine.deviceManager.switchCamera().then((value) {
-                if (value == 0) {
-                  isFrontCamera = !isFrontCamera;
-                  _localSession.renderer
-                      .setMirror(isFrontCamera && isFrontCameraMirror);
-                }
-              });
-            },
-            child: Text(
-              '切换摄像头',
-              softWrap: false,
-              style: TextStyle(fontSize: 12.0),
-            ),
-          ),
-        ),
-        Expanded(
-          child: RaisedButton(
-            onPressed: () {
-              bool speakerphoneOn = !isSpeakerphoneOn;
-              _engine.deviceManager
-                  .setSpeakerphoneOn(speakerphoneOn)
-                  .then((value) {
-                if (value == 0) {
-                  setState(() {
-                    isSpeakerphoneOn = speakerphoneOn;
-                  });
-                }
-              });
-            },
-            child: Text(
-              isSpeakerphoneOn ? '关闭扬声器' : '打开扬声器',
-              softWrap: false,
-              style: TextStyle(fontSize: 12.0),
-            ),
-          ),
-        ),
-      ],
-    );
+    return Container(
+        height: 50,
+        child: Row(
+          children: [
+            Expanded(
+                child: buildControlButton(
+              () {
+                bool audioEnabled = !isAudioEnabled;
+                _engine.enableLocalAudio(audioEnabled).then((value) {
+                  if (value == 0) {
+                    setState(() {
+                      isAudioEnabled = audioEnabled;
+                    });
+                  }
+                });
+              },
+              Text(
+                isAudioEnabled ? '关闭语音' : '打开语音',
+                style: TextStyle(fontSize: 12),
+              ),
+            )),
+            Expanded(
+                child: buildControlButton(
+              () {
+                bool videoEnabled = !isVideoEnabled;
+                _engine.enableLocalVideo(videoEnabled).then((value) {
+                  if (value == 0) {
+                    setState(() {
+                      isVideoEnabled = videoEnabled;
+                    });
+                  }
+                });
+              },
+              Text(
+                isVideoEnabled ? '关闭视频' : '打开视频',
+                style: TextStyle(fontSize: 12),
+              ),
+            )),
+            Expanded(
+                child: buildControlButton(
+              () {
+                _engine.deviceManager.switchCamera().then((value) {
+                  if (value == 0) {
+                    isFrontCamera = !isFrontCamera;
+                    _localSession.renderer
+                        .setMirror(isFrontCamera && isFrontCameraMirror);
+                  }
+                });
+              },
+              Text(
+                '切换摄像头',
+                style: TextStyle(fontSize: 12),
+              ),
+            )),
+            Expanded(
+                child: buildControlButton(
+              () {
+                bool speakerphoneOn = !isSpeakerphoneOn;
+                _engine.deviceManager
+                    .setSpeakerphoneOn(speakerphoneOn)
+                    .then((value) {
+                  if (value == 0) {
+                    setState(() {
+                      isSpeakerphoneOn = speakerphoneOn;
+                    });
+                  }
+                });
+              },
+              Text(
+                isSpeakerphoneOn ? '关闭扬声器' : '打开扬声器',
+                style: TextStyle(fontSize: 12),
+              ),
+            )),
+          ],
+        ));
   }
 
   Widget buildVideoViews(BuildContext context) {
