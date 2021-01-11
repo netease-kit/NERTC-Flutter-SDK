@@ -244,6 +244,7 @@ class _CallPageState extends State<CallPage>
             NERtcMediaCodecMode.values[_settings.videoEncodeMediaCodecMode],
         videoDecodeMode:
             NERtcMediaCodecMode.values[_settings.videoDecodeMediaCodecMode]);
+    // 错误异常需要处理
     _engine
         .create(
             appKey: Config.APP_KEY,
@@ -253,7 +254,11 @@ class _CallPageState extends State<CallPage>
         .then((value) => _initAudio())
         .then((value) => _initVideo())
         .then((value) => _initRenderer())
-        .then((value) => _engine.joinChannel('', widget.cid, widget.uid));
+        .then((value) => _engine.joinChannel('', widget.cid, widget.uid))
+        .catchError((e) {
+      Fluttertoast.showToast(
+          msg: 'catchError:' + e, gravity: ToastGravity.CENTER);
+    });
   }
 
   Future<int> _initCallbacks() async {
