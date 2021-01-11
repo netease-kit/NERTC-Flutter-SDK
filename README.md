@@ -29,4 +29,3 @@ Change the minimum Android sdk version to 21 (or higher) in your `android/app/bu
 ```
 minSdkVersion 21
 ```
-
