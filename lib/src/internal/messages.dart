@@ -25,39 +25,6 @@ class IntValue {
   }
 }
 
-class StartAudioMixingRequest {
-  String path;
-  int loopCount;
-  bool sendEnabled;
-  int sendVolume;
-  bool playbackEnabled;
-  int playbackVolume;
-
-  // ignore: unused_element
-  Object encode() {
-    final Map<Object, Object> pigeonMap = <Object, Object>{};
-    pigeonMap['path'] = path;
-    pigeonMap['loopCount'] = loopCount;
-    pigeonMap['sendEnabled'] = sendEnabled;
-    pigeonMap['sendVolume'] = sendVolume;
-    pigeonMap['playbackEnabled'] = playbackEnabled;
-    pigeonMap['playbackVolume'] = playbackVolume;
-    return pigeonMap;
-  }
-
-  // ignore: unused_element
-  static StartAudioMixingRequest decode(Object message) {
-    final Map<Object, Object> pigeonMap = message as Map<Object, Object>;
-    return StartAudioMixingRequest()
-      ..path = pigeonMap['path'] as String
-      ..loopCount = pigeonMap['loopCount'] as int
-      ..sendEnabled = pigeonMap['sendEnabled'] as bool
-      ..sendVolume = pigeonMap['sendVolume'] as int
-      ..playbackEnabled = pigeonMap['playbackEnabled'] as bool
-      ..playbackVolume = pigeonMap['playbackVolume'] as int;
-  }
-}
-
 class SetVideoRendererMirrorRequest {
   int textureId;
   bool mirror;
@@ -100,81 +67,36 @@ class SetupRemoteVideoRendererRequest {
   }
 }
 
-class BoolValue {
-  bool value;
+class StartAudioMixingRequest {
+  String path;
+  int loopCount;
+  bool sendEnabled;
+  int sendVolume;
+  bool playbackEnabled;
+  int playbackVolume;
 
   // ignore: unused_element
   Object encode() {
     final Map<Object, Object> pigeonMap = <Object, Object>{};
-    pigeonMap['value'] = value;
+    pigeonMap['path'] = path;
+    pigeonMap['loopCount'] = loopCount;
+    pigeonMap['sendEnabled'] = sendEnabled;
+    pigeonMap['sendVolume'] = sendVolume;
+    pigeonMap['playbackEnabled'] = playbackEnabled;
+    pigeonMap['playbackVolume'] = playbackVolume;
     return pigeonMap;
   }
 
   // ignore: unused_element
-  static BoolValue decode(Object message) {
+  static StartAudioMixingRequest decode(Object message) {
     final Map<Object, Object> pigeonMap = message as Map<Object, Object>;
-    return BoolValue()
-      ..value = pigeonMap['value'] as bool;
-  }
-}
-
-class DoubleValue {
-  double value;
-
-  // ignore: unused_element
-  Object encode() {
-    final Map<Object, Object> pigeonMap = <Object, Object>{};
-    pigeonMap['value'] = value;
-    return pigeonMap;
-  }
-
-  // ignore: unused_element
-  static DoubleValue decode(Object message) {
-    final Map<Object, Object> pigeonMap = message as Map<Object, Object>;
-    return DoubleValue()
-      ..value = pigeonMap['value'] as double;
-  }
-}
-
-class SetCameraFocusPositionRequest {
-  double x;
-  double y;
-
-  // ignore: unused_element
-  Object encode() {
-    final Map<Object, Object> pigeonMap = <Object, Object>{};
-    pigeonMap['x'] = x;
-    pigeonMap['y'] = y;
-    return pigeonMap;
-  }
-
-  // ignore: unused_element
-  static SetCameraFocusPositionRequest decode(Object message) {
-    final Map<Object, Object> pigeonMap = message as Map<Object, Object>;
-    return SetCameraFocusPositionRequest()
-      ..x = pigeonMap['x'] as double
-      ..y = pigeonMap['y'] as double;
-  }
-}
-
-class EnableEarbackRequest {
-  bool enabled;
-  int volume;
-
-  // ignore: unused_element
-  Object encode() {
-    final Map<Object, Object> pigeonMap = <Object, Object>{};
-    pigeonMap['enabled'] = enabled;
-    pigeonMap['volume'] = volume;
-    return pigeonMap;
-  }
-
-  // ignore: unused_element
-  static EnableEarbackRequest decode(Object message) {
-    final Map<Object, Object> pigeonMap = message as Map<Object, Object>;
-    return EnableEarbackRequest()
-      ..enabled = pigeonMap['enabled'] as bool
-      ..volume = pigeonMap['volume'] as int;
+    return StartAudioMixingRequest()
+      ..path = pigeonMap['path'] as String
+      ..loopCount = pigeonMap['loopCount'] as int
+      ..sendEnabled = pigeonMap['sendEnabled'] as bool
+      ..sendVolume = pigeonMap['sendVolume'] as int
+      ..playbackEnabled = pigeonMap['playbackEnabled'] as bool
+      ..playbackVolume = pigeonMap['playbackVolume'] as int;
   }
 }
 
@@ -256,19 +178,100 @@ class SetEffectPlaybackVolumeRequest {
   }
 }
 
+class BoolValue {
+  bool value;
+
+  // ignore: unused_element
+  Object encode() {
+    final Map<Object, Object> pigeonMap = <Object, Object>{};
+    pigeonMap['value'] = value;
+    return pigeonMap;
+  }
+
+  // ignore: unused_element
+  static BoolValue decode(Object message) {
+    final Map<Object, Object> pigeonMap = message as Map<Object, Object>;
+    return BoolValue()
+      ..value = pigeonMap['value'] as bool;
+  }
+}
+
+class DoubleValue {
+  double value;
+
+  // ignore: unused_element
+  Object encode() {
+    final Map<Object, Object> pigeonMap = <Object, Object>{};
+    pigeonMap['value'] = value;
+    return pigeonMap;
+  }
+
+  // ignore: unused_element
+  static DoubleValue decode(Object message) {
+    final Map<Object, Object> pigeonMap = message as Map<Object, Object>;
+    return DoubleValue()
+      ..value = pigeonMap['value'] as double;
+  }
+}
+
+class SetCameraFocusPositionRequest {
+  double x;
+  double y;
+
+  // ignore: unused_element
+  Object encode() {
+    final Map<Object, Object> pigeonMap = <Object, Object>{};
+    pigeonMap['x'] = x;
+    pigeonMap['y'] = y;
+    return pigeonMap;
+  }
+
+  // ignore: unused_element
+  static SetCameraFocusPositionRequest decode(Object message) {
+    final Map<Object, Object> pigeonMap = message as Map<Object, Object>;
+    return SetCameraFocusPositionRequest()
+      ..x = pigeonMap['x'] as double
+      ..y = pigeonMap['y'] as double;
+  }
+}
+
+class EnableEarbackRequest {
+  bool enabled;
+  int volume;
+
+  // ignore: unused_element
+  Object encode() {
+    final Map<Object, Object> pigeonMap = <Object, Object>{};
+    pigeonMap['enabled'] = enabled;
+    pigeonMap['volume'] = volume;
+    return pigeonMap;
+  }
+
+  // ignore: unused_element
+  static EnableEarbackRequest decode(Object message) {
+    final Map<Object, Object> pigeonMap = message as Map<Object, Object>;
+    return EnableEarbackRequest()
+      ..enabled = pigeonMap['enabled'] as bool
+      ..volume = pigeonMap['volume'] as int;
+  }
+}
+
 class CreateEngineRequest {
   String appKey;
   String logDir;
   int logLevel;
-  bool autoSubscribeAudio;
-  int videoEncodeMode;
-  int videoDecodeMode;
+  bool audioAutoSubscribe;
+  bool audioDisableOverrideSpeakerOnReceiver;
+  bool audioDisableSWAECOnHeadset;
+  bool audioAINSEnabled;
   bool serverRecordAudio;
   bool serverRecordVideo;
   int serverRecordMode;
   bool serverRecordSpeaker;
   bool publishSelfStream;
-  bool videoCaptureObserver;
+  bool videoCaptureObserverEnabled;
+  int videoEncodeMode;
+  int videoDecodeMode;
   int videoSendMode;
 
   // ignore: unused_element
@@ -277,15 +280,18 @@ class CreateEngineRequest {
     pigeonMap['appKey'] = appKey;
     pigeonMap['logDir'] = logDir;
     pigeonMap['logLevel'] = logLevel;
-    pigeonMap['autoSubscribeAudio'] = autoSubscribeAudio;
-    pigeonMap['videoEncodeMode'] = videoEncodeMode;
-    pigeonMap['videoDecodeMode'] = videoDecodeMode;
+    pigeonMap['audioAutoSubscribe'] = audioAutoSubscribe;
+    pigeonMap['audioDisableOverrideSpeakerOnReceiver'] = audioDisableOverrideSpeakerOnReceiver;
+    pigeonMap['audioDisableSWAECOnHeadset'] = audioDisableSWAECOnHeadset;
+    pigeonMap['audioAINSEnabled'] = audioAINSEnabled;
     pigeonMap['serverRecordAudio'] = serverRecordAudio;
     pigeonMap['serverRecordVideo'] = serverRecordVideo;
     pigeonMap['serverRecordMode'] = serverRecordMode;
     pigeonMap['serverRecordSpeaker'] = serverRecordSpeaker;
     pigeonMap['publishSelfStream'] = publishSelfStream;
-    pigeonMap['videoCaptureObserver'] = videoCaptureObserver;
+    pigeonMap['videoCaptureObserverEnabled'] = videoCaptureObserverEnabled;
+    pigeonMap['videoEncodeMode'] = videoEncodeMode;
+    pigeonMap['videoDecodeMode'] = videoDecodeMode;
     pigeonMap['videoSendMode'] = videoSendMode;
     return pigeonMap;
   }
@@ -297,15 +303,18 @@ class CreateEngineRequest {
       ..appKey = pigeonMap['appKey'] as String
       ..logDir = pigeonMap['logDir'] as String
       ..logLevel = pigeonMap['logLevel'] as int
-      ..autoSubscribeAudio = pigeonMap['autoSubscribeAudio'] as bool
-      ..videoEncodeMode = pigeonMap['videoEncodeMode'] as int
-      ..videoDecodeMode = pigeonMap['videoDecodeMode'] as int
+      ..audioAutoSubscribe = pigeonMap['audioAutoSubscribe'] as bool
+      ..audioDisableOverrideSpeakerOnReceiver = pigeonMap['audioDisableOverrideSpeakerOnReceiver'] as bool
+      ..audioDisableSWAECOnHeadset = pigeonMap['audioDisableSWAECOnHeadset'] as bool
+      ..audioAINSEnabled = pigeonMap['audioAINSEnabled'] as bool
       ..serverRecordAudio = pigeonMap['serverRecordAudio'] as bool
       ..serverRecordVideo = pigeonMap['serverRecordVideo'] as bool
       ..serverRecordMode = pigeonMap['serverRecordMode'] as int
       ..serverRecordSpeaker = pigeonMap['serverRecordSpeaker'] as bool
       ..publishSelfStream = pigeonMap['publishSelfStream'] as bool
-      ..videoCaptureObserver = pigeonMap['videoCaptureObserver'] as bool
+      ..videoCaptureObserverEnabled = pigeonMap['videoCaptureObserverEnabled'] as bool
+      ..videoEncodeMode = pigeonMap['videoEncodeMode'] as int
+      ..videoDecodeMode = pigeonMap['videoDecodeMode'] as int
       ..videoSendMode = pigeonMap['videoSendMode'] as int;
   }
 }
@@ -334,7 +343,7 @@ class JoinChannelRequest {
   }
 }
 
-class SubscribeRemoteAudioStreamRequest {
+class SubscribeRemoteAudioRequest {
   int uid;
   bool subscribe;
 
@@ -347,9 +356,9 @@ class SubscribeRemoteAudioStreamRequest {
   }
 
   // ignore: unused_element
-  static SubscribeRemoteAudioStreamRequest decode(Object message) {
+  static SubscribeRemoteAudioRequest decode(Object message) {
     final Map<Object, Object> pigeonMap = message as Map<Object, Object>;
-    return SubscribeRemoteAudioStreamRequest()
+    return SubscribeRemoteAudioRequest()
       ..uid = pigeonMap['uid'] as int
       ..subscribe = pigeonMap['subscribe'] as bool;
   }
@@ -415,7 +424,7 @@ class SetLocalVideoConfigRequest {
   }
 }
 
-class SubscribeRemoteVideoStreamRequest {
+class SubscribeRemoteVideoRequest {
   int uid;
   int streamType;
   bool subscribe;
@@ -430,11 +439,32 @@ class SubscribeRemoteVideoStreamRequest {
   }
 
   // ignore: unused_element
-  static SubscribeRemoteVideoStreamRequest decode(Object message) {
+  static SubscribeRemoteVideoRequest decode(Object message) {
     final Map<Object, Object> pigeonMap = message as Map<Object, Object>;
-    return SubscribeRemoteVideoStreamRequest()
+    return SubscribeRemoteVideoRequest()
       ..uid = pigeonMap['uid'] as int
       ..streamType = pigeonMap['streamType'] as int
+      ..subscribe = pigeonMap['subscribe'] as bool;
+  }
+}
+
+class SubscribeRemoteSubStreamVideoRequest {
+  int uid;
+  bool subscribe;
+
+  // ignore: unused_element
+  Object encode() {
+    final Map<Object, Object> pigeonMap = <Object, Object>{};
+    pigeonMap['uid'] = uid;
+    pigeonMap['subscribe'] = subscribe;
+    return pigeonMap;
+  }
+
+  // ignore: unused_element
+  static SubscribeRemoteSubStreamVideoRequest decode(Object message) {
+    final Map<Object, Object> pigeonMap = message as Map<Object, Object>;
+    return SubscribeRemoteSubStreamVideoRequest()
+      ..uid = pigeonMap['uid'] as int
       ..subscribe = pigeonMap['subscribe'] as bool;
   }
 }
@@ -535,6 +565,122 @@ class DeleteLiveStreamTaskRequest {
     return DeleteLiveStreamTaskRequest()
       ..serial = pigeonMap['serial'] as int
       ..taskId = pigeonMap['taskId'] as String;
+  }
+}
+
+class VideoRendererApi {
+  Future<IntValue> createVideoRenderer() async {
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.VideoRendererApi.createVideoRenderer', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
+      throw PlatformException(
+        code: error['code'] as String,
+        message: error['message'] as String,
+        details: error['details'],
+      );
+    } else {
+      return IntValue.decode(replyMap['result']);
+    }
+  }
+
+  Future<IntValue> setMirror(SetVideoRendererMirrorRequest arg) async {
+    final Object encoded = arg.encode();
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.VideoRendererApi.setMirror', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
+      throw PlatformException(
+        code: error['code'] as String,
+        message: error['message'] as String,
+        details: error['details'],
+      );
+    } else {
+      return IntValue.decode(replyMap['result']);
+    }
+  }
+
+  Future<IntValue> setupLocalVideoRenderer(IntValue arg) async {
+    final Object encoded = arg.encode();
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.VideoRendererApi.setupLocalVideoRenderer', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
+      throw PlatformException(
+        code: error['code'] as String,
+        message: error['message'] as String,
+        details: error['details'],
+      );
+    } else {
+      return IntValue.decode(replyMap['result']);
+    }
+  }
+
+  Future<IntValue> setupRemoteVideoRenderer(SetupRemoteVideoRendererRequest arg) async {
+    final Object encoded = arg.encode();
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.VideoRendererApi.setupRemoteVideoRenderer', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
+      throw PlatformException(
+        code: error['code'] as String,
+        message: error['message'] as String,
+        details: error['details'],
+      );
+    } else {
+      return IntValue.decode(replyMap['result']);
+    }
+  }
+
+  Future<void> disposeVideoRenderer(IntValue arg) async {
+    final Object encoded = arg.encode();
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.VideoRendererApi.disposeVideoRenderer', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
+      throw PlatformException(
+        code: error['code'] as String,
+        message: error['message'] as String,
+        details: error['details'],
+      );
+    } else {
+      // noop
+    }
   }
 }
 
@@ -830,10 +976,10 @@ class AudioMixingApi {
   }
 }
 
-class VideoRendererApi {
-  Future<IntValue> createVideoRenderer() async {
+class AudioEffectApi {
+  Future<IntValue> setAudioEffectEventCallback() async {
     const BasicMessageChannel<Object> channel =
-        BasicMessageChannel<Object>('dev.flutter.pigeon.VideoRendererApi.createVideoRenderer', StandardMessageCodec());
+        BasicMessageChannel<Object>('dev.flutter.pigeon.AudioEffectApi.setAudioEffectEventCallback', StandardMessageCodec());
     final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
@@ -853,10 +999,32 @@ class VideoRendererApi {
     }
   }
 
-  Future<IntValue> setMirror(SetVideoRendererMirrorRequest arg) async {
+  Future<IntValue> clearAudioEffectEventCallback() async {
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.AudioEffectApi.clearAudioEffectEventCallback', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
+      throw PlatformException(
+        code: error['code'] as String,
+        message: error['message'] as String,
+        details: error['details'],
+      );
+    } else {
+      return IntValue.decode(replyMap['result']);
+    }
+  }
+
+  Future<IntValue> playEffect(PlayEffectRequest arg) async {
     final Object encoded = arg.encode();
     const BasicMessageChannel<Object> channel =
-        BasicMessageChannel<Object>('dev.flutter.pigeon.VideoRendererApi.setMirror', StandardMessageCodec());
+        BasicMessageChannel<Object>('dev.flutter.pigeon.AudioEffectApi.playEffect', StandardMessageCodec());
     final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
@@ -876,10 +1044,10 @@ class VideoRendererApi {
     }
   }
 
-  Future<IntValue> setupLocalVideoRenderer(IntValue arg) async {
+  Future<IntValue> stopEffect(IntValue arg) async {
     final Object encoded = arg.encode();
     const BasicMessageChannel<Object> channel =
-        BasicMessageChannel<Object>('dev.flutter.pigeon.VideoRendererApi.setupLocalVideoRenderer', StandardMessageCodec());
+        BasicMessageChannel<Object>('dev.flutter.pigeon.AudioEffectApi.stopEffect', StandardMessageCodec());
     final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
@@ -899,10 +1067,32 @@ class VideoRendererApi {
     }
   }
 
-  Future<IntValue> setupRemoteVideoRenderer(SetupRemoteVideoRendererRequest arg) async {
+  Future<IntValue> stopAllEffects() async {
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.AudioEffectApi.stopAllEffects', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
+      throw PlatformException(
+        code: error['code'] as String,
+        message: error['message'] as String,
+        details: error['details'],
+      );
+    } else {
+      return IntValue.decode(replyMap['result']);
+    }
+  }
+
+  Future<IntValue> pauseEffect(IntValue arg) async {
     final Object encoded = arg.encode();
     const BasicMessageChannel<Object> channel =
-        BasicMessageChannel<Object>('dev.flutter.pigeon.VideoRendererApi.setupRemoteVideoRenderer', StandardMessageCodec());
+        BasicMessageChannel<Object>('dev.flutter.pigeon.AudioEffectApi.pauseEffect', StandardMessageCodec());
     final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
@@ -922,10 +1112,10 @@ class VideoRendererApi {
     }
   }
 
-  Future<void> disposeVideoRenderer(IntValue arg) async {
+  Future<IntValue> resumeEffect(IntValue arg) async {
     final Object encoded = arg.encode();
     const BasicMessageChannel<Object> channel =
-        BasicMessageChannel<Object>('dev.flutter.pigeon.VideoRendererApi.disposeVideoRenderer', StandardMessageCodec());
+        BasicMessageChannel<Object>('dev.flutter.pigeon.AudioEffectApi.resumeEffect', StandardMessageCodec());
     final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
@@ -941,7 +1131,143 @@ class VideoRendererApi {
         details: error['details'],
       );
     } else {
-      // noop
+      return IntValue.decode(replyMap['result']);
+    }
+  }
+
+  Future<IntValue> pauseAllEffects() async {
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.AudioEffectApi.pauseAllEffects', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
+      throw PlatformException(
+        code: error['code'] as String,
+        message: error['message'] as String,
+        details: error['details'],
+      );
+    } else {
+      return IntValue.decode(replyMap['result']);
+    }
+  }
+
+  Future<IntValue> resumeAllEffects() async {
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.AudioEffectApi.resumeAllEffects', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
+      throw PlatformException(
+        code: error['code'] as String,
+        message: error['message'] as String,
+        details: error['details'],
+      );
+    } else {
+      return IntValue.decode(replyMap['result']);
+    }
+  }
+
+  Future<IntValue> setEffectSendVolume(SetEffectSendVolumeRequest arg) async {
+    final Object encoded = arg.encode();
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.AudioEffectApi.setEffectSendVolume', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
+      throw PlatformException(
+        code: error['code'] as String,
+        message: error['message'] as String,
+        details: error['details'],
+      );
+    } else {
+      return IntValue.decode(replyMap['result']);
+    }
+  }
+
+  Future<IntValue> getEffectSendVolume(IntValue arg) async {
+    final Object encoded = arg.encode();
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.AudioEffectApi.getEffectSendVolume', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
+      throw PlatformException(
+        code: error['code'] as String,
+        message: error['message'] as String,
+        details: error['details'],
+      );
+    } else {
+      return IntValue.decode(replyMap['result']);
+    }
+  }
+
+  Future<IntValue> setEffectPlaybackVolume(SetEffectPlaybackVolumeRequest arg) async {
+    final Object encoded = arg.encode();
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.AudioEffectApi.setEffectPlaybackVolume', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
+      throw PlatformException(
+        code: error['code'] as String,
+        message: error['message'] as String,
+        details: error['details'],
+      );
+    } else {
+      return IntValue.decode(replyMap['result']);
+    }
+  }
+
+  Future<IntValue> getEffectPlaybackVolume(IntValue arg) async {
+    final Object encoded = arg.encode();
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.AudioEffectApi.getEffectPlaybackVolume', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
+      throw PlatformException(
+        code: error['code'] as String,
+        message: error['message'] as String,
+        details: error['details'],
+      );
+    } else {
+      return IntValue.decode(replyMap['result']);
     }
   }
 }
@@ -1309,302 +1635,6 @@ class DeviceManagerApi {
   }
 }
 
-class AudioEffectApi {
-  Future<IntValue> setAudioEffectEventCallback() async {
-    const BasicMessageChannel<Object> channel =
-        BasicMessageChannel<Object>('dev.flutter.pigeon.AudioEffectApi.setAudioEffectEventCallback', StandardMessageCodec());
-    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
-    if (replyMap == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-        details: null,
-      );
-    } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
-      throw PlatformException(
-        code: error['code'] as String,
-        message: error['message'] as String,
-        details: error['details'],
-      );
-    } else {
-      return IntValue.decode(replyMap['result']);
-    }
-  }
-
-  Future<IntValue> clearAudioEffectEventCallback() async {
-    const BasicMessageChannel<Object> channel =
-        BasicMessageChannel<Object>('dev.flutter.pigeon.AudioEffectApi.clearAudioEffectEventCallback', StandardMessageCodec());
-    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
-    if (replyMap == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-        details: null,
-      );
-    } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
-      throw PlatformException(
-        code: error['code'] as String,
-        message: error['message'] as String,
-        details: error['details'],
-      );
-    } else {
-      return IntValue.decode(replyMap['result']);
-    }
-  }
-
-  Future<IntValue> playEffect(PlayEffectRequest arg) async {
-    final Object encoded = arg.encode();
-    const BasicMessageChannel<Object> channel =
-        BasicMessageChannel<Object>('dev.flutter.pigeon.AudioEffectApi.playEffect', StandardMessageCodec());
-    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
-    if (replyMap == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-        details: null,
-      );
-    } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
-      throw PlatformException(
-        code: error['code'] as String,
-        message: error['message'] as String,
-        details: error['details'],
-      );
-    } else {
-      return IntValue.decode(replyMap['result']);
-    }
-  }
-
-  Future<IntValue> stopEffect(IntValue arg) async {
-    final Object encoded = arg.encode();
-    const BasicMessageChannel<Object> channel =
-        BasicMessageChannel<Object>('dev.flutter.pigeon.AudioEffectApi.stopEffect', StandardMessageCodec());
-    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
-    if (replyMap == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-        details: null,
-      );
-    } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
-      throw PlatformException(
-        code: error['code'] as String,
-        message: error['message'] as String,
-        details: error['details'],
-      );
-    } else {
-      return IntValue.decode(replyMap['result']);
-    }
-  }
-
-  Future<IntValue> stopAllEffects() async {
-    const BasicMessageChannel<Object> channel =
-        BasicMessageChannel<Object>('dev.flutter.pigeon.AudioEffectApi.stopAllEffects', StandardMessageCodec());
-    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
-    if (replyMap == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-        details: null,
-      );
-    } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
-      throw PlatformException(
-        code: error['code'] as String,
-        message: error['message'] as String,
-        details: error['details'],
-      );
-    } else {
-      return IntValue.decode(replyMap['result']);
-    }
-  }
-
-  Future<IntValue> pauseEffect(IntValue arg) async {
-    final Object encoded = arg.encode();
-    const BasicMessageChannel<Object> channel =
-        BasicMessageChannel<Object>('dev.flutter.pigeon.AudioEffectApi.pauseEffect', StandardMessageCodec());
-    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
-    if (replyMap == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-        details: null,
-      );
-    } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
-      throw PlatformException(
-        code: error['code'] as String,
-        message: error['message'] as String,
-        details: error['details'],
-      );
-    } else {
-      return IntValue.decode(replyMap['result']);
-    }
-  }
-
-  Future<IntValue> resumeEffect(IntValue arg) async {
-    final Object encoded = arg.encode();
-    const BasicMessageChannel<Object> channel =
-        BasicMessageChannel<Object>('dev.flutter.pigeon.AudioEffectApi.resumeEffect', StandardMessageCodec());
-    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
-    if (replyMap == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-        details: null,
-      );
-    } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
-      throw PlatformException(
-        code: error['code'] as String,
-        message: error['message'] as String,
-        details: error['details'],
-      );
-    } else {
-      return IntValue.decode(replyMap['result']);
-    }
-  }
-
-  Future<IntValue> pauseAllEffects() async {
-    const BasicMessageChannel<Object> channel =
-        BasicMessageChannel<Object>('dev.flutter.pigeon.AudioEffectApi.pauseAllEffects', StandardMessageCodec());
-    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
-    if (replyMap == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-        details: null,
-      );
-    } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
-      throw PlatformException(
-        code: error['code'] as String,
-        message: error['message'] as String,
-        details: error['details'],
-      );
-    } else {
-      return IntValue.decode(replyMap['result']);
-    }
-  }
-
-  Future<IntValue> resumeAllEffects() async {
-    const BasicMessageChannel<Object> channel =
-        BasicMessageChannel<Object>('dev.flutter.pigeon.AudioEffectApi.resumeAllEffects', StandardMessageCodec());
-    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
-    if (replyMap == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-        details: null,
-      );
-    } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
-      throw PlatformException(
-        code: error['code'] as String,
-        message: error['message'] as String,
-        details: error['details'],
-      );
-    } else {
-      return IntValue.decode(replyMap['result']);
-    }
-  }
-
-  Future<IntValue> setEffectSendVolume(SetEffectSendVolumeRequest arg) async {
-    final Object encoded = arg.encode();
-    const BasicMessageChannel<Object> channel =
-        BasicMessageChannel<Object>('dev.flutter.pigeon.AudioEffectApi.setEffectSendVolume', StandardMessageCodec());
-    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
-    if (replyMap == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-        details: null,
-      );
-    } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
-      throw PlatformException(
-        code: error['code'] as String,
-        message: error['message'] as String,
-        details: error['details'],
-      );
-    } else {
-      return IntValue.decode(replyMap['result']);
-    }
-  }
-
-  Future<IntValue> getEffectSendVolume(IntValue arg) async {
-    final Object encoded = arg.encode();
-    const BasicMessageChannel<Object> channel =
-        BasicMessageChannel<Object>('dev.flutter.pigeon.AudioEffectApi.getEffectSendVolume', StandardMessageCodec());
-    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
-    if (replyMap == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-        details: null,
-      );
-    } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
-      throw PlatformException(
-        code: error['code'] as String,
-        message: error['message'] as String,
-        details: error['details'],
-      );
-    } else {
-      return IntValue.decode(replyMap['result']);
-    }
-  }
-
-  Future<IntValue> setEffectPlaybackVolume(SetEffectPlaybackVolumeRequest arg) async {
-    final Object encoded = arg.encode();
-    const BasicMessageChannel<Object> channel =
-        BasicMessageChannel<Object>('dev.flutter.pigeon.AudioEffectApi.setEffectPlaybackVolume', StandardMessageCodec());
-    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
-    if (replyMap == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-        details: null,
-      );
-    } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
-      throw PlatformException(
-        code: error['code'] as String,
-        message: error['message'] as String,
-        details: error['details'],
-      );
-    } else {
-      return IntValue.decode(replyMap['result']);
-    }
-  }
-
-  Future<IntValue> getEffectPlaybackVolume(IntValue arg) async {
-    final Object encoded = arg.encode();
-    const BasicMessageChannel<Object> channel =
-        BasicMessageChannel<Object>('dev.flutter.pigeon.AudioEffectApi.getEffectPlaybackVolume', StandardMessageCodec());
-    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
-    if (replyMap == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-        details: null,
-      );
-    } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
-      throw PlatformException(
-        code: error['code'] as String,
-        message: error['message'] as String,
-        details: error['details'],
-      );
-    } else {
-      return IntValue.decode(replyMap['result']);
-    }
-  }
-}
-
 class EngineApi {
   Future<IntValue> create(CreateEngineRequest arg) async {
     final Object encoded = arg.encode();
@@ -1786,10 +1816,10 @@ class EngineApi {
     }
   }
 
-  Future<IntValue> subscribeRemoteAudioStream(SubscribeRemoteAudioStreamRequest arg) async {
+  Future<IntValue> subscribeRemoteAudio(SubscribeRemoteAudioRequest arg) async {
     final Object encoded = arg.encode();
     const BasicMessageChannel<Object> channel =
-        BasicMessageChannel<Object>('dev.flutter.pigeon.EngineApi.subscribeRemoteAudioStream', StandardMessageCodec());
+        BasicMessageChannel<Object>('dev.flutter.pigeon.EngineApi.subscribeRemoteAudio', StandardMessageCodec());
     final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
@@ -1809,10 +1839,10 @@ class EngineApi {
     }
   }
 
-  Future<IntValue> subscribeAllRemoteAudioStreams(BoolValue arg) async {
+  Future<IntValue> subscribeAllRemoteAudio(BoolValue arg) async {
     final Object encoded = arg.encode();
     const BasicMessageChannel<Object> channel =
-        BasicMessageChannel<Object>('dev.flutter.pigeon.EngineApi.subscribeAllRemoteAudioStreams', StandardMessageCodec());
+        BasicMessageChannel<Object>('dev.flutter.pigeon.EngineApi.subscribeAllRemoteAudio', StandardMessageCodec());
     final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
@@ -2013,10 +2043,33 @@ class EngineApi {
     }
   }
 
-  Future<IntValue> subscribeRemoteVideoStream(SubscribeRemoteVideoStreamRequest arg) async {
+  Future<IntValue> subscribeRemoteVideo(SubscribeRemoteVideoRequest arg) async {
     final Object encoded = arg.encode();
     const BasicMessageChannel<Object> channel =
-        BasicMessageChannel<Object>('dev.flutter.pigeon.EngineApi.subscribeRemoteVideoStream', StandardMessageCodec());
+        BasicMessageChannel<Object>('dev.flutter.pigeon.EngineApi.subscribeRemoteVideo', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
+      throw PlatformException(
+        code: error['code'] as String,
+        message: error['message'] as String,
+        details: error['details'],
+      );
+    } else {
+      return IntValue.decode(replyMap['result']);
+    }
+  }
+
+  Future<IntValue> subscribeRemoteSubStreamVideo(SubscribeRemoteSubStreamVideoRequest arg) async {
+    final Object encoded = arg.encode();
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.EngineApi.subscribeRemoteSubStreamVideo', StandardMessageCodec());
     final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
@@ -2246,6 +2299,73 @@ class EngineApi {
     const BasicMessageChannel<Object> channel =
         BasicMessageChannel<Object>('dev.flutter.pigeon.EngineApi.removeLiveStreamTask', StandardMessageCodec());
     final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
+      throw PlatformException(
+        code: error['code'] as String,
+        message: error['message'] as String,
+        details: error['details'],
+      );
+    } else {
+      return IntValue.decode(replyMap['result']);
+    }
+  }
+
+  Future<IntValue> setClientRole(IntValue arg) async {
+    final Object encoded = arg.encode();
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.EngineApi.setClientRole', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
+      throw PlatformException(
+        code: error['code'] as String,
+        message: error['message'] as String,
+        details: error['details'],
+      );
+    } else {
+      return IntValue.decode(replyMap['result']);
+    }
+  }
+
+  Future<IntValue> getConnectionState() async {
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.EngineApi.getConnectionState', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
+      throw PlatformException(
+        code: error['code'] as String,
+        message: error['message'] as String,
+        details: error['details'],
+      );
+    } else {
+      return IntValue.decode(replyMap['result']);
+    }
+  }
+
+  Future<IntValue> uploadSdkInfo() async {
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.EngineApi.uploadSdkInfo', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',

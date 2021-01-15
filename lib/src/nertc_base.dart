@@ -7,15 +7,18 @@ class NERtcOptions {
   const NERtcOptions(
       {this.logDir,
       this.logLevel,
-      this.autoSubscribeAudio,
-      this.videoEncodeMode,
-      this.videoDecodeMode,
+      this.audioAutoSubscribe,
+      this.audioDisableOverrideSpeakerOnReceiver,
+      this.audioDisableSWAECOnHeadset,
+      this.audioAINSEnabled,
       this.serverRecordAudio,
       this.serverRecordVideo,
       this.serverRecordMode,
       this.serverRecordSpeaker,
       this.publishSelfStream,
-      this.videoCaptureObserver,
+      this.videoEncodeMode,
+      this.videoDecodeMode,
+      this.videoCaptureObserverEnabled,
       this.videoSendMode});
 
   /// 日志路径
@@ -25,13 +28,18 @@ class NERtcOptions {
   final int logLevel;
 
   /// 是否自动订阅音频（默认订阅）
-  final bool autoSubscribeAudio;
+  final bool audioAutoSubscribe;
 
-  /// 视频编码模式
-  final NERtcMediaCodecMode videoEncodeMode;
+  /// 系统切换听筒事件时，禁用切换到扬声器
+  /// 默认值 false, 如设置 true 则禁止SDK在系统切换到听筒时做切换扬声器操作，需要用户自己处理切换听筒事件
+  final bool audioDisableOverrideSpeakerOnReceiver;
 
-  /// 视频解码模式.
-  final NERtcMediaCodecMode videoDecodeMode;
+  /// 设置耳机时不使用软件回声消除功能
+  /// 默认值 false,如设置true 则SDK在耳机模式下不使用软件回声消除功能，会对某些机型下 耳机的音质效果有影响
+  final bool audioDisableSWAECOnHeadset;
+
+  /// 设置是否开启AI降噪，开启AI降噪，在嘈杂环境下，让对方更清晰听到您的声音
+  final bool audioAINSEnabled;
 
   /// 是否开启服务器录制语音
   final bool serverRecordAudio;
@@ -48,8 +56,16 @@ class NERtcOptions {
   /// 是否允许在房间推流时推送自身的视频流
   final bool publishSelfStream;
 
-  /// 是否允许视频帧回调（该字段仅对IOS平台有效，Android默认支持该视频帧回调）
-  final bool videoCaptureObserver;
+  /// 是否允许视频帧回调.
+  ///
+  /// 参数仅在 iOS 平台有效
+  final bool videoCaptureObserverEnabled;
+
+  /// 视频编码模式
+  final NERtcMediaCodecMode videoEncodeMode;
+
+  /// 视频解码模式.
+  final NERtcMediaCodecMode videoDecodeMode;
 
   /// 视频发布模式
   final NERtcVideoSendMode videoSendMode;
@@ -81,13 +97,19 @@ class NERtcVideoConfig {
   /// 带宽受限时的视频编码降级偏好
   int degradationPrefer = NERtcDegradationPreference.degradationDefault;
 
+  /// 自定义宽 <=0 表示采用 [videoProfile] 档位
+  int width = 0;
+
+  /// 自定义高 <=0 表示采用 [videoProfile] 档位
+  int height = 0;
+
   @override
   String toString() {
     return 'NERtcVideoConfig{videoProfile: $videoProfile, '
         'videoCropMode: $videoCropMode, frontCamera: $frontCamera, '
         'frameRate: $frameRate, minFrameRate: $minFrameRate,'
         ' bitrate: $bitrate, minBitrate: $minBitrate, '
-        'degradationPrefer: $degradationPrefer}';
+        'degradationPrefer: $degradationPrefer, width:$width, height:$height}';
   }
 }
 
@@ -862,4 +884,13 @@ class NERtcConnectionStateChangeReason {
 
   /// 加入频道失败
   static const int joinChannelFailed = 11;
+}
+
+/// 用户角色
+class NERtcClientRole {
+  /// 主播
+  static const int broadcaster = 0;
+
+  /// 观众
+  static const int audience = 1;
 }

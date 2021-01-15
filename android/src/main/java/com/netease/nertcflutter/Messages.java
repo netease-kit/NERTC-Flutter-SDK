@@ -4,7 +4,6 @@
 package com.netease.nertcflutter;
 
 import com.netease.nertcflutter.NERtcEngine.SuccessCallback;
-
 import io.flutter.plugin.common.BasicMessageChannel;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.StandardMessageCodec;
@@ -30,60 +29,6 @@ public class Messages {
       IntValue fromMapResult = new IntValue();
       Object value = map.get("value");
       fromMapResult.value = (value == null) ? null : ((value instanceof Integer) ? (Integer)value : (Long)value);
-      return fromMapResult;
-    }
-  }
-
-  /** Generated class from Pigeon that represents data sent in messages. */
-  public static class StartAudioMixingRequest {
-    private String path;
-    public String getPath() { return path; }
-    public void setPath(String setterArg) { this.path = setterArg; }
-
-    private Long loopCount;
-    public Long getLoopCount() { return loopCount; }
-    public void setLoopCount(Long setterArg) { this.loopCount = setterArg; }
-
-    private Boolean sendEnabled;
-    public Boolean getSendEnabled() { return sendEnabled; }
-    public void setSendEnabled(Boolean setterArg) { this.sendEnabled = setterArg; }
-
-    private Long sendVolume;
-    public Long getSendVolume() { return sendVolume; }
-    public void setSendVolume(Long setterArg) { this.sendVolume = setterArg; }
-
-    private Boolean playbackEnabled;
-    public Boolean getPlaybackEnabled() { return playbackEnabled; }
-    public void setPlaybackEnabled(Boolean setterArg) { this.playbackEnabled = setterArg; }
-
-    private Long playbackVolume;
-    public Long getPlaybackVolume() { return playbackVolume; }
-    public void setPlaybackVolume(Long setterArg) { this.playbackVolume = setterArg; }
-
-    HashMap toMap() {
-      HashMap<String, Object> toMapResult = new HashMap<>();
-      toMapResult.put("path", path);
-      toMapResult.put("loopCount", loopCount);
-      toMapResult.put("sendEnabled", sendEnabled);
-      toMapResult.put("sendVolume", sendVolume);
-      toMapResult.put("playbackEnabled", playbackEnabled);
-      toMapResult.put("playbackVolume", playbackVolume);
-      return toMapResult;
-    }
-    static StartAudioMixingRequest fromMap(HashMap map) {
-      StartAudioMixingRequest fromMapResult = new StartAudioMixingRequest();
-      Object path = map.get("path");
-      fromMapResult.path = (String)path;
-      Object loopCount = map.get("loopCount");
-      fromMapResult.loopCount = (loopCount == null) ? null : ((loopCount instanceof Integer) ? (Integer)loopCount : (Long)loopCount);
-      Object sendEnabled = map.get("sendEnabled");
-      fromMapResult.sendEnabled = (Boolean)sendEnabled;
-      Object sendVolume = map.get("sendVolume");
-      fromMapResult.sendVolume = (sendVolume == null) ? null : ((sendVolume instanceof Integer) ? (Integer)sendVolume : (Long)sendVolume);
-      Object playbackEnabled = map.get("playbackEnabled");
-      fromMapResult.playbackEnabled = (Boolean)playbackEnabled;
-      Object playbackVolume = map.get("playbackVolume");
-      fromMapResult.playbackVolume = (playbackVolume == null) ? null : ((playbackVolume instanceof Integer) ? (Integer)playbackVolume : (Long)playbackVolume);
       return fromMapResult;
     }
   }
@@ -141,91 +86,55 @@ public class Messages {
   }
 
   /** Generated class from Pigeon that represents data sent in messages. */
-  public static class BoolValue {
-    private Boolean value;
-    public Boolean getValue() { return value; }
-    public void setValue(Boolean setterArg) { this.value = setterArg; }
+  public static class StartAudioMixingRequest {
+    private String path;
+    public String getPath() { return path; }
+    public void setPath(String setterArg) { this.path = setterArg; }
+
+    private Long loopCount;
+    public Long getLoopCount() { return loopCount; }
+    public void setLoopCount(Long setterArg) { this.loopCount = setterArg; }
+
+    private Boolean sendEnabled;
+    public Boolean getSendEnabled() { return sendEnabled; }
+    public void setSendEnabled(Boolean setterArg) { this.sendEnabled = setterArg; }
+
+    private Long sendVolume;
+    public Long getSendVolume() { return sendVolume; }
+    public void setSendVolume(Long setterArg) { this.sendVolume = setterArg; }
+
+    private Boolean playbackEnabled;
+    public Boolean getPlaybackEnabled() { return playbackEnabled; }
+    public void setPlaybackEnabled(Boolean setterArg) { this.playbackEnabled = setterArg; }
+
+    private Long playbackVolume;
+    public Long getPlaybackVolume() { return playbackVolume; }
+    public void setPlaybackVolume(Long setterArg) { this.playbackVolume = setterArg; }
 
     HashMap toMap() {
       HashMap<String, Object> toMapResult = new HashMap<>();
-      toMapResult.put("value", value);
+      toMapResult.put("path", path);
+      toMapResult.put("loopCount", loopCount);
+      toMapResult.put("sendEnabled", sendEnabled);
+      toMapResult.put("sendVolume", sendVolume);
+      toMapResult.put("playbackEnabled", playbackEnabled);
+      toMapResult.put("playbackVolume", playbackVolume);
       return toMapResult;
     }
-    static BoolValue fromMap(HashMap map) {
-      BoolValue fromMapResult = new BoolValue();
-      Object value = map.get("value");
-      fromMapResult.value = (Boolean)value;
-      return fromMapResult;
-    }
-  }
-
-  /** Generated class from Pigeon that represents data sent in messages. */
-  public static class DoubleValue {
-    private Double value;
-    public Double getValue() { return value; }
-    public void setValue(Double setterArg) { this.value = setterArg; }
-
-    HashMap toMap() {
-      HashMap<String, Object> toMapResult = new HashMap<>();
-      toMapResult.put("value", value);
-      return toMapResult;
-    }
-    static DoubleValue fromMap(HashMap map) {
-      DoubleValue fromMapResult = new DoubleValue();
-      Object value = map.get("value");
-      fromMapResult.value = (Double)value;
-      return fromMapResult;
-    }
-  }
-
-  /** Generated class from Pigeon that represents data sent in messages. */
-  public static class SetCameraFocusPositionRequest {
-    private Double x;
-    public Double getX() { return x; }
-    public void setX(Double setterArg) { this.x = setterArg; }
-
-    private Double y;
-    public Double getY() { return y; }
-    public void setY(Double setterArg) { this.y = setterArg; }
-
-    HashMap toMap() {
-      HashMap<String, Object> toMapResult = new HashMap<>();
-      toMapResult.put("x", x);
-      toMapResult.put("y", y);
-      return toMapResult;
-    }
-    static SetCameraFocusPositionRequest fromMap(HashMap map) {
-      SetCameraFocusPositionRequest fromMapResult = new SetCameraFocusPositionRequest();
-      Object x = map.get("x");
-      fromMapResult.x = (Double)x;
-      Object y = map.get("y");
-      fromMapResult.y = (Double)y;
-      return fromMapResult;
-    }
-  }
-
-  /** Generated class from Pigeon that represents data sent in messages. */
-  public static class EnableEarbackRequest {
-    private Boolean enabled;
-    public Boolean getEnabled() { return enabled; }
-    public void setEnabled(Boolean setterArg) { this.enabled = setterArg; }
-
-    private Long volume;
-    public Long getVolume() { return volume; }
-    public void setVolume(Long setterArg) { this.volume = setterArg; }
-
-    HashMap toMap() {
-      HashMap<String, Object> toMapResult = new HashMap<>();
-      toMapResult.put("enabled", enabled);
-      toMapResult.put("volume", volume);
-      return toMapResult;
-    }
-    static EnableEarbackRequest fromMap(HashMap map) {
-      EnableEarbackRequest fromMapResult = new EnableEarbackRequest();
-      Object enabled = map.get("enabled");
-      fromMapResult.enabled = (Boolean)enabled;
-      Object volume = map.get("volume");
-      fromMapResult.volume = (volume == null) ? null : ((volume instanceof Integer) ? (Integer)volume : (Long)volume);
+    static StartAudioMixingRequest fromMap(HashMap map) {
+      StartAudioMixingRequest fromMapResult = new StartAudioMixingRequest();
+      Object path = map.get("path");
+      fromMapResult.path = (String)path;
+      Object loopCount = map.get("loopCount");
+      fromMapResult.loopCount = (loopCount == null) ? null : ((loopCount instanceof Integer) ? (Integer)loopCount : (Long)loopCount);
+      Object sendEnabled = map.get("sendEnabled");
+      fromMapResult.sendEnabled = (Boolean)sendEnabled;
+      Object sendVolume = map.get("sendVolume");
+      fromMapResult.sendVolume = (sendVolume == null) ? null : ((sendVolume instanceof Integer) ? (Integer)sendVolume : (Long)sendVolume);
+      Object playbackEnabled = map.get("playbackEnabled");
+      fromMapResult.playbackEnabled = (Boolean)playbackEnabled;
+      Object playbackVolume = map.get("playbackVolume");
+      fromMapResult.playbackVolume = (playbackVolume == null) ? null : ((playbackVolume instanceof Integer) ? (Integer)playbackVolume : (Long)playbackVolume);
       return fromMapResult;
     }
   }
@@ -344,6 +253,96 @@ public class Messages {
   }
 
   /** Generated class from Pigeon that represents data sent in messages. */
+  public static class BoolValue {
+    private Boolean value;
+    public Boolean getValue() { return value; }
+    public void setValue(Boolean setterArg) { this.value = setterArg; }
+
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("value", value);
+      return toMapResult;
+    }
+    static BoolValue fromMap(HashMap map) {
+      BoolValue fromMapResult = new BoolValue();
+      Object value = map.get("value");
+      fromMapResult.value = (Boolean)value;
+      return fromMapResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class DoubleValue {
+    private Double value;
+    public Double getValue() { return value; }
+    public void setValue(Double setterArg) { this.value = setterArg; }
+
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("value", value);
+      return toMapResult;
+    }
+    static DoubleValue fromMap(HashMap map) {
+      DoubleValue fromMapResult = new DoubleValue();
+      Object value = map.get("value");
+      fromMapResult.value = (Double)value;
+      return fromMapResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class SetCameraFocusPositionRequest {
+    private Double x;
+    public Double getX() { return x; }
+    public void setX(Double setterArg) { this.x = setterArg; }
+
+    private Double y;
+    public Double getY() { return y; }
+    public void setY(Double setterArg) { this.y = setterArg; }
+
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("x", x);
+      toMapResult.put("y", y);
+      return toMapResult;
+    }
+    static SetCameraFocusPositionRequest fromMap(HashMap map) {
+      SetCameraFocusPositionRequest fromMapResult = new SetCameraFocusPositionRequest();
+      Object x = map.get("x");
+      fromMapResult.x = (Double)x;
+      Object y = map.get("y");
+      fromMapResult.y = (Double)y;
+      return fromMapResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class EnableEarbackRequest {
+    private Boolean enabled;
+    public Boolean getEnabled() { return enabled; }
+    public void setEnabled(Boolean setterArg) { this.enabled = setterArg; }
+
+    private Long volume;
+    public Long getVolume() { return volume; }
+    public void setVolume(Long setterArg) { this.volume = setterArg; }
+
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("enabled", enabled);
+      toMapResult.put("volume", volume);
+      return toMapResult;
+    }
+    static EnableEarbackRequest fromMap(HashMap map) {
+      EnableEarbackRequest fromMapResult = new EnableEarbackRequest();
+      Object enabled = map.get("enabled");
+      fromMapResult.enabled = (Boolean)enabled;
+      Object volume = map.get("volume");
+      fromMapResult.volume = (volume == null) ? null : ((volume instanceof Integer) ? (Integer)volume : (Long)volume);
+      return fromMapResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
   public static class CreateEngineRequest {
     private String appKey;
     public String getAppKey() { return appKey; }
@@ -357,17 +356,21 @@ public class Messages {
     public Long getLogLevel() { return logLevel; }
     public void setLogLevel(Long setterArg) { this.logLevel = setterArg; }
 
-    private Boolean autoSubscribeAudio;
-    public Boolean getAutoSubscribeAudio() { return autoSubscribeAudio; }
-    public void setAutoSubscribeAudio(Boolean setterArg) { this.autoSubscribeAudio = setterArg; }
+    private Boolean audioAutoSubscribe;
+    public Boolean getAudioAutoSubscribe() { return audioAutoSubscribe; }
+    public void setAudioAutoSubscribe(Boolean setterArg) { this.audioAutoSubscribe = setterArg; }
 
-    private Long videoEncodeMode;
-    public Long getVideoEncodeMode() { return videoEncodeMode; }
-    public void setVideoEncodeMode(Long setterArg) { this.videoEncodeMode = setterArg; }
+    private Boolean audioDisableOverrideSpeakerOnReceiver;
+    public Boolean getAudioDisableOverrideSpeakerOnReceiver() { return audioDisableOverrideSpeakerOnReceiver; }
+    public void setAudioDisableOverrideSpeakerOnReceiver(Boolean setterArg) { this.audioDisableOverrideSpeakerOnReceiver = setterArg; }
 
-    private Long videoDecodeMode;
-    public Long getVideoDecodeMode() { return videoDecodeMode; }
-    public void setVideoDecodeMode(Long setterArg) { this.videoDecodeMode = setterArg; }
+    private Boolean audioDisableSWAECOnHeadset;
+    public Boolean getAudioDisableSWAECOnHeadset() { return audioDisableSWAECOnHeadset; }
+    public void setAudioDisableSWAECOnHeadset(Boolean setterArg) { this.audioDisableSWAECOnHeadset = setterArg; }
+
+    private Boolean audioAINSEnabled;
+    public Boolean getAudioAINSEnabled() { return audioAINSEnabled; }
+    public void setAudioAINSEnabled(Boolean setterArg) { this.audioAINSEnabled = setterArg; }
 
     private Boolean serverRecordAudio;
     public Boolean getServerRecordAudio() { return serverRecordAudio; }
@@ -389,9 +392,17 @@ public class Messages {
     public Boolean getPublishSelfStream() { return publishSelfStream; }
     public void setPublishSelfStream(Boolean setterArg) { this.publishSelfStream = setterArg; }
 
-    private Boolean videoCaptureObserver;
-    public Boolean getVideoCaptureObserver() { return videoCaptureObserver; }
-    public void setVideoCaptureObserver(Boolean setterArg) { this.videoCaptureObserver = setterArg; }
+    private Boolean videoCaptureObserverEnabled;
+    public Boolean getVideoCaptureObserverEnabled() { return videoCaptureObserverEnabled; }
+    public void setVideoCaptureObserverEnabled(Boolean setterArg) { this.videoCaptureObserverEnabled = setterArg; }
+
+    private Long videoEncodeMode;
+    public Long getVideoEncodeMode() { return videoEncodeMode; }
+    public void setVideoEncodeMode(Long setterArg) { this.videoEncodeMode = setterArg; }
+
+    private Long videoDecodeMode;
+    public Long getVideoDecodeMode() { return videoDecodeMode; }
+    public void setVideoDecodeMode(Long setterArg) { this.videoDecodeMode = setterArg; }
 
     private Long videoSendMode;
     public Long getVideoSendMode() { return videoSendMode; }
@@ -402,15 +413,18 @@ public class Messages {
       toMapResult.put("appKey", appKey);
       toMapResult.put("logDir", logDir);
       toMapResult.put("logLevel", logLevel);
-      toMapResult.put("autoSubscribeAudio", autoSubscribeAudio);
-      toMapResult.put("videoEncodeMode", videoEncodeMode);
-      toMapResult.put("videoDecodeMode", videoDecodeMode);
+      toMapResult.put("audioAutoSubscribe", audioAutoSubscribe);
+      toMapResult.put("audioDisableOverrideSpeakerOnReceiver", audioDisableOverrideSpeakerOnReceiver);
+      toMapResult.put("audioDisableSWAECOnHeadset", audioDisableSWAECOnHeadset);
+      toMapResult.put("audioAINSEnabled", audioAINSEnabled);
       toMapResult.put("serverRecordAudio", serverRecordAudio);
       toMapResult.put("serverRecordVideo", serverRecordVideo);
       toMapResult.put("serverRecordMode", serverRecordMode);
       toMapResult.put("serverRecordSpeaker", serverRecordSpeaker);
       toMapResult.put("publishSelfStream", publishSelfStream);
-      toMapResult.put("videoCaptureObserver", videoCaptureObserver);
+      toMapResult.put("videoCaptureObserverEnabled", videoCaptureObserverEnabled);
+      toMapResult.put("videoEncodeMode", videoEncodeMode);
+      toMapResult.put("videoDecodeMode", videoDecodeMode);
       toMapResult.put("videoSendMode", videoSendMode);
       return toMapResult;
     }
@@ -422,12 +436,14 @@ public class Messages {
       fromMapResult.logDir = (String)logDir;
       Object logLevel = map.get("logLevel");
       fromMapResult.logLevel = (logLevel == null) ? null : ((logLevel instanceof Integer) ? (Integer)logLevel : (Long)logLevel);
-      Object autoSubscribeAudio = map.get("autoSubscribeAudio");
-      fromMapResult.autoSubscribeAudio = (Boolean)autoSubscribeAudio;
-      Object videoEncodeMode = map.get("videoEncodeMode");
-      fromMapResult.videoEncodeMode = (videoEncodeMode == null) ? null : ((videoEncodeMode instanceof Integer) ? (Integer)videoEncodeMode : (Long)videoEncodeMode);
-      Object videoDecodeMode = map.get("videoDecodeMode");
-      fromMapResult.videoDecodeMode = (videoDecodeMode == null) ? null : ((videoDecodeMode instanceof Integer) ? (Integer)videoDecodeMode : (Long)videoDecodeMode);
+      Object audioAutoSubscribe = map.get("audioAutoSubscribe");
+      fromMapResult.audioAutoSubscribe = (Boolean)audioAutoSubscribe;
+      Object audioDisableOverrideSpeakerOnReceiver = map.get("audioDisableOverrideSpeakerOnReceiver");
+      fromMapResult.audioDisableOverrideSpeakerOnReceiver = (Boolean)audioDisableOverrideSpeakerOnReceiver;
+      Object audioDisableSWAECOnHeadset = map.get("audioDisableSWAECOnHeadset");
+      fromMapResult.audioDisableSWAECOnHeadset = (Boolean)audioDisableSWAECOnHeadset;
+      Object audioAINSEnabled = map.get("audioAINSEnabled");
+      fromMapResult.audioAINSEnabled = (Boolean)audioAINSEnabled;
       Object serverRecordAudio = map.get("serverRecordAudio");
       fromMapResult.serverRecordAudio = (Boolean)serverRecordAudio;
       Object serverRecordVideo = map.get("serverRecordVideo");
@@ -438,8 +454,12 @@ public class Messages {
       fromMapResult.serverRecordSpeaker = (Boolean)serverRecordSpeaker;
       Object publishSelfStream = map.get("publishSelfStream");
       fromMapResult.publishSelfStream = (Boolean)publishSelfStream;
-      Object videoCaptureObserver = map.get("videoCaptureObserver");
-      fromMapResult.videoCaptureObserver = (Boolean)videoCaptureObserver;
+      Object videoCaptureObserverEnabled = map.get("videoCaptureObserverEnabled");
+      fromMapResult.videoCaptureObserverEnabled = (Boolean)videoCaptureObserverEnabled;
+      Object videoEncodeMode = map.get("videoEncodeMode");
+      fromMapResult.videoEncodeMode = (videoEncodeMode == null) ? null : ((videoEncodeMode instanceof Integer) ? (Integer)videoEncodeMode : (Long)videoEncodeMode);
+      Object videoDecodeMode = map.get("videoDecodeMode");
+      fromMapResult.videoDecodeMode = (videoDecodeMode == null) ? null : ((videoDecodeMode instanceof Integer) ? (Integer)videoDecodeMode : (Long)videoDecodeMode);
       Object videoSendMode = map.get("videoSendMode");
       fromMapResult.videoSendMode = (videoSendMode == null) ? null : ((videoSendMode instanceof Integer) ? (Integer)videoSendMode : (Long)videoSendMode);
       return fromMapResult;
@@ -480,7 +500,7 @@ public class Messages {
   }
 
   /** Generated class from Pigeon that represents data sent in messages. */
-  public static class SubscribeRemoteAudioStreamRequest {
+  public static class SubscribeRemoteAudioRequest {
     private Long uid;
     public Long getUid() { return uid; }
     public void setUid(Long setterArg) { this.uid = setterArg; }
@@ -495,8 +515,8 @@ public class Messages {
       toMapResult.put("subscribe", subscribe);
       return toMapResult;
     }
-    static SubscribeRemoteAudioStreamRequest fromMap(HashMap map) {
-      SubscribeRemoteAudioStreamRequest fromMapResult = new SubscribeRemoteAudioStreamRequest();
+    static SubscribeRemoteAudioRequest fromMap(HashMap map) {
+      SubscribeRemoteAudioRequest fromMapResult = new SubscribeRemoteAudioRequest();
       Object uid = map.get("uid");
       fromMapResult.uid = (uid == null) ? null : ((uid instanceof Integer) ? (Integer)uid : (Long)uid);
       Object subscribe = map.get("subscribe");
@@ -600,7 +620,7 @@ public class Messages {
   }
 
   /** Generated class from Pigeon that represents data sent in messages. */
-  public static class SubscribeRemoteVideoStreamRequest {
+  public static class SubscribeRemoteVideoRequest {
     private Long uid;
     public Long getUid() { return uid; }
     public void setUid(Long setterArg) { this.uid = setterArg; }
@@ -620,12 +640,38 @@ public class Messages {
       toMapResult.put("subscribe", subscribe);
       return toMapResult;
     }
-    static SubscribeRemoteVideoStreamRequest fromMap(HashMap map) {
-      SubscribeRemoteVideoStreamRequest fromMapResult = new SubscribeRemoteVideoStreamRequest();
+    static SubscribeRemoteVideoRequest fromMap(HashMap map) {
+      SubscribeRemoteVideoRequest fromMapResult = new SubscribeRemoteVideoRequest();
       Object uid = map.get("uid");
       fromMapResult.uid = (uid == null) ? null : ((uid instanceof Integer) ? (Integer)uid : (Long)uid);
       Object streamType = map.get("streamType");
       fromMapResult.streamType = (streamType == null) ? null : ((streamType instanceof Integer) ? (Integer)streamType : (Long)streamType);
+      Object subscribe = map.get("subscribe");
+      fromMapResult.subscribe = (Boolean)subscribe;
+      return fromMapResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class SubscribeRemoteSubStreamVideoRequest {
+    private Long uid;
+    public Long getUid() { return uid; }
+    public void setUid(Long setterArg) { this.uid = setterArg; }
+
+    private Boolean subscribe;
+    public Boolean getSubscribe() { return subscribe; }
+    public void setSubscribe(Boolean setterArg) { this.subscribe = setterArg; }
+
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("uid", uid);
+      toMapResult.put("subscribe", subscribe);
+      return toMapResult;
+    }
+    static SubscribeRemoteSubStreamVideoRequest fromMap(HashMap map) {
+      SubscribeRemoteSubStreamVideoRequest fromMapResult = new SubscribeRemoteSubStreamVideoRequest();
+      Object uid = map.get("uid");
+      fromMapResult.uid = (uid == null) ? null : ((uid instanceof Integer) ? (Integer)uid : (Long)uid);
       Object subscribe = map.get("subscribe");
       fromMapResult.subscribe = (Boolean)subscribe;
       return fromMapResult;
@@ -791,6 +837,122 @@ public class Messages {
       Object taskId = map.get("taskId");
       fromMapResult.taskId = (String)taskId;
       return fromMapResult;
+    }
+  }
+
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
+  public interface VideoRendererApi {
+    IntValue createVideoRenderer();
+    IntValue setMirror(SetVideoRendererMirrorRequest arg);
+    IntValue setupLocalVideoRenderer(IntValue arg);
+    IntValue setupRemoteVideoRenderer(SetupRemoteVideoRendererRequest arg);
+    void disposeVideoRenderer(IntValue arg);
+
+    /** Sets up an instance of `VideoRendererApi` to handle messages through the `binaryMessenger` */
+    static void setup(BinaryMessenger binaryMessenger, VideoRendererApi api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VideoRendererApi.createVideoRenderer", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              IntValue output = api.createVideoRenderer();
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VideoRendererApi.setMirror", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              SetVideoRendererMirrorRequest input = SetVideoRendererMirrorRequest.fromMap((HashMap)message);
+              IntValue output = api.setMirror(input);
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VideoRendererApi.setupLocalVideoRenderer", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              IntValue input = IntValue.fromMap((HashMap)message);
+              IntValue output = api.setupLocalVideoRenderer(input);
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VideoRendererApi.setupRemoteVideoRenderer", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              SetupRemoteVideoRendererRequest input = SetupRemoteVideoRendererRequest.fromMap((HashMap)message);
+              IntValue output = api.setupRemoteVideoRenderer(input);
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VideoRendererApi.disposeVideoRenderer", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              IntValue input = IntValue.fromMap((HashMap)message);
+              api.disposeVideoRenderer(input);
+              wrapped.put("result", null);
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
     }
   }
 
@@ -1071,23 +1233,31 @@ public class Messages {
   }
 
   /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
-  public interface VideoRendererApi {
-    IntValue createVideoRenderer();
-    IntValue setMirror(SetVideoRendererMirrorRequest arg);
-    IntValue setupLocalVideoRenderer(IntValue arg);
-    IntValue setupRemoteVideoRenderer(SetupRemoteVideoRendererRequest arg);
-    void disposeVideoRenderer(IntValue arg);
+  public interface AudioEffectApi {
+    IntValue setAudioEffectEventCallback();
+    IntValue clearAudioEffectEventCallback();
+    IntValue playEffect(PlayEffectRequest arg);
+    IntValue stopEffect(IntValue arg);
+    IntValue stopAllEffects();
+    IntValue pauseEffect(IntValue arg);
+    IntValue resumeEffect(IntValue arg);
+    IntValue pauseAllEffects();
+    IntValue resumeAllEffects();
+    IntValue setEffectSendVolume(SetEffectSendVolumeRequest arg);
+    IntValue getEffectSendVolume(IntValue arg);
+    IntValue setEffectPlaybackVolume(SetEffectPlaybackVolumeRequest arg);
+    IntValue getEffectPlaybackVolume(IntValue arg);
 
-    /** Sets up an instance of `VideoRendererApi` to handle messages through the `binaryMessenger` */
-    static void setup(BinaryMessenger binaryMessenger, VideoRendererApi api) {
+    /** Sets up an instance of `AudioEffectApi` to handle messages through the `binaryMessenger` */
+    static void setup(BinaryMessenger binaryMessenger, AudioEffectApi api) {
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VideoRendererApi.createVideoRenderer", new StandardMessageCodec());
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AudioEffectApi.setAudioEffectEventCallback", new StandardMessageCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
             HashMap<String, HashMap> wrapped = new HashMap<>();
             try {
-              IntValue output = api.createVideoRenderer();
+              IntValue output = api.setAudioEffectEventCallback();
               wrapped.put("result", output.toMap());
             }
             catch (Exception exception) {
@@ -1101,14 +1271,12 @@ public class Messages {
       }
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VideoRendererApi.setMirror", new StandardMessageCodec());
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AudioEffectApi.clearAudioEffectEventCallback", new StandardMessageCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
             HashMap<String, HashMap> wrapped = new HashMap<>();
             try {
-              @SuppressWarnings("ConstantConditions")
-              SetVideoRendererMirrorRequest input = SetVideoRendererMirrorRequest.fromMap((HashMap)message);
-              IntValue output = api.setMirror(input);
+              IntValue output = api.clearAudioEffectEventCallback();
               wrapped.put("result", output.toMap());
             }
             catch (Exception exception) {
@@ -1122,35 +1290,14 @@ public class Messages {
       }
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VideoRendererApi.setupLocalVideoRenderer", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              @SuppressWarnings("ConstantConditions")
-              IntValue input = IntValue.fromMap((HashMap)message);
-              IntValue output = api.setupLocalVideoRenderer(input);
-              wrapped.put("result", output.toMap());
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VideoRendererApi.setupRemoteVideoRenderer", new StandardMessageCodec());
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AudioEffectApi.playEffect", new StandardMessageCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
             HashMap<String, HashMap> wrapped = new HashMap<>();
             try {
               @SuppressWarnings("ConstantConditions")
-              SetupRemoteVideoRendererRequest input = SetupRemoteVideoRendererRequest.fromMap((HashMap)message);
-              IntValue output = api.setupRemoteVideoRenderer(input);
+              PlayEffectRequest input = PlayEffectRequest.fromMap((HashMap)message);
+              IntValue output = api.playEffect(input);
               wrapped.put("result", output.toMap());
             }
             catch (Exception exception) {
@@ -1164,15 +1311,198 @@ public class Messages {
       }
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VideoRendererApi.disposeVideoRenderer", new StandardMessageCodec());
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AudioEffectApi.stopEffect", new StandardMessageCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
             HashMap<String, HashMap> wrapped = new HashMap<>();
             try {
               @SuppressWarnings("ConstantConditions")
               IntValue input = IntValue.fromMap((HashMap)message);
-              api.disposeVideoRenderer(input);
-              wrapped.put("result", null);
+              IntValue output = api.stopEffect(input);
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AudioEffectApi.stopAllEffects", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              IntValue output = api.stopAllEffects();
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AudioEffectApi.pauseEffect", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              IntValue input = IntValue.fromMap((HashMap)message);
+              IntValue output = api.pauseEffect(input);
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AudioEffectApi.resumeEffect", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              IntValue input = IntValue.fromMap((HashMap)message);
+              IntValue output = api.resumeEffect(input);
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AudioEffectApi.pauseAllEffects", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              IntValue output = api.pauseAllEffects();
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AudioEffectApi.resumeAllEffects", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              IntValue output = api.resumeAllEffects();
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AudioEffectApi.setEffectSendVolume", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              SetEffectSendVolumeRequest input = SetEffectSendVolumeRequest.fromMap((HashMap)message);
+              IntValue output = api.setEffectSendVolume(input);
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AudioEffectApi.getEffectSendVolume", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              IntValue input = IntValue.fromMap((HashMap)message);
+              IntValue output = api.getEffectSendVolume(input);
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AudioEffectApi.setEffectPlaybackVolume", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              SetEffectPlaybackVolumeRequest input = SetEffectPlaybackVolumeRequest.fromMap((HashMap)message);
+              IntValue output = api.setEffectPlaybackVolume(input);
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AudioEffectApi.getEffectPlaybackVolume", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              IntValue input = IntValue.fromMap((HashMap)message);
+              IntValue output = api.getEffectPlaybackVolume(input);
+              wrapped.put("result", output.toMap());
             }
             catch (Exception exception) {
               wrapped.put("error", wrapError(exception));
@@ -1533,290 +1863,6 @@ public class Messages {
   }
 
   /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
-  public interface AudioEffectApi {
-    IntValue setAudioEffectEventCallback();
-    IntValue clearAudioEffectEventCallback();
-    IntValue playEffect(PlayEffectRequest arg);
-    IntValue stopEffect(IntValue arg);
-    IntValue stopAllEffects();
-    IntValue pauseEffect(IntValue arg);
-    IntValue resumeEffect(IntValue arg);
-    IntValue pauseAllEffects();
-    IntValue resumeAllEffects();
-    IntValue setEffectSendVolume(SetEffectSendVolumeRequest arg);
-    IntValue getEffectSendVolume(IntValue arg);
-    IntValue setEffectPlaybackVolume(SetEffectPlaybackVolumeRequest arg);
-    IntValue getEffectPlaybackVolume(IntValue arg);
-
-    /** Sets up an instance of `AudioEffectApi` to handle messages through the `binaryMessenger` */
-    static void setup(BinaryMessenger binaryMessenger, AudioEffectApi api) {
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AudioEffectApi.setAudioEffectEventCallback", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              IntValue output = api.setAudioEffectEventCallback();
-              wrapped.put("result", output.toMap());
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AudioEffectApi.clearAudioEffectEventCallback", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              IntValue output = api.clearAudioEffectEventCallback();
-              wrapped.put("result", output.toMap());
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AudioEffectApi.playEffect", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              @SuppressWarnings("ConstantConditions")
-              PlayEffectRequest input = PlayEffectRequest.fromMap((HashMap)message);
-              IntValue output = api.playEffect(input);
-              wrapped.put("result", output.toMap());
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AudioEffectApi.stopEffect", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              @SuppressWarnings("ConstantConditions")
-              IntValue input = IntValue.fromMap((HashMap)message);
-              IntValue output = api.stopEffect(input);
-              wrapped.put("result", output.toMap());
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AudioEffectApi.stopAllEffects", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              IntValue output = api.stopAllEffects();
-              wrapped.put("result", output.toMap());
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AudioEffectApi.pauseEffect", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              @SuppressWarnings("ConstantConditions")
-              IntValue input = IntValue.fromMap((HashMap)message);
-              IntValue output = api.pauseEffect(input);
-              wrapped.put("result", output.toMap());
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AudioEffectApi.resumeEffect", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              @SuppressWarnings("ConstantConditions")
-              IntValue input = IntValue.fromMap((HashMap)message);
-              IntValue output = api.resumeEffect(input);
-              wrapped.put("result", output.toMap());
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AudioEffectApi.pauseAllEffects", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              IntValue output = api.pauseAllEffects();
-              wrapped.put("result", output.toMap());
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AudioEffectApi.resumeAllEffects", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              IntValue output = api.resumeAllEffects();
-              wrapped.put("result", output.toMap());
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AudioEffectApi.setEffectSendVolume", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              @SuppressWarnings("ConstantConditions")
-              SetEffectSendVolumeRequest input = SetEffectSendVolumeRequest.fromMap((HashMap)message);
-              IntValue output = api.setEffectSendVolume(input);
-              wrapped.put("result", output.toMap());
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AudioEffectApi.getEffectSendVolume", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              @SuppressWarnings("ConstantConditions")
-              IntValue input = IntValue.fromMap((HashMap)message);
-              IntValue output = api.getEffectSendVolume(input);
-              wrapped.put("result", output.toMap());
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AudioEffectApi.setEffectPlaybackVolume", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              @SuppressWarnings("ConstantConditions")
-              SetEffectPlaybackVolumeRequest input = SetEffectPlaybackVolumeRequest.fromMap((HashMap)message);
-              IntValue output = api.setEffectPlaybackVolume(input);
-              wrapped.put("result", output.toMap());
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AudioEffectApi.getEffectPlaybackVolume", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              @SuppressWarnings("ConstantConditions")
-              IntValue input = IntValue.fromMap((HashMap)message);
-              IntValue output = api.getEffectPlaybackVolume(input);
-              wrapped.put("result", output.toMap());
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
-    }
-  }
-
-  /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
   public interface EngineApi {
     IntValue create(CreateEngineRequest arg);
     IntValue release();
@@ -1826,8 +1872,8 @@ public class Messages {
     IntValue joinChannel(JoinChannelRequest arg);
     IntValue leaveChannel();
     IntValue enableLocalAudio(BoolValue arg);
-    IntValue subscribeRemoteAudioStream(SubscribeRemoteAudioStreamRequest arg);
-    IntValue subscribeAllRemoteAudioStreams(BoolValue arg);
+    IntValue subscribeRemoteAudio(SubscribeRemoteAudioRequest arg);
+    IntValue subscribeAllRemoteAudio(BoolValue arg);
     IntValue setAudioProfile(SetAudioProfileRequest arg);
     IntValue enableDualStreamMode(BoolValue arg);
     IntValue setLocalVideoConfig(SetLocalVideoConfigRequest arg);
@@ -1836,7 +1882,8 @@ public class Messages {
     IntValue enableLocalVideo(BoolValue arg);
     void startScreenCapture(IntValue arg, SuccessCallback successCallback);
     IntValue stopScreenCapture();
-    IntValue subscribeRemoteVideoStream(SubscribeRemoteVideoStreamRequest arg);
+    IntValue subscribeRemoteVideo(SubscribeRemoteVideoRequest arg);
+    IntValue subscribeRemoteSubStreamVideo(SubscribeRemoteSubStreamVideoRequest arg);
     IntValue muteLocalAudioStream(BoolValue arg);
     IntValue muteLocalVideoStream(BoolValue arg);
     IntValue startAudioDump();
@@ -1847,6 +1894,9 @@ public class Messages {
     IntValue addLiveStreamTask(AddOrUpdateLiveStreamTaskRequest arg);
     IntValue updateLiveStreamTask(AddOrUpdateLiveStreamTaskRequest arg);
     IntValue removeLiveStreamTask(DeleteLiveStreamTaskRequest arg);
+    IntValue setClientRole(IntValue arg);
+    IntValue getConnectionState();
+    IntValue uploadSdkInfo();
 
     /** Sets up an instance of `EngineApi` to handle messages through the `binaryMessenger` */
     static void setup(BinaryMessenger binaryMessenger, EngineApi api) {
@@ -2012,14 +2062,14 @@ public class Messages {
       }
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.EngineApi.subscribeRemoteAudioStream", new StandardMessageCodec());
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.EngineApi.subscribeRemoteAudio", new StandardMessageCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
             HashMap<String, HashMap> wrapped = new HashMap<>();
             try {
               @SuppressWarnings("ConstantConditions")
-              SubscribeRemoteAudioStreamRequest input = SubscribeRemoteAudioStreamRequest.fromMap((HashMap)message);
-              IntValue output = api.subscribeRemoteAudioStream(input);
+              SubscribeRemoteAudioRequest input = SubscribeRemoteAudioRequest.fromMap((HashMap)message);
+              IntValue output = api.subscribeRemoteAudio(input);
               wrapped.put("result", output.toMap());
             }
             catch (Exception exception) {
@@ -2033,14 +2083,14 @@ public class Messages {
       }
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.EngineApi.subscribeAllRemoteAudioStreams", new StandardMessageCodec());
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.EngineApi.subscribeAllRemoteAudio", new StandardMessageCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
             HashMap<String, HashMap> wrapped = new HashMap<>();
             try {
               @SuppressWarnings("ConstantConditions")
               BoolValue input = BoolValue.fromMap((HashMap)message);
-              IntValue output = api.subscribeAllRemoteAudioStreams(input);
+              IntValue output = api.subscribeAllRemoteAudio(input);
               wrapped.put("result", output.toMap());
             }
             catch (Exception exception) {
@@ -2220,14 +2270,35 @@ public class Messages {
       }
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.EngineApi.subscribeRemoteVideoStream", new StandardMessageCodec());
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.EngineApi.subscribeRemoteVideo", new StandardMessageCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
             HashMap<String, HashMap> wrapped = new HashMap<>();
             try {
               @SuppressWarnings("ConstantConditions")
-              SubscribeRemoteVideoStreamRequest input = SubscribeRemoteVideoStreamRequest.fromMap((HashMap)message);
-              IntValue output = api.subscribeRemoteVideoStream(input);
+              SubscribeRemoteVideoRequest input = SubscribeRemoteVideoRequest.fromMap((HashMap)message);
+              IntValue output = api.subscribeRemoteVideo(input);
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.EngineApi.subscribeRemoteSubStreamVideo", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              SubscribeRemoteSubStreamVideoRequest input = SubscribeRemoteSubStreamVideoRequest.fromMap((HashMap)message);
+              IntValue output = api.subscribeRemoteSubStreamVideo(input);
               wrapped.put("result", output.toMap());
             }
             catch (Exception exception) {
@@ -2434,6 +2505,65 @@ public class Messages {
               @SuppressWarnings("ConstantConditions")
               DeleteLiveStreamTaskRequest input = DeleteLiveStreamTaskRequest.fromMap((HashMap)message);
               IntValue output = api.removeLiveStreamTask(input);
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.EngineApi.setClientRole", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              IntValue input = IntValue.fromMap((HashMap)message);
+              IntValue output = api.setClientRole(input);
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.EngineApi.getConnectionState", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              IntValue output = api.getConnectionState();
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.EngineApi.uploadSdkInfo", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              IntValue output = api.uploadSdkInfo();
               wrapped.put("result", output.toMap());
             }
             catch (Exception exception) {

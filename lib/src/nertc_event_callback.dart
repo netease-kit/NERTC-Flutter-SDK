@@ -138,6 +138,13 @@ abstract class NERtcChannelEventCallback {
   /// [liveState] 直播状态 [NERtcLiveStreamState]
   void onLiveStreamState(String taskId, String pushUrl, int liveState);
 
+  /// 角色切换成功回调
+  /// 直播场景下，如果您在加入房间后调用该方法切换用户角色，调用成功后，会触发回调
+  /// 角色定义参考 [NERtcClientRole].
+  /// [oldRole] 之前的角色.
+  /// [newRole] 现在的角色
+  void onClientRoleChange(int oldRole, int newRole);
+
   /// 发生警告回调
   /// 该回调方法表示 SDK 运行时出现了（网络或媒体相关的）警告。
   /// 通常情况下，SDK 上报的警告信息 App 可以忽略，SDK 会自动恢复
@@ -147,6 +154,17 @@ abstract class NERtcChannelEventCallback {
   /// 该回调方法表示 SDK 运行时出现了（网络或媒体相关的）错误。
   /// 通常情况下，SDK上报的错误意味着SDK无法自动恢复，需要 App 干预或提示用户
   void onWarning(int code);
+
+  /// 远端用户开启视频辅流
+  ///
+  /// [uid] 远端用户ID.
+  /// [maxProfile] 最大支持分辨率. [NERtcVideoProfile]
+  void onUserSubStreamVideoStart(int uid, int maxProfile);
+
+  /// 远端用户开启视频辅流
+  ///
+  /// [uid] 远端用户ID.
+  void onUserSubStreamVideoStop(int uid);
 }
 
 abstract class NERtcDeviceEventCallback {

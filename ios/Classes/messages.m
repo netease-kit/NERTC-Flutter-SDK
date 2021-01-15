@@ -8,290 +8,230 @@
 #endif
 
 static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
-    NSDictionary *errorDict = (NSDictionary *)[NSNull null];
-    if (error) {
-        errorDict = [NSDictionary dictionaryWithObjectsAndKeys:
-                     (error.code ? error.code : [NSNull null]), @"code",
-                     (error.message ? error.message : [NSNull null]), @"message",
-                     (error.details ? error.details : [NSNull null]), @"details",
-                     nil];
-    }
-    return [NSDictionary dictionaryWithObjectsAndKeys:
-            (result ? result : [NSNull null]), @"result",
-            errorDict, @"error",
-            nil];
+  NSDictionary *errorDict = (NSDictionary *)[NSNull null];
+  if (error) {
+    errorDict = [NSDictionary dictionaryWithObjectsAndKeys:
+        (error.code ? error.code : [NSNull null]), @"code",
+        (error.message ? error.message : [NSNull null]), @"message",
+        (error.details ? error.details : [NSNull null]), @"details",
+        nil];
+  }
+  return [NSDictionary dictionaryWithObjectsAndKeys:
+      (result ? result : [NSNull null]), @"result",
+      errorDict, @"error",
+      nil];
 }
 
-@interface FLTIntValue ()
-+(FLTIntValue*)fromMap:(NSDictionary*)dict;
+@interface NEFLTIntValue ()
++(NEFLTIntValue*)fromMap:(NSDictionary*)dict;
 -(NSDictionary*)toMap;
 @end
-@interface FLTStartAudioMixingRequest ()
-+(FLTStartAudioMixingRequest*)fromMap:(NSDictionary*)dict;
+@interface NEFLTSetVideoRendererMirrorRequest ()
++(NEFLTSetVideoRendererMirrorRequest*)fromMap:(NSDictionary*)dict;
 -(NSDictionary*)toMap;
 @end
-@interface FLTSetVideoRendererMirrorRequest ()
-+(FLTSetVideoRendererMirrorRequest*)fromMap:(NSDictionary*)dict;
+@interface NEFLTSetupRemoteVideoRendererRequest ()
++(NEFLTSetupRemoteVideoRendererRequest*)fromMap:(NSDictionary*)dict;
 -(NSDictionary*)toMap;
 @end
-@interface FLTSetupRemoteVideoRendererRequest ()
-+(FLTSetupRemoteVideoRendererRequest*)fromMap:(NSDictionary*)dict;
+@interface NEFLTStartAudioMixingRequest ()
++(NEFLTStartAudioMixingRequest*)fromMap:(NSDictionary*)dict;
 -(NSDictionary*)toMap;
 @end
-@interface FLTBoolValue ()
-+(FLTBoolValue*)fromMap:(NSDictionary*)dict;
+@interface NEFLTPlayEffectRequest ()
++(NEFLTPlayEffectRequest*)fromMap:(NSDictionary*)dict;
 -(NSDictionary*)toMap;
 @end
-@interface FLTDoubleValue ()
-+(FLTDoubleValue*)fromMap:(NSDictionary*)dict;
+@interface NEFLTSetEffectSendVolumeRequest ()
++(NEFLTSetEffectSendVolumeRequest*)fromMap:(NSDictionary*)dict;
 -(NSDictionary*)toMap;
 @end
-@interface FLTSetCameraFocusPositionRequest ()
-+(FLTSetCameraFocusPositionRequest*)fromMap:(NSDictionary*)dict;
+@interface NEFLTSetEffectPlaybackVolumeRequest ()
++(NEFLTSetEffectPlaybackVolumeRequest*)fromMap:(NSDictionary*)dict;
 -(NSDictionary*)toMap;
 @end
-@interface FLTEnableEarbackRequest ()
-+(FLTEnableEarbackRequest*)fromMap:(NSDictionary*)dict;
+@interface NEFLTBoolValue ()
++(NEFLTBoolValue*)fromMap:(NSDictionary*)dict;
 -(NSDictionary*)toMap;
 @end
-@interface FLTPlayEffectRequest ()
-+(FLTPlayEffectRequest*)fromMap:(NSDictionary*)dict;
+@interface NEFLTDoubleValue ()
++(NEFLTDoubleValue*)fromMap:(NSDictionary*)dict;
 -(NSDictionary*)toMap;
 @end
-@interface FLTSetEffectSendVolumeRequest ()
-+(FLTSetEffectSendVolumeRequest*)fromMap:(NSDictionary*)dict;
+@interface NEFLTSetCameraFocusPositionRequest ()
++(NEFLTSetCameraFocusPositionRequest*)fromMap:(NSDictionary*)dict;
 -(NSDictionary*)toMap;
 @end
-@interface FLTSetEffectPlaybackVolumeRequest ()
-+(FLTSetEffectPlaybackVolumeRequest*)fromMap:(NSDictionary*)dict;
+@interface NEFLTEnableEarbackRequest ()
++(NEFLTEnableEarbackRequest*)fromMap:(NSDictionary*)dict;
 -(NSDictionary*)toMap;
 @end
-@interface FLTCreateEngineRequest ()
-+(FLTCreateEngineRequest*)fromMap:(NSDictionary*)dict;
+@interface NEFLTCreateEngineRequest ()
++(NEFLTCreateEngineRequest*)fromMap:(NSDictionary*)dict;
 -(NSDictionary*)toMap;
 @end
-@interface FLTJoinChannelRequest ()
-+(FLTJoinChannelRequest*)fromMap:(NSDictionary*)dict;
+@interface NEFLTJoinChannelRequest ()
++(NEFLTJoinChannelRequest*)fromMap:(NSDictionary*)dict;
 -(NSDictionary*)toMap;
 @end
-@interface FLTSubscribeRemoteAudioStreamRequest ()
-+(FLTSubscribeRemoteAudioStreamRequest*)fromMap:(NSDictionary*)dict;
+@interface NEFLTSubscribeRemoteAudioRequest ()
++(NEFLTSubscribeRemoteAudioRequest*)fromMap:(NSDictionary*)dict;
 -(NSDictionary*)toMap;
 @end
-@interface FLTSetAudioProfileRequest ()
-+(FLTSetAudioProfileRequest*)fromMap:(NSDictionary*)dict;
+@interface NEFLTSetAudioProfileRequest ()
++(NEFLTSetAudioProfileRequest*)fromMap:(NSDictionary*)dict;
 -(NSDictionary*)toMap;
 @end
-@interface FLTSetLocalVideoConfigRequest ()
-+(FLTSetLocalVideoConfigRequest*)fromMap:(NSDictionary*)dict;
+@interface NEFLTSetLocalVideoConfigRequest ()
++(NEFLTSetLocalVideoConfigRequest*)fromMap:(NSDictionary*)dict;
 -(NSDictionary*)toMap;
 @end
-@interface FLTSubscribeRemoteVideoStreamRequest ()
-+(FLTSubscribeRemoteVideoStreamRequest*)fromMap:(NSDictionary*)dict;
+@interface NEFLTSubscribeRemoteVideoRequest ()
++(NEFLTSubscribeRemoteVideoRequest*)fromMap:(NSDictionary*)dict;
 -(NSDictionary*)toMap;
 @end
-@interface FLTEnableAudioVolumeIndicationRequest ()
-+(FLTEnableAudioVolumeIndicationRequest*)fromMap:(NSDictionary*)dict;
+@interface NEFLTSubscribeRemoteSubStreamVideoRequest ()
++(NEFLTSubscribeRemoteSubStreamVideoRequest*)fromMap:(NSDictionary*)dict;
 -(NSDictionary*)toMap;
 @end
-@interface FLTAddOrUpdateLiveStreamTaskRequest ()
-+(FLTAddOrUpdateLiveStreamTaskRequest*)fromMap:(NSDictionary*)dict;
+@interface NEFLTEnableAudioVolumeIndicationRequest ()
++(NEFLTEnableAudioVolumeIndicationRequest*)fromMap:(NSDictionary*)dict;
 -(NSDictionary*)toMap;
 @end
-@interface FLTDeleteLiveStreamTaskRequest ()
-+(FLTDeleteLiveStreamTaskRequest*)fromMap:(NSDictionary*)dict;
+@interface NEFLTAddOrUpdateLiveStreamTaskRequest ()
++(NEFLTAddOrUpdateLiveStreamTaskRequest*)fromMap:(NSDictionary*)dict;
+-(NSDictionary*)toMap;
+@end
+@interface NEFLTDeleteLiveStreamTaskRequest ()
++(NEFLTDeleteLiveStreamTaskRequest*)fromMap:(NSDictionary*)dict;
 -(NSDictionary*)toMap;
 @end
 
-@implementation FLTIntValue
-+(FLTIntValue*)fromMap:(NSDictionary*)dict {
-    FLTIntValue* result = [[FLTIntValue alloc] init];
-    result.value = dict[@"value"];
-    if ((NSNull *)result.value == [NSNull null]) {
-        result.value = nil;
-    }
-    return result;
+@implementation NEFLTIntValue
++(NEFLTIntValue*)fromMap:(NSDictionary*)dict {
+  NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
+  result.value = dict[@"value"];
+  if ((NSNull *)result.value == [NSNull null]) {
+    result.value = nil;
+  }
+  return result;
 }
 -(NSDictionary*)toMap {
-    return [NSDictionary dictionaryWithObjectsAndKeys:(self.value ? self.value : [NSNull null]), @"value", nil];
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.value ? self.value : [NSNull null]), @"value", nil];
 }
 @end
 
-@implementation FLTStartAudioMixingRequest
-+(FLTStartAudioMixingRequest*)fromMap:(NSDictionary*)dict {
-    FLTStartAudioMixingRequest* result = [[FLTStartAudioMixingRequest alloc] init];
-    result.path = dict[@"path"];
-    if ((NSNull *)result.path == [NSNull null]) {
-        result.path = nil;
-    }
-    result.loopCount = dict[@"loopCount"];
-    if ((NSNull *)result.loopCount == [NSNull null]) {
-        result.loopCount = nil;
-    }
-    result.sendEnabled = dict[@"sendEnabled"];
-    if ((NSNull *)result.sendEnabled == [NSNull null]) {
-        result.sendEnabled = nil;
-    }
-    result.sendVolume = dict[@"sendVolume"];
-    if ((NSNull *)result.sendVolume == [NSNull null]) {
-        result.sendVolume = nil;
-    }
-    result.playbackEnabled = dict[@"playbackEnabled"];
-    if ((NSNull *)result.playbackEnabled == [NSNull null]) {
-        result.playbackEnabled = nil;
-    }
-    result.playbackVolume = dict[@"playbackVolume"];
-    if ((NSNull *)result.playbackVolume == [NSNull null]) {
-        result.playbackVolume = nil;
-    }
-    return result;
+@implementation NEFLTSetVideoRendererMirrorRequest
++(NEFLTSetVideoRendererMirrorRequest*)fromMap:(NSDictionary*)dict {
+  NEFLTSetVideoRendererMirrorRequest* result = [[NEFLTSetVideoRendererMirrorRequest alloc] init];
+  result.textureId = dict[@"textureId"];
+  if ((NSNull *)result.textureId == [NSNull null]) {
+    result.textureId = nil;
+  }
+  result.mirror = dict[@"mirror"];
+  if ((NSNull *)result.mirror == [NSNull null]) {
+    result.mirror = nil;
+  }
+  return result;
 }
 -(NSDictionary*)toMap {
-    return [NSDictionary dictionaryWithObjectsAndKeys:(self.path ? self.path : [NSNull null]), @"path", (self.loopCount ? self.loopCount : [NSNull null]), @"loopCount", (self.sendEnabled ? self.sendEnabled : [NSNull null]), @"sendEnabled", (self.sendVolume ? self.sendVolume : [NSNull null]), @"sendVolume", (self.playbackEnabled ? self.playbackEnabled : [NSNull null]), @"playbackEnabled", (self.playbackVolume ? self.playbackVolume : [NSNull null]), @"playbackVolume", nil];
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId", (self.mirror ? self.mirror : [NSNull null]), @"mirror", nil];
 }
 @end
 
-@implementation FLTSetVideoRendererMirrorRequest
-+(FLTSetVideoRendererMirrorRequest*)fromMap:(NSDictionary*)dict {
-    FLTSetVideoRendererMirrorRequest* result = [[FLTSetVideoRendererMirrorRequest alloc] init];
-    result.textureId = dict[@"textureId"];
-    if ((NSNull *)result.textureId == [NSNull null]) {
-        result.textureId = nil;
-    }
-    result.mirror = dict[@"mirror"];
-    if ((NSNull *)result.mirror == [NSNull null]) {
-        result.mirror = nil;
-    }
-    return result;
+@implementation NEFLTSetupRemoteVideoRendererRequest
++(NEFLTSetupRemoteVideoRendererRequest*)fromMap:(NSDictionary*)dict {
+  NEFLTSetupRemoteVideoRendererRequest* result = [[NEFLTSetupRemoteVideoRendererRequest alloc] init];
+  result.uid = dict[@"uid"];
+  if ((NSNull *)result.uid == [NSNull null]) {
+    result.uid = nil;
+  }
+  result.textureId = dict[@"textureId"];
+  if ((NSNull *)result.textureId == [NSNull null]) {
+    result.textureId = nil;
+  }
+  return result;
 }
 -(NSDictionary*)toMap {
-    return [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId", (self.mirror ? self.mirror : [NSNull null]), @"mirror", nil];
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.uid ? self.uid : [NSNull null]), @"uid", (self.textureId ? self.textureId : [NSNull null]), @"textureId", nil];
 }
 @end
 
-@implementation FLTSetupRemoteVideoRendererRequest
-+(FLTSetupRemoteVideoRendererRequest*)fromMap:(NSDictionary*)dict {
-    FLTSetupRemoteVideoRendererRequest* result = [[FLTSetupRemoteVideoRendererRequest alloc] init];
-    result.uid = dict[@"uid"];
-    if ((NSNull *)result.uid == [NSNull null]) {
-        result.uid = nil;
-    }
-    result.textureId = dict[@"textureId"];
-    if ((NSNull *)result.textureId == [NSNull null]) {
-        result.textureId = nil;
-    }
-    return result;
+@implementation NEFLTStartAudioMixingRequest
++(NEFLTStartAudioMixingRequest*)fromMap:(NSDictionary*)dict {
+  NEFLTStartAudioMixingRequest* result = [[NEFLTStartAudioMixingRequest alloc] init];
+  result.path = dict[@"path"];
+  if ((NSNull *)result.path == [NSNull null]) {
+    result.path = nil;
+  }
+  result.loopCount = dict[@"loopCount"];
+  if ((NSNull *)result.loopCount == [NSNull null]) {
+    result.loopCount = nil;
+  }
+  result.sendEnabled = dict[@"sendEnabled"];
+  if ((NSNull *)result.sendEnabled == [NSNull null]) {
+    result.sendEnabled = nil;
+  }
+  result.sendVolume = dict[@"sendVolume"];
+  if ((NSNull *)result.sendVolume == [NSNull null]) {
+    result.sendVolume = nil;
+  }
+  result.playbackEnabled = dict[@"playbackEnabled"];
+  if ((NSNull *)result.playbackEnabled == [NSNull null]) {
+    result.playbackEnabled = nil;
+  }
+  result.playbackVolume = dict[@"playbackVolume"];
+  if ((NSNull *)result.playbackVolume == [NSNull null]) {
+    result.playbackVolume = nil;
+  }
+  return result;
 }
 -(NSDictionary*)toMap {
-    return [NSDictionary dictionaryWithObjectsAndKeys:(self.uid ? self.uid : [NSNull null]), @"uid", (self.textureId ? self.textureId : [NSNull null]), @"textureId", nil];
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.path ? self.path : [NSNull null]), @"path", (self.loopCount ? self.loopCount : [NSNull null]), @"loopCount", (self.sendEnabled ? self.sendEnabled : [NSNull null]), @"sendEnabled", (self.sendVolume ? self.sendVolume : [NSNull null]), @"sendVolume", (self.playbackEnabled ? self.playbackEnabled : [NSNull null]), @"playbackEnabled", (self.playbackVolume ? self.playbackVolume : [NSNull null]), @"playbackVolume", nil];
 }
 @end
 
-@implementation FLTBoolValue
-+(FLTBoolValue*)fromMap:(NSDictionary*)dict {
-    FLTBoolValue* result = [[FLTBoolValue alloc] init];
-    result.value = dict[@"value"];
-    if ((NSNull *)result.value == [NSNull null]) {
-        result.value = nil;
-    }
-    return result;
+@implementation NEFLTPlayEffectRequest
++(NEFLTPlayEffectRequest*)fromMap:(NSDictionary*)dict {
+  NEFLTPlayEffectRequest* result = [[NEFLTPlayEffectRequest alloc] init];
+  result.effectId = dict[@"effectId"];
+  if ((NSNull *)result.effectId == [NSNull null]) {
+    result.effectId = nil;
+  }
+  result.path = dict[@"path"];
+  if ((NSNull *)result.path == [NSNull null]) {
+    result.path = nil;
+  }
+  result.loopCount = dict[@"loopCount"];
+  if ((NSNull *)result.loopCount == [NSNull null]) {
+    result.loopCount = nil;
+  }
+  result.sendEnabled = dict[@"sendEnabled"];
+  if ((NSNull *)result.sendEnabled == [NSNull null]) {
+    result.sendEnabled = nil;
+  }
+  result.sendVolume = dict[@"sendVolume"];
+  if ((NSNull *)result.sendVolume == [NSNull null]) {
+    result.sendVolume = nil;
+  }
+  result.playbackEnabled = dict[@"playbackEnabled"];
+  if ((NSNull *)result.playbackEnabled == [NSNull null]) {
+    result.playbackEnabled = nil;
+  }
+  result.playbackVolume = dict[@"playbackVolume"];
+  if ((NSNull *)result.playbackVolume == [NSNull null]) {
+    result.playbackVolume = nil;
+  }
+  return result;
 }
 -(NSDictionary*)toMap {
-    return [NSDictionary dictionaryWithObjectsAndKeys:(self.value ? self.value : [NSNull null]), @"value", nil];
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.effectId ? self.effectId : [NSNull null]), @"effectId", (self.path ? self.path : [NSNull null]), @"path", (self.loopCount ? self.loopCount : [NSNull null]), @"loopCount", (self.sendEnabled ? self.sendEnabled : [NSNull null]), @"sendEnabled", (self.sendVolume ? self.sendVolume : [NSNull null]), @"sendVolume", (self.playbackEnabled ? self.playbackEnabled : [NSNull null]), @"playbackEnabled", (self.playbackVolume ? self.playbackVolume : [NSNull null]), @"playbackVolume", nil];
 }
 @end
 
-@implementation FLTDoubleValue
-+(FLTDoubleValue*)fromMap:(NSDictionary*)dict {
-    FLTDoubleValue* result = [[FLTDoubleValue alloc] init];
-    result.value = dict[@"value"];
-    if ((NSNull *)result.value == [NSNull null]) {
-        result.value = nil;
-    }
-    return result;
-}
--(NSDictionary*)toMap {
-    return [NSDictionary dictionaryWithObjectsAndKeys:(self.value ? self.value : [NSNull null]), @"value", nil];
-}
-@end
-
-@implementation FLTSetCameraFocusPositionRequest
-+(FLTSetCameraFocusPositionRequest*)fromMap:(NSDictionary*)dict {
-    FLTSetCameraFocusPositionRequest* result = [[FLTSetCameraFocusPositionRequest alloc] init];
-    result.x = dict[@"x"];
-    if ((NSNull *)result.x == [NSNull null]) {
-        result.x = nil;
-    }
-    result.y = dict[@"y"];
-    if ((NSNull *)result.y == [NSNull null]) {
-        result.y = nil;
-    }
-    return result;
-}
--(NSDictionary*)toMap {
-    return [NSDictionary dictionaryWithObjectsAndKeys:(self.x ? self.x : [NSNull null]), @"x", (self.y ? self.y : [NSNull null]), @"y", nil];
-}
-@end
-
-@implementation FLTEnableEarbackRequest
-+(FLTEnableEarbackRequest*)fromMap:(NSDictionary*)dict {
-    FLTEnableEarbackRequest* result = [[FLTEnableEarbackRequest alloc] init];
-    result.enabled = dict[@"enabled"];
-    if ((NSNull *)result.enabled == [NSNull null]) {
-        result.enabled = nil;
-    }
-    result.volume = dict[@"volume"];
-    if ((NSNull *)result.volume == [NSNull null]) {
-        result.volume = nil;
-    }
-    return result;
-}
--(NSDictionary*)toMap {
-    return [NSDictionary dictionaryWithObjectsAndKeys:(self.enabled ? self.enabled : [NSNull null]), @"enabled", (self.volume ? self.volume : [NSNull null]), @"volume", nil];
-}
-@end
-
-@implementation FLTPlayEffectRequest
-+(FLTPlayEffectRequest*)fromMap:(NSDictionary*)dict {
-    FLTPlayEffectRequest* result = [[FLTPlayEffectRequest alloc] init];
-    result.effectId = dict[@"effectId"];
-    if ((NSNull *)result.effectId == [NSNull null]) {
-        result.effectId = nil;
-    }
-    result.path = dict[@"path"];
-    if ((NSNull *)result.path == [NSNull null]) {
-        result.path = nil;
-    }
-    result.loopCount = dict[@"loopCount"];
-    if ((NSNull *)result.loopCount == [NSNull null]) {
-        result.loopCount = nil;
-    }
-    result.sendEnabled = dict[@"sendEnabled"];
-    if ((NSNull *)result.sendEnabled == [NSNull null]) {
-        result.sendEnabled = nil;
-    }
-    result.sendVolume = dict[@"sendVolume"];
-    if ((NSNull *)result.sendVolume == [NSNull null]) {
-        result.sendVolume = nil;
-    }
-    result.playbackEnabled = dict[@"playbackEnabled"];
-    if ((NSNull *)result.playbackEnabled == [NSNull null]) {
-        result.playbackEnabled = nil;
-    }
-    result.playbackVolume = dict[@"playbackVolume"];
-    if ((NSNull *)result.playbackVolume == [NSNull null]) {
-        result.playbackVolume = nil;
-    }
-    return result;
-}
--(NSDictionary*)toMap {
-    return [NSDictionary dictionaryWithObjectsAndKeys:(self.effectId ? self.effectId : [NSNull null]), @"effectId", (self.path ? self.path : [NSNull null]), @"path", (self.loopCount ? self.loopCount : [NSNull null]), @"loopCount", (self.sendEnabled ? self.sendEnabled : [NSNull null]), @"sendEnabled", (self.sendVolume ? self.sendVolume : [NSNull null]), @"sendVolume", (self.playbackEnabled ? self.playbackEnabled : [NSNull null]), @"playbackEnabled", (self.playbackVolume ? self.playbackVolume : [NSNull null]), @"playbackVolume", nil];
-}
-@end
-
-@implementation FLTSetEffectSendVolumeRequest
-+(FLTSetEffectSendVolumeRequest*)fromMap:(NSDictionary*)dict {
-  FLTSetEffectSendVolumeRequest* result = [[FLTSetEffectSendVolumeRequest alloc] init];
+@implementation NEFLTSetEffectSendVolumeRequest
++(NEFLTSetEffectSendVolumeRequest*)fromMap:(NSDictionary*)dict {
+  NEFLTSetEffectSendVolumeRequest* result = [[NEFLTSetEffectSendVolumeRequest alloc] init];
   result.effectId = dict[@"effectId"];
   if ((NSNull *)result.effectId == [NSNull null]) {
     result.effectId = nil;
@@ -307,9 +247,9 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
 }
 @end
 
-@implementation FLTSetEffectPlaybackVolumeRequest
-+(FLTSetEffectPlaybackVolumeRequest*)fromMap:(NSDictionary*)dict {
-  FLTSetEffectPlaybackVolumeRequest* result = [[FLTSetEffectPlaybackVolumeRequest alloc] init];
+@implementation NEFLTSetEffectPlaybackVolumeRequest
++(NEFLTSetEffectPlaybackVolumeRequest*)fromMap:(NSDictionary*)dict {
+  NEFLTSetEffectPlaybackVolumeRequest* result = [[NEFLTSetEffectPlaybackVolumeRequest alloc] init];
   result.effectId = dict[@"effectId"];
   if ((NSNull *)result.effectId == [NSNull null]) {
     result.effectId = nil;
@@ -325,9 +265,73 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
 }
 @end
 
-@implementation FLTCreateEngineRequest
-+(FLTCreateEngineRequest*)fromMap:(NSDictionary*)dict {
-  FLTCreateEngineRequest* result = [[FLTCreateEngineRequest alloc] init];
+@implementation NEFLTBoolValue
++(NEFLTBoolValue*)fromMap:(NSDictionary*)dict {
+  NEFLTBoolValue* result = [[NEFLTBoolValue alloc] init];
+  result.value = dict[@"value"];
+  if ((NSNull *)result.value == [NSNull null]) {
+    result.value = nil;
+  }
+  return result;
+}
+-(NSDictionary*)toMap {
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.value ? self.value : [NSNull null]), @"value", nil];
+}
+@end
+
+@implementation NEFLTDoubleValue
++(NEFLTDoubleValue*)fromMap:(NSDictionary*)dict {
+  NEFLTDoubleValue* result = [[NEFLTDoubleValue alloc] init];
+  result.value = dict[@"value"];
+  if ((NSNull *)result.value == [NSNull null]) {
+    result.value = nil;
+  }
+  return result;
+}
+-(NSDictionary*)toMap {
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.value ? self.value : [NSNull null]), @"value", nil];
+}
+@end
+
+@implementation NEFLTSetCameraFocusPositionRequest
++(NEFLTSetCameraFocusPositionRequest*)fromMap:(NSDictionary*)dict {
+  NEFLTSetCameraFocusPositionRequest* result = [[NEFLTSetCameraFocusPositionRequest alloc] init];
+  result.x = dict[@"x"];
+  if ((NSNull *)result.x == [NSNull null]) {
+    result.x = nil;
+  }
+  result.y = dict[@"y"];
+  if ((NSNull *)result.y == [NSNull null]) {
+    result.y = nil;
+  }
+  return result;
+}
+-(NSDictionary*)toMap {
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.x ? self.x : [NSNull null]), @"x", (self.y ? self.y : [NSNull null]), @"y", nil];
+}
+@end
+
+@implementation NEFLTEnableEarbackRequest
++(NEFLTEnableEarbackRequest*)fromMap:(NSDictionary*)dict {
+  NEFLTEnableEarbackRequest* result = [[NEFLTEnableEarbackRequest alloc] init];
+  result.enabled = dict[@"enabled"];
+  if ((NSNull *)result.enabled == [NSNull null]) {
+    result.enabled = nil;
+  }
+  result.volume = dict[@"volume"];
+  if ((NSNull *)result.volume == [NSNull null]) {
+    result.volume = nil;
+  }
+  return result;
+}
+-(NSDictionary*)toMap {
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.enabled ? self.enabled : [NSNull null]), @"enabled", (self.volume ? self.volume : [NSNull null]), @"volume", nil];
+}
+@end
+
+@implementation NEFLTCreateEngineRequest
++(NEFLTCreateEngineRequest*)fromMap:(NSDictionary*)dict {
+  NEFLTCreateEngineRequest* result = [[NEFLTCreateEngineRequest alloc] init];
   result.appKey = dict[@"appKey"];
   if ((NSNull *)result.appKey == [NSNull null]) {
     result.appKey = nil;
@@ -340,17 +344,21 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
   if ((NSNull *)result.logLevel == [NSNull null]) {
     result.logLevel = nil;
   }
-  result.autoSubscribeAudio = dict[@"autoSubscribeAudio"];
-  if ((NSNull *)result.autoSubscribeAudio == [NSNull null]) {
-    result.autoSubscribeAudio = nil;
+  result.audioAutoSubscribe = dict[@"audioAutoSubscribe"];
+  if ((NSNull *)result.audioAutoSubscribe == [NSNull null]) {
+    result.audioAutoSubscribe = nil;
   }
-  result.videoEncodeMode = dict[@"videoEncodeMode"];
-  if ((NSNull *)result.videoEncodeMode == [NSNull null]) {
-    result.videoEncodeMode = nil;
+  result.audioDisableOverrideSpeakerOnReceiver = dict[@"audioDisableOverrideSpeakerOnReceiver"];
+  if ((NSNull *)result.audioDisableOverrideSpeakerOnReceiver == [NSNull null]) {
+    result.audioDisableOverrideSpeakerOnReceiver = nil;
   }
-  result.videoDecodeMode = dict[@"videoDecodeMode"];
-  if ((NSNull *)result.videoDecodeMode == [NSNull null]) {
-    result.videoDecodeMode = nil;
+  result.audioDisableSWAECOnHeadset = dict[@"audioDisableSWAECOnHeadset"];
+  if ((NSNull *)result.audioDisableSWAECOnHeadset == [NSNull null]) {
+    result.audioDisableSWAECOnHeadset = nil;
+  }
+  result.audioAINSEnabled = dict[@"audioAINSEnabled"];
+  if ((NSNull *)result.audioAINSEnabled == [NSNull null]) {
+    result.audioAINSEnabled = nil;
   }
   result.serverRecordAudio = dict[@"serverRecordAudio"];
   if ((NSNull *)result.serverRecordAudio == [NSNull null]) {
@@ -372,9 +380,17 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
   if ((NSNull *)result.publishSelfStream == [NSNull null]) {
     result.publishSelfStream = nil;
   }
-  result.videoCaptureObserver = dict[@"videoCaptureObserver"];
-  if ((NSNull *)result.videoCaptureObserver == [NSNull null]) {
-    result.videoCaptureObserver = nil;
+  result.videoCaptureObserverEnabled = dict[@"videoCaptureObserverEnabled"];
+  if ((NSNull *)result.videoCaptureObserverEnabled == [NSNull null]) {
+    result.videoCaptureObserverEnabled = nil;
+  }
+  result.videoEncodeMode = dict[@"videoEncodeMode"];
+  if ((NSNull *)result.videoEncodeMode == [NSNull null]) {
+    result.videoEncodeMode = nil;
+  }
+  result.videoDecodeMode = dict[@"videoDecodeMode"];
+  if ((NSNull *)result.videoDecodeMode == [NSNull null]) {
+    result.videoDecodeMode = nil;
   }
   result.videoSendMode = dict[@"videoSendMode"];
   if ((NSNull *)result.videoSendMode == [NSNull null]) {
@@ -383,13 +399,13 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
   return result;
 }
 -(NSDictionary*)toMap {
-  return [NSDictionary dictionaryWithObjectsAndKeys:(self.appKey ? self.appKey : [NSNull null]), @"appKey", (self.logDir ? self.logDir : [NSNull null]), @"logDir", (self.logLevel ? self.logLevel : [NSNull null]), @"logLevel", (self.autoSubscribeAudio ? self.autoSubscribeAudio : [NSNull null]), @"autoSubscribeAudio", (self.videoEncodeMode ? self.videoEncodeMode : [NSNull null]), @"videoEncodeMode", (self.videoDecodeMode ? self.videoDecodeMode : [NSNull null]), @"videoDecodeMode", (self.serverRecordAudio ? self.serverRecordAudio : [NSNull null]), @"serverRecordAudio", (self.serverRecordVideo ? self.serverRecordVideo : [NSNull null]), @"serverRecordVideo", (self.serverRecordMode ? self.serverRecordMode : [NSNull null]), @"serverRecordMode", (self.serverRecordSpeaker ? self.serverRecordSpeaker : [NSNull null]), @"serverRecordSpeaker", (self.publishSelfStream ? self.publishSelfStream : [NSNull null]), @"publishSelfStream", (self.videoCaptureObserver ? self.videoCaptureObserver : [NSNull null]), @"videoCaptureObserver", (self.videoSendMode ? self.videoSendMode : [NSNull null]), @"videoSendMode", nil];
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.appKey ? self.appKey : [NSNull null]), @"appKey", (self.logDir ? self.logDir : [NSNull null]), @"logDir", (self.logLevel ? self.logLevel : [NSNull null]), @"logLevel", (self.audioAutoSubscribe ? self.audioAutoSubscribe : [NSNull null]), @"audioAutoSubscribe", (self.audioDisableOverrideSpeakerOnReceiver ? self.audioDisableOverrideSpeakerOnReceiver : [NSNull null]), @"audioDisableOverrideSpeakerOnReceiver", (self.audioDisableSWAECOnHeadset ? self.audioDisableSWAECOnHeadset : [NSNull null]), @"audioDisableSWAECOnHeadset", (self.audioAINSEnabled ? self.audioAINSEnabled : [NSNull null]), @"audioAINSEnabled", (self.serverRecordAudio ? self.serverRecordAudio : [NSNull null]), @"serverRecordAudio", (self.serverRecordVideo ? self.serverRecordVideo : [NSNull null]), @"serverRecordVideo", (self.serverRecordMode ? self.serverRecordMode : [NSNull null]), @"serverRecordMode", (self.serverRecordSpeaker ? self.serverRecordSpeaker : [NSNull null]), @"serverRecordSpeaker", (self.publishSelfStream ? self.publishSelfStream : [NSNull null]), @"publishSelfStream", (self.videoCaptureObserverEnabled ? self.videoCaptureObserverEnabled : [NSNull null]), @"videoCaptureObserverEnabled", (self.videoEncodeMode ? self.videoEncodeMode : [NSNull null]), @"videoEncodeMode", (self.videoDecodeMode ? self.videoDecodeMode : [NSNull null]), @"videoDecodeMode", (self.videoSendMode ? self.videoSendMode : [NSNull null]), @"videoSendMode", nil];
 }
 @end
 
-@implementation FLTJoinChannelRequest
-+(FLTJoinChannelRequest*)fromMap:(NSDictionary*)dict {
-  FLTJoinChannelRequest* result = [[FLTJoinChannelRequest alloc] init];
+@implementation NEFLTJoinChannelRequest
++(NEFLTJoinChannelRequest*)fromMap:(NSDictionary*)dict {
+  NEFLTJoinChannelRequest* result = [[NEFLTJoinChannelRequest alloc] init];
   result.token = dict[@"token"];
   if ((NSNull *)result.token == [NSNull null]) {
     result.token = nil;
@@ -409,9 +425,9 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
 }
 @end
 
-@implementation FLTSubscribeRemoteAudioStreamRequest
-+(FLTSubscribeRemoteAudioStreamRequest*)fromMap:(NSDictionary*)dict {
-  FLTSubscribeRemoteAudioStreamRequest* result = [[FLTSubscribeRemoteAudioStreamRequest alloc] init];
+@implementation NEFLTSubscribeRemoteAudioRequest
++(NEFLTSubscribeRemoteAudioRequest*)fromMap:(NSDictionary*)dict {
+  NEFLTSubscribeRemoteAudioRequest* result = [[NEFLTSubscribeRemoteAudioRequest alloc] init];
   result.uid = dict[@"uid"];
   if ((NSNull *)result.uid == [NSNull null]) {
     result.uid = nil;
@@ -427,9 +443,9 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
 }
 @end
 
-@implementation FLTSetAudioProfileRequest
-+(FLTSetAudioProfileRequest*)fromMap:(NSDictionary*)dict {
-  FLTSetAudioProfileRequest* result = [[FLTSetAudioProfileRequest alloc] init];
+@implementation NEFLTSetAudioProfileRequest
++(NEFLTSetAudioProfileRequest*)fromMap:(NSDictionary*)dict {
+  NEFLTSetAudioProfileRequest* result = [[NEFLTSetAudioProfileRequest alloc] init];
   result.profile = dict[@"profile"];
   if ((NSNull *)result.profile == [NSNull null]) {
     result.profile = nil;
@@ -445,9 +461,9 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
 }
 @end
 
-@implementation FLTSetLocalVideoConfigRequest
-+(FLTSetLocalVideoConfigRequest*)fromMap:(NSDictionary*)dict {
-  FLTSetLocalVideoConfigRequest* result = [[FLTSetLocalVideoConfigRequest alloc] init];
+@implementation NEFLTSetLocalVideoConfigRequest
++(NEFLTSetLocalVideoConfigRequest*)fromMap:(NSDictionary*)dict {
+  NEFLTSetLocalVideoConfigRequest* result = [[NEFLTSetLocalVideoConfigRequest alloc] init];
   result.videoProfile = dict[@"videoProfile"];
   if ((NSNull *)result.videoProfile == [NSNull null]) {
     result.videoProfile = nil;
@@ -487,9 +503,9 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
 }
 @end
 
-@implementation FLTSubscribeRemoteVideoStreamRequest
-+(FLTSubscribeRemoteVideoStreamRequest*)fromMap:(NSDictionary*)dict {
-  FLTSubscribeRemoteVideoStreamRequest* result = [[FLTSubscribeRemoteVideoStreamRequest alloc] init];
+@implementation NEFLTSubscribeRemoteVideoRequest
++(NEFLTSubscribeRemoteVideoRequest*)fromMap:(NSDictionary*)dict {
+  NEFLTSubscribeRemoteVideoRequest* result = [[NEFLTSubscribeRemoteVideoRequest alloc] init];
   result.uid = dict[@"uid"];
   if ((NSNull *)result.uid == [NSNull null]) {
     result.uid = nil;
@@ -509,9 +525,27 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
 }
 @end
 
-@implementation FLTEnableAudioVolumeIndicationRequest
-+(FLTEnableAudioVolumeIndicationRequest*)fromMap:(NSDictionary*)dict {
-  FLTEnableAudioVolumeIndicationRequest* result = [[FLTEnableAudioVolumeIndicationRequest alloc] init];
+@implementation NEFLTSubscribeRemoteSubStreamVideoRequest
++(NEFLTSubscribeRemoteSubStreamVideoRequest*)fromMap:(NSDictionary*)dict {
+  NEFLTSubscribeRemoteSubStreamVideoRequest* result = [[NEFLTSubscribeRemoteSubStreamVideoRequest alloc] init];
+  result.uid = dict[@"uid"];
+  if ((NSNull *)result.uid == [NSNull null]) {
+    result.uid = nil;
+  }
+  result.subscribe = dict[@"subscribe"];
+  if ((NSNull *)result.subscribe == [NSNull null]) {
+    result.subscribe = nil;
+  }
+  return result;
+}
+-(NSDictionary*)toMap {
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.uid ? self.uid : [NSNull null]), @"uid", (self.subscribe ? self.subscribe : [NSNull null]), @"subscribe", nil];
+}
+@end
+
+@implementation NEFLTEnableAudioVolumeIndicationRequest
++(NEFLTEnableAudioVolumeIndicationRequest*)fromMap:(NSDictionary*)dict {
+  NEFLTEnableAudioVolumeIndicationRequest* result = [[NEFLTEnableAudioVolumeIndicationRequest alloc] init];
   result.enable = dict[@"enable"];
   if ((NSNull *)result.enable == [NSNull null]) {
     result.enable = nil;
@@ -527,9 +561,9 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
 }
 @end
 
-@implementation FLTAddOrUpdateLiveStreamTaskRequest
-+(FLTAddOrUpdateLiveStreamTaskRequest*)fromMap:(NSDictionary*)dict {
-  FLTAddOrUpdateLiveStreamTaskRequest* result = [[FLTAddOrUpdateLiveStreamTaskRequest alloc] init];
+@implementation NEFLTAddOrUpdateLiveStreamTaskRequest
++(NEFLTAddOrUpdateLiveStreamTaskRequest*)fromMap:(NSDictionary*)dict {
+  NEFLTAddOrUpdateLiveStreamTaskRequest* result = [[NEFLTAddOrUpdateLiveStreamTaskRequest alloc] init];
   result.serial = dict[@"serial"];
   if ((NSNull *)result.serial == [NSNull null]) {
     result.serial = nil;
@@ -593,9 +627,9 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
 }
 @end
 
-@implementation FLTDeleteLiveStreamTaskRequest
-+(FLTDeleteLiveStreamTaskRequest*)fromMap:(NSDictionary*)dict {
-  FLTDeleteLiveStreamTaskRequest* result = [[FLTDeleteLiveStreamTaskRequest alloc] init];
+@implementation NEFLTDeleteLiveStreamTaskRequest
++(NEFLTDeleteLiveStreamTaskRequest*)fromMap:(NSDictionary*)dict {
+  NEFLTDeleteLiveStreamTaskRequest* result = [[NEFLTDeleteLiveStreamTaskRequest alloc] init];
   result.serial = dict[@"serial"];
   if ((NSNull *)result.serial == [NSNull null]) {
     result.serial = nil;
@@ -611,221 +645,7 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
 }
 @end
 
-void FLTAudioMixingApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTAudioMixingApi> api) {
-  {
-    FlutterBasicMessageChannel *channel =
-      [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.AudioMixingApi.setAudioMixingEventCallback"
-        binaryMessenger:binaryMessenger];
-    if (api) {
-      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        FlutterError *error;
-        FLTIntValue *output = [api setAudioMixingEventCallback:&error];
-        callback(wrapResult([output toMap], error));
-      }];
-    }
-    else {
-      [channel setMessageHandler:nil];
-    }
-  }
-  {
-    FlutterBasicMessageChannel *channel =
-      [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.AudioMixingApi.clearAudioMixingEventCallback"
-        binaryMessenger:binaryMessenger];
-    if (api) {
-      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        FlutterError *error;
-        FLTIntValue *output = [api clearAudioMixingEventCallback:&error];
-        callback(wrapResult([output toMap], error));
-      }];
-    }
-    else {
-      [channel setMessageHandler:nil];
-    }
-  }
-  {
-    FlutterBasicMessageChannel *channel =
-      [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.AudioMixingApi.startAudioMixing"
-        binaryMessenger:binaryMessenger];
-    if (api) {
-      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        FlutterError *error;
-        FLTStartAudioMixingRequest *input = [FLTStartAudioMixingRequest fromMap:message];
-        FLTIntValue *output = [api startAudioMixing:input error:&error];
-        callback(wrapResult([output toMap], error));
-      }];
-    }
-    else {
-      [channel setMessageHandler:nil];
-    }
-  }
-  {
-    FlutterBasicMessageChannel *channel =
-      [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.AudioMixingApi.stopAudioMixing"
-        binaryMessenger:binaryMessenger];
-    if (api) {
-      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        FlutterError *error;
-        FLTIntValue *output = [api stopAudioMixing:&error];
-        callback(wrapResult([output toMap], error));
-      }];
-    }
-    else {
-      [channel setMessageHandler:nil];
-    }
-  }
-  {
-    FlutterBasicMessageChannel *channel =
-      [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.AudioMixingApi.pauseAudioMixing"
-        binaryMessenger:binaryMessenger];
-    if (api) {
-      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        FlutterError *error;
-        FLTIntValue *output = [api pauseAudioMixing:&error];
-        callback(wrapResult([output toMap], error));
-      }];
-    }
-    else {
-      [channel setMessageHandler:nil];
-    }
-  }
-  {
-    FlutterBasicMessageChannel *channel =
-      [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.AudioMixingApi.resumeAudioMixing"
-        binaryMessenger:binaryMessenger];
-    if (api) {
-      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        FlutterError *error;
-        FLTIntValue *output = [api resumeAudioMixing:&error];
-        callback(wrapResult([output toMap], error));
-      }];
-    }
-    else {
-      [channel setMessageHandler:nil];
-    }
-  }
-  {
-    FlutterBasicMessageChannel *channel =
-      [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.AudioMixingApi.setAudioMixingSendVolume"
-        binaryMessenger:binaryMessenger];
-    if (api) {
-      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        FlutterError *error;
-        FLTIntValue *input = [FLTIntValue fromMap:message];
-        FLTIntValue *output = [api setAudioMixingSendVolume:input error:&error];
-        callback(wrapResult([output toMap], error));
-      }];
-    }
-    else {
-      [channel setMessageHandler:nil];
-    }
-  }
-  {
-    FlutterBasicMessageChannel *channel =
-      [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.AudioMixingApi.getAudioMixingSendVolume"
-        binaryMessenger:binaryMessenger];
-    if (api) {
-      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        FlutterError *error;
-        FLTIntValue *output = [api getAudioMixingSendVolume:&error];
-        callback(wrapResult([output toMap], error));
-      }];
-    }
-    else {
-      [channel setMessageHandler:nil];
-    }
-  }
-  {
-    FlutterBasicMessageChannel *channel =
-      [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.AudioMixingApi.setAudioMixingPlaybackVolume"
-        binaryMessenger:binaryMessenger];
-    if (api) {
-      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        FlutterError *error;
-        FLTIntValue *input = [FLTIntValue fromMap:message];
-        FLTIntValue *output = [api setAudioMixingPlaybackVolume:input error:&error];
-        callback(wrapResult([output toMap], error));
-      }];
-    }
-    else {
-      [channel setMessageHandler:nil];
-    }
-  }
-  {
-    FlutterBasicMessageChannel *channel =
-      [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.AudioMixingApi.getAudioMixingPlaybackVolume"
-        binaryMessenger:binaryMessenger];
-    if (api) {
-      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        FlutterError *error;
-        FLTIntValue *output = [api getAudioMixingPlaybackVolume:&error];
-        callback(wrapResult([output toMap], error));
-      }];
-    }
-    else {
-      [channel setMessageHandler:nil];
-    }
-  }
-  {
-    FlutterBasicMessageChannel *channel =
-      [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.AudioMixingApi.getAudioMixingDuration"
-        binaryMessenger:binaryMessenger];
-    if (api) {
-      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        FlutterError *error;
-        FLTIntValue *output = [api getAudioMixingDuration:&error];
-        callback(wrapResult([output toMap], error));
-      }];
-    }
-    else {
-      [channel setMessageHandler:nil];
-    }
-  }
-  {
-    FlutterBasicMessageChannel *channel =
-      [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.AudioMixingApi.getAudioMixingCurrentPosition"
-        binaryMessenger:binaryMessenger];
-    if (api) {
-      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        FlutterError *error;
-        FLTIntValue *output = [api getAudioMixingCurrentPosition:&error];
-        callback(wrapResult([output toMap], error));
-      }];
-    }
-    else {
-      [channel setMessageHandler:nil];
-    }
-  }
-  {
-    FlutterBasicMessageChannel *channel =
-      [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.AudioMixingApi.setAudioMixingPosition"
-        binaryMessenger:binaryMessenger];
-    if (api) {
-      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        FlutterError *error;
-        FLTIntValue *input = [FLTIntValue fromMap:message];
-        FLTIntValue *output = [api setAudioMixingPosition:input error:&error];
-        callback(wrapResult([output toMap], error));
-      }];
-    }
-    else {
-      [channel setMessageHandler:nil];
-    }
-  }
-}
-void FLTVideoRendererApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTVideoRendererApi> api) {
+void NEFLTVideoRendererApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<NEFLTVideoRendererApi> api) {
   {
     FlutterBasicMessageChannel *channel =
       [FlutterBasicMessageChannel
@@ -834,7 +654,7 @@ void FLTVideoRendererApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLT
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTIntValue *output = [api createVideoRenderer:&error];
+        NEFLTIntValue *output = [api createVideoRenderer:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -850,8 +670,8 @@ void FLTVideoRendererApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLT
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTSetVideoRendererMirrorRequest *input = [FLTSetVideoRendererMirrorRequest fromMap:message];
-        FLTIntValue *output = [api setMirror:input error:&error];
+        NEFLTSetVideoRendererMirrorRequest *input = [NEFLTSetVideoRendererMirrorRequest fromMap:message];
+        NEFLTIntValue *output = [api setMirror:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -867,8 +687,8 @@ void FLTVideoRendererApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLT
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTIntValue *input = [FLTIntValue fromMap:message];
-        FLTIntValue *output = [api setupLocalVideoRenderer:input error:&error];
+        NEFLTIntValue *input = [NEFLTIntValue fromMap:message];
+        NEFLTIntValue *output = [api setupLocalVideoRenderer:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -884,8 +704,8 @@ void FLTVideoRendererApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLT
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTSetupRemoteVideoRendererRequest *input = [FLTSetupRemoteVideoRendererRequest fromMap:message];
-        FLTIntValue *output = [api setupRemoteVideoRenderer:input error:&error];
+        NEFLTSetupRemoteVideoRendererRequest *input = [NEFLTSetupRemoteVideoRendererRequest fromMap:message];
+        NEFLTIntValue *output = [api setupRemoteVideoRenderer:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -901,7 +721,7 @@ void FLTVideoRendererApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLT
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTIntValue *input = [FLTIntValue fromMap:message];
+        NEFLTIntValue *input = [NEFLTIntValue fromMap:message];
         [api disposeVideoRenderer:input error:&error];
         callback(wrapResult(nil, error));
       }];
@@ -911,16 +731,16 @@ void FLTVideoRendererApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLT
     }
   }
 }
-void FLTDeviceManagerApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTDeviceManagerApi> api) {
+void NEFLTAudioMixingApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<NEFLTAudioMixingApi> api) {
   {
     FlutterBasicMessageChannel *channel =
       [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.DeviceManagerApi.setDeviceEventCallback"
+        messageChannelWithName:@"dev.flutter.pigeon.AudioMixingApi.setAudioMixingEventCallback"
         binaryMessenger:binaryMessenger];
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTIntValue *output = [api setDeviceEventCallback:&error];
+        NEFLTIntValue *output = [api setAudioMixingEventCallback:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -931,12 +751,12 @@ void FLTDeviceManagerApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLT
   {
     FlutterBasicMessageChannel *channel =
       [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.DeviceManagerApi.clearDeviceEventCallback"
+        messageChannelWithName:@"dev.flutter.pigeon.AudioMixingApi.clearAudioMixingEventCallback"
         binaryMessenger:binaryMessenger];
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTIntValue *output = [api clearDeviceEventCallback:&error];
+        NEFLTIntValue *output = [api clearAudioMixingEventCallback:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -947,12 +767,13 @@ void FLTDeviceManagerApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLT
   {
     FlutterBasicMessageChannel *channel =
       [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.DeviceManagerApi.isSpeakerphoneOn"
+        messageChannelWithName:@"dev.flutter.pigeon.AudioMixingApi.startAudioMixing"
         binaryMessenger:binaryMessenger];
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTBoolValue *output = [api isSpeakerphoneOn:&error];
+        NEFLTStartAudioMixingRequest *input = [NEFLTStartAudioMixingRequest fromMap:message];
+        NEFLTIntValue *output = [api startAudioMixing:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -963,13 +784,12 @@ void FLTDeviceManagerApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLT
   {
     FlutterBasicMessageChannel *channel =
       [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.DeviceManagerApi.setSpeakerphoneOn"
+        messageChannelWithName:@"dev.flutter.pigeon.AudioMixingApi.stopAudioMixing"
         binaryMessenger:binaryMessenger];
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTBoolValue *input = [FLTBoolValue fromMap:message];
-        FLTIntValue *output = [api setSpeakerphoneOn:input error:&error];
+        NEFLTIntValue *output = [api stopAudioMixing:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -980,12 +800,12 @@ void FLTDeviceManagerApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLT
   {
     FlutterBasicMessageChannel *channel =
       [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.DeviceManagerApi.switchCamera"
+        messageChannelWithName:@"dev.flutter.pigeon.AudioMixingApi.pauseAudioMixing"
         binaryMessenger:binaryMessenger];
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTIntValue *output = [api switchCamera:&error];
+        NEFLTIntValue *output = [api pauseAudioMixing:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -996,13 +816,12 @@ void FLTDeviceManagerApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLT
   {
     FlutterBasicMessageChannel *channel =
       [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.DeviceManagerApi.setCameraZoomFactor"
+        messageChannelWithName:@"dev.flutter.pigeon.AudioMixingApi.resumeAudioMixing"
         binaryMessenger:binaryMessenger];
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTIntValue *input = [FLTIntValue fromMap:message];
-        FLTIntValue *output = [api setCameraZoomFactor:input error:&error];
+        NEFLTIntValue *output = [api resumeAudioMixing:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1013,12 +832,13 @@ void FLTDeviceManagerApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLT
   {
     FlutterBasicMessageChannel *channel =
       [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.DeviceManagerApi.getCameraMaxZoom"
+        messageChannelWithName:@"dev.flutter.pigeon.AudioMixingApi.setAudioMixingSendVolume"
         binaryMessenger:binaryMessenger];
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTDoubleValue *output = [api getCameraMaxZoom:&error];
+        NEFLTIntValue *input = [NEFLTIntValue fromMap:message];
+        NEFLTIntValue *output = [api setAudioMixingSendVolume:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1029,13 +849,12 @@ void FLTDeviceManagerApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLT
   {
     FlutterBasicMessageChannel *channel =
       [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.DeviceManagerApi.setCameraTorchOn"
+        messageChannelWithName:@"dev.flutter.pigeon.AudioMixingApi.getAudioMixingSendVolume"
         binaryMessenger:binaryMessenger];
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTBoolValue *input = [FLTBoolValue fromMap:message];
-        FLTIntValue *output = [api setCameraTorchOn:input error:&error];
+        NEFLTIntValue *output = [api getAudioMixingSendVolume:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1046,13 +865,13 @@ void FLTDeviceManagerApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLT
   {
     FlutterBasicMessageChannel *channel =
       [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.DeviceManagerApi.setCameraFocusPosition"
+        messageChannelWithName:@"dev.flutter.pigeon.AudioMixingApi.setAudioMixingPlaybackVolume"
         binaryMessenger:binaryMessenger];
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTSetCameraFocusPositionRequest *input = [FLTSetCameraFocusPositionRequest fromMap:message];
-        FLTIntValue *output = [api setCameraFocusPosition:input error:&error];
+        NEFLTIntValue *input = [NEFLTIntValue fromMap:message];
+        NEFLTIntValue *output = [api setAudioMixingPlaybackVolume:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1063,13 +882,12 @@ void FLTDeviceManagerApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLT
   {
     FlutterBasicMessageChannel *channel =
       [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.DeviceManagerApi.setPlayoutDeviceMute"
+        messageChannelWithName:@"dev.flutter.pigeon.AudioMixingApi.getAudioMixingPlaybackVolume"
         binaryMessenger:binaryMessenger];
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTBoolValue *input = [FLTBoolValue fromMap:message];
-        FLTIntValue *output = [api setPlayoutDeviceMute:input error:&error];
+        NEFLTIntValue *output = [api getAudioMixingPlaybackVolume:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1080,12 +898,12 @@ void FLTDeviceManagerApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLT
   {
     FlutterBasicMessageChannel *channel =
       [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.DeviceManagerApi.isPlayoutDeviceMute"
+        messageChannelWithName:@"dev.flutter.pigeon.AudioMixingApi.getAudioMixingDuration"
         binaryMessenger:binaryMessenger];
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTBoolValue *output = [api isPlayoutDeviceMute:&error];
+        NEFLTIntValue *output = [api getAudioMixingDuration:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1096,13 +914,12 @@ void FLTDeviceManagerApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLT
   {
     FlutterBasicMessageChannel *channel =
       [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.DeviceManagerApi.setRecordDeviceMute"
+        messageChannelWithName:@"dev.flutter.pigeon.AudioMixingApi.getAudioMixingCurrentPosition"
         binaryMessenger:binaryMessenger];
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTBoolValue *input = [FLTBoolValue fromMap:message];
-        FLTIntValue *output = [api setRecordDeviceMute:input error:&error];
+        NEFLTIntValue *output = [api getAudioMixingCurrentPosition:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1113,63 +930,13 @@ void FLTDeviceManagerApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLT
   {
     FlutterBasicMessageChannel *channel =
       [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.DeviceManagerApi.isRecordDeviceMute"
+        messageChannelWithName:@"dev.flutter.pigeon.AudioMixingApi.setAudioMixingPosition"
         binaryMessenger:binaryMessenger];
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTBoolValue *output = [api isRecordDeviceMute:&error];
-        callback(wrapResult([output toMap], error));
-      }];
-    }
-    else {
-      [channel setMessageHandler:nil];
-    }
-  }
-  {
-    FlutterBasicMessageChannel *channel =
-      [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.DeviceManagerApi.enableEarback"
-        binaryMessenger:binaryMessenger];
-    if (api) {
-      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        FlutterError *error;
-        FLTEnableEarbackRequest *input = [FLTEnableEarbackRequest fromMap:message];
-        FLTIntValue *output = [api enableEarback:input error:&error];
-        callback(wrapResult([output toMap], error));
-      }];
-    }
-    else {
-      [channel setMessageHandler:nil];
-    }
-  }
-  {
-    FlutterBasicMessageChannel *channel =
-      [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.DeviceManagerApi.setEarbackVolume"
-        binaryMessenger:binaryMessenger];
-    if (api) {
-      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        FlutterError *error;
-        FLTIntValue *input = [FLTIntValue fromMap:message];
-        FLTIntValue *output = [api setEarbackVolume:input error:&error];
-        callback(wrapResult([output toMap], error));
-      }];
-    }
-    else {
-      [channel setMessageHandler:nil];
-    }
-  }
-  {
-    FlutterBasicMessageChannel *channel =
-      [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.DeviceManagerApi.setAudioFocusMode"
-        binaryMessenger:binaryMessenger];
-    if (api) {
-      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        FlutterError *error;
-        FLTIntValue *input = [FLTIntValue fromMap:message];
-        FLTIntValue *output = [api setAudioFocusMode:input error:&error];
+        NEFLTIntValue *input = [NEFLTIntValue fromMap:message];
+        NEFLTIntValue *output = [api setAudioMixingPosition:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1178,7 +945,7 @@ void FLTDeviceManagerApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLT
     }
   }
 }
-void FLTAudioEffectApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTAudioEffectApi> api) {
+void NEFLTAudioEffectApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<NEFLTAudioEffectApi> api) {
   {
     FlutterBasicMessageChannel *channel =
       [FlutterBasicMessageChannel
@@ -1187,7 +954,7 @@ void FLTAudioEffectApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTAu
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTIntValue *output = [api setAudioEffectEventCallback:&error];
+        NEFLTIntValue *output = [api setAudioEffectEventCallback:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1203,7 +970,7 @@ void FLTAudioEffectApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTAu
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTIntValue *output = [api clearAudioEffectEventCallback:&error];
+        NEFLTIntValue *output = [api clearAudioEffectEventCallback:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1219,8 +986,8 @@ void FLTAudioEffectApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTAu
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTPlayEffectRequest *input = [FLTPlayEffectRequest fromMap:message];
-        FLTIntValue *output = [api playEffect:input error:&error];
+        NEFLTPlayEffectRequest *input = [NEFLTPlayEffectRequest fromMap:message];
+        NEFLTIntValue *output = [api playEffect:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1236,8 +1003,8 @@ void FLTAudioEffectApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTAu
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTIntValue *input = [FLTIntValue fromMap:message];
-        FLTIntValue *output = [api stopEffect:input error:&error];
+        NEFLTIntValue *input = [NEFLTIntValue fromMap:message];
+        NEFLTIntValue *output = [api stopEffect:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1253,7 +1020,7 @@ void FLTAudioEffectApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTAu
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTIntValue *output = [api stopAllEffects:&error];
+        NEFLTIntValue *output = [api stopAllEffects:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1269,8 +1036,8 @@ void FLTAudioEffectApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTAu
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTIntValue *input = [FLTIntValue fromMap:message];
-        FLTIntValue *output = [api pauseEffect:input error:&error];
+        NEFLTIntValue *input = [NEFLTIntValue fromMap:message];
+        NEFLTIntValue *output = [api pauseEffect:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1286,8 +1053,8 @@ void FLTAudioEffectApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTAu
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTIntValue *input = [FLTIntValue fromMap:message];
-        FLTIntValue *output = [api resumeEffect:input error:&error];
+        NEFLTIntValue *input = [NEFLTIntValue fromMap:message];
+        NEFLTIntValue *output = [api resumeEffect:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1303,7 +1070,7 @@ void FLTAudioEffectApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTAu
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTIntValue *output = [api pauseAllEffects:&error];
+        NEFLTIntValue *output = [api pauseAllEffects:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1319,7 +1086,7 @@ void FLTAudioEffectApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTAu
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTIntValue *output = [api resumeAllEffects:&error];
+        NEFLTIntValue *output = [api resumeAllEffects:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1335,8 +1102,8 @@ void FLTAudioEffectApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTAu
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTSetEffectSendVolumeRequest *input = [FLTSetEffectSendVolumeRequest fromMap:message];
-        FLTIntValue *output = [api setEffectSendVolume:input error:&error];
+        NEFLTSetEffectSendVolumeRequest *input = [NEFLTSetEffectSendVolumeRequest fromMap:message];
+        NEFLTIntValue *output = [api setEffectSendVolume:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1352,8 +1119,8 @@ void FLTAudioEffectApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTAu
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTIntValue *input = [FLTIntValue fromMap:message];
-        FLTIntValue *output = [api getEffectSendVolume:input error:&error];
+        NEFLTIntValue *input = [NEFLTIntValue fromMap:message];
+        NEFLTIntValue *output = [api getEffectSendVolume:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1369,8 +1136,8 @@ void FLTAudioEffectApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTAu
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTSetEffectPlaybackVolumeRequest *input = [FLTSetEffectPlaybackVolumeRequest fromMap:message];
-        FLTIntValue *output = [api setEffectPlaybackVolume:input error:&error];
+        NEFLTSetEffectPlaybackVolumeRequest *input = [NEFLTSetEffectPlaybackVolumeRequest fromMap:message];
+        NEFLTIntValue *output = [api setEffectPlaybackVolume:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1386,8 +1153,8 @@ void FLTAudioEffectApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTAu
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTIntValue *input = [FLTIntValue fromMap:message];
-        FLTIntValue *output = [api getEffectPlaybackVolume:input error:&error];
+        NEFLTIntValue *input = [NEFLTIntValue fromMap:message];
+        NEFLTIntValue *output = [api getEffectPlaybackVolume:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1396,7 +1163,274 @@ void FLTAudioEffectApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTAu
     }
   }
 }
-void FLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTEngineApi> api) {
+void NEFLTDeviceManagerApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<NEFLTDeviceManagerApi> api) {
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.DeviceManagerApi.setDeviceEventCallback"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        NEFLTIntValue *output = [api setDeviceEventCallback:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.DeviceManagerApi.clearDeviceEventCallback"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        NEFLTIntValue *output = [api clearDeviceEventCallback:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.DeviceManagerApi.isSpeakerphoneOn"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        NEFLTBoolValue *output = [api isSpeakerphoneOn:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.DeviceManagerApi.setSpeakerphoneOn"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        NEFLTBoolValue *input = [NEFLTBoolValue fromMap:message];
+        NEFLTIntValue *output = [api setSpeakerphoneOn:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.DeviceManagerApi.switchCamera"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        NEFLTIntValue *output = [api switchCamera:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.DeviceManagerApi.setCameraZoomFactor"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        NEFLTIntValue *input = [NEFLTIntValue fromMap:message];
+        NEFLTIntValue *output = [api setCameraZoomFactor:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.DeviceManagerApi.getCameraMaxZoom"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        NEFLTDoubleValue *output = [api getCameraMaxZoom:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.DeviceManagerApi.setCameraTorchOn"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        NEFLTBoolValue *input = [NEFLTBoolValue fromMap:message];
+        NEFLTIntValue *output = [api setCameraTorchOn:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.DeviceManagerApi.setCameraFocusPosition"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        NEFLTSetCameraFocusPositionRequest *input = [NEFLTSetCameraFocusPositionRequest fromMap:message];
+        NEFLTIntValue *output = [api setCameraFocusPosition:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.DeviceManagerApi.setPlayoutDeviceMute"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        NEFLTBoolValue *input = [NEFLTBoolValue fromMap:message];
+        NEFLTIntValue *output = [api setPlayoutDeviceMute:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.DeviceManagerApi.isPlayoutDeviceMute"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        NEFLTBoolValue *output = [api isPlayoutDeviceMute:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.DeviceManagerApi.setRecordDeviceMute"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        NEFLTBoolValue *input = [NEFLTBoolValue fromMap:message];
+        NEFLTIntValue *output = [api setRecordDeviceMute:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.DeviceManagerApi.isRecordDeviceMute"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        NEFLTBoolValue *output = [api isRecordDeviceMute:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.DeviceManagerApi.enableEarback"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        NEFLTEnableEarbackRequest *input = [NEFLTEnableEarbackRequest fromMap:message];
+        NEFLTIntValue *output = [api enableEarback:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.DeviceManagerApi.setEarbackVolume"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        NEFLTIntValue *input = [NEFLTIntValue fromMap:message];
+        NEFLTIntValue *output = [api setEarbackVolume:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.DeviceManagerApi.setAudioFocusMode"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        NEFLTIntValue *input = [NEFLTIntValue fromMap:message];
+        NEFLTIntValue *output = [api setAudioFocusMode:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+}
+void NEFLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<NEFLTEngineApi> api) {
   {
     FlutterBasicMessageChannel *channel =
       [FlutterBasicMessageChannel
@@ -1405,8 +1439,8 @@ void FLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTEngineA
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTCreateEngineRequest *input = [FLTCreateEngineRequest fromMap:message];
-        FLTIntValue *output = [api create:input error:&error];
+        NEFLTCreateEngineRequest *input = [NEFLTCreateEngineRequest fromMap:message];
+        NEFLTIntValue *output = [api create:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1433,7 +1467,7 @@ void FLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTEngineA
         else {
             [channel setMessageHandler:nil];
         }
-    }
+  }
   {
     FlutterBasicMessageChannel *channel =
       [FlutterBasicMessageChannel
@@ -1442,7 +1476,7 @@ void FLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTEngineA
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTIntValue *output = [api setStatsEventCallback:&error];
+        NEFLTIntValue *output = [api setStatsEventCallback:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1458,7 +1492,7 @@ void FLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTEngineA
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTIntValue *output = [api clearStatsEventCallback:&error];
+        NEFLTIntValue *output = [api clearStatsEventCallback:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1474,8 +1508,8 @@ void FLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTEngineA
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTIntValue *input = [FLTIntValue fromMap:message];
-        FLTIntValue *output = [api setChannelProfile:input error:&error];
+        NEFLTIntValue *input = [NEFLTIntValue fromMap:message];
+        NEFLTIntValue *output = [api setChannelProfile:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1491,8 +1525,8 @@ void FLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTEngineA
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTJoinChannelRequest *input = [FLTJoinChannelRequest fromMap:message];
-        FLTIntValue *output = [api joinChannel:input error:&error];
+        NEFLTJoinChannelRequest *input = [NEFLTJoinChannelRequest fromMap:message];
+        NEFLTIntValue *output = [api joinChannel:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1508,7 +1542,7 @@ void FLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTEngineA
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTIntValue *output = [api leaveChannel:&error];
+        NEFLTIntValue *output = [api leaveChannel:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1524,8 +1558,8 @@ void FLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTEngineA
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTBoolValue *input = [FLTBoolValue fromMap:message];
-        FLTIntValue *output = [api enableLocalAudio:input error:&error];
+        NEFLTBoolValue *input = [NEFLTBoolValue fromMap:message];
+        NEFLTIntValue *output = [api enableLocalAudio:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1536,13 +1570,13 @@ void FLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTEngineA
   {
     FlutterBasicMessageChannel *channel =
       [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.EngineApi.subscribeRemoteAudioStream"
+        messageChannelWithName:@"dev.flutter.pigeon.EngineApi.subscribeRemoteAudio"
         binaryMessenger:binaryMessenger];
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTSubscribeRemoteAudioStreamRequest *input = [FLTSubscribeRemoteAudioStreamRequest fromMap:message];
-        FLTIntValue *output = [api subscribeRemoteAudioStream:input error:&error];
+        NEFLTSubscribeRemoteAudioRequest *input = [NEFLTSubscribeRemoteAudioRequest fromMap:message];
+        NEFLTIntValue *output = [api subscribeRemoteAudio:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1553,13 +1587,13 @@ void FLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTEngineA
   {
     FlutterBasicMessageChannel *channel =
       [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.EngineApi.subscribeAllRemoteAudioStreams"
+        messageChannelWithName:@"dev.flutter.pigeon.EngineApi.subscribeAllRemoteAudio"
         binaryMessenger:binaryMessenger];
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTBoolValue *input = [FLTBoolValue fromMap:message];
-        FLTIntValue *output = [api subscribeAllRemoteAudioStreams:input error:&error];
+        NEFLTBoolValue *input = [NEFLTBoolValue fromMap:message];
+        NEFLTIntValue *output = [api subscribeAllRemoteAudio:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1575,8 +1609,8 @@ void FLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTEngineA
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTSetAudioProfileRequest *input = [FLTSetAudioProfileRequest fromMap:message];
-        FLTIntValue *output = [api setAudioProfile:input error:&error];
+        NEFLTSetAudioProfileRequest *input = [NEFLTSetAudioProfileRequest fromMap:message];
+        NEFLTIntValue *output = [api setAudioProfile:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1592,8 +1626,8 @@ void FLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTEngineA
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTBoolValue *input = [FLTBoolValue fromMap:message];
-        FLTIntValue *output = [api enableDualStreamMode:input error:&error];
+        NEFLTBoolValue *input = [NEFLTBoolValue fromMap:message];
+        NEFLTIntValue *output = [api enableDualStreamMode:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1609,8 +1643,8 @@ void FLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTEngineA
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTSetLocalVideoConfigRequest *input = [FLTSetLocalVideoConfigRequest fromMap:message];
-        FLTIntValue *output = [api setLocalVideoConfig:input error:&error];
+        NEFLTSetLocalVideoConfigRequest *input = [NEFLTSetLocalVideoConfigRequest fromMap:message];
+        NEFLTIntValue *output = [api setLocalVideoConfig:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1626,7 +1660,7 @@ void FLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTEngineA
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTIntValue *output = [api startVideoPreview:&error];
+        NEFLTIntValue *output = [api startVideoPreview:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1642,7 +1676,7 @@ void FLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTEngineA
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTIntValue *output = [api stopVideoPreview:&error];
+        NEFLTIntValue *output = [api stopVideoPreview:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1658,8 +1692,8 @@ void FLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTEngineA
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTBoolValue *input = [FLTBoolValue fromMap:message];
-        FLTIntValue *output = [api enableLocalVideo:input error:&error];
+        NEFLTBoolValue *input = [NEFLTBoolValue fromMap:message];
+        NEFLTIntValue *output = [api enableLocalVideo:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1675,8 +1709,8 @@ void FLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTEngineA
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTIntValue *input = [FLTIntValue fromMap:message];
-        FLTIntValue *output = [api startScreenCapture:input error:&error];
+        NEFLTIntValue *input = [NEFLTIntValue fromMap:message];
+        NEFLTIntValue *output = [api startScreenCapture:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1692,7 +1726,7 @@ void FLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTEngineA
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTIntValue *output = [api stopScreenCapture:&error];
+        NEFLTIntValue *output = [api stopScreenCapture:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1703,13 +1737,30 @@ void FLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTEngineA
   {
     FlutterBasicMessageChannel *channel =
       [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.EngineApi.subscribeRemoteVideoStream"
+        messageChannelWithName:@"dev.flutter.pigeon.EngineApi.subscribeRemoteVideo"
         binaryMessenger:binaryMessenger];
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTSubscribeRemoteVideoStreamRequest *input = [FLTSubscribeRemoteVideoStreamRequest fromMap:message];
-        FLTIntValue *output = [api subscribeRemoteVideoStream:input error:&error];
+        NEFLTSubscribeRemoteVideoRequest *input = [NEFLTSubscribeRemoteVideoRequest fromMap:message];
+        NEFLTIntValue *output = [api subscribeRemoteVideo:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.EngineApi.subscribeRemoteSubStreamVideo"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        NEFLTSubscribeRemoteSubStreamVideoRequest *input = [NEFLTSubscribeRemoteSubStreamVideoRequest fromMap:message];
+        NEFLTIntValue *output = [api subscribeRemoteSubStreamVideo:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1725,8 +1776,8 @@ void FLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTEngineA
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTBoolValue *input = [FLTBoolValue fromMap:message];
-        FLTIntValue *output = [api muteLocalAudioStream:input error:&error];
+        NEFLTBoolValue *input = [NEFLTBoolValue fromMap:message];
+        NEFLTIntValue *output = [api muteLocalAudioStream:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1742,8 +1793,8 @@ void FLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTEngineA
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTBoolValue *input = [FLTBoolValue fromMap:message];
-        FLTIntValue *output = [api muteLocalVideoStream:input error:&error];
+        NEFLTBoolValue *input = [NEFLTBoolValue fromMap:message];
+        NEFLTIntValue *output = [api muteLocalVideoStream:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1759,7 +1810,7 @@ void FLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTEngineA
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTIntValue *output = [api startAudioDump:&error];
+        NEFLTIntValue *output = [api startAudioDump:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1775,7 +1826,7 @@ void FLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTEngineA
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTIntValue *output = [api stopAudioDump:&error];
+        NEFLTIntValue *output = [api stopAudioDump:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1791,8 +1842,8 @@ void FLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTEngineA
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTEnableAudioVolumeIndicationRequest *input = [FLTEnableAudioVolumeIndicationRequest fromMap:message];
-        FLTIntValue *output = [api enableAudioVolumeIndication:input error:&error];
+        NEFLTEnableAudioVolumeIndicationRequest *input = [NEFLTEnableAudioVolumeIndicationRequest fromMap:message];
+        NEFLTIntValue *output = [api enableAudioVolumeIndication:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1808,8 +1859,8 @@ void FLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTEngineA
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTIntValue *input = [FLTIntValue fromMap:message];
-        FLTIntValue *output = [api adjustRecordingSignalVolume:input error:&error];
+        NEFLTIntValue *input = [NEFLTIntValue fromMap:message];
+        NEFLTIntValue *output = [api adjustRecordingSignalVolume:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1825,8 +1876,8 @@ void FLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTEngineA
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTIntValue *input = [FLTIntValue fromMap:message];
-        FLTIntValue *output = [api adjustPlaybackSignalVolume:input error:&error];
+        NEFLTIntValue *input = [NEFLTIntValue fromMap:message];
+        NEFLTIntValue *output = [api adjustPlaybackSignalVolume:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1842,8 +1893,8 @@ void FLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTEngineA
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTAddOrUpdateLiveStreamTaskRequest *input = [FLTAddOrUpdateLiveStreamTaskRequest fromMap:message];
-        FLTIntValue *output = [api addLiveStreamTask:input error:&error];
+        NEFLTAddOrUpdateLiveStreamTaskRequest *input = [NEFLTAddOrUpdateLiveStreamTaskRequest fromMap:message];
+        NEFLTIntValue *output = [api addLiveStreamTask:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1859,8 +1910,8 @@ void FLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTEngineA
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTAddOrUpdateLiveStreamTaskRequest *input = [FLTAddOrUpdateLiveStreamTaskRequest fromMap:message];
-        FLTIntValue *output = [api updateLiveStreamTask:input error:&error];
+        NEFLTAddOrUpdateLiveStreamTaskRequest *input = [NEFLTAddOrUpdateLiveStreamTaskRequest fromMap:message];
+        NEFLTIntValue *output = [api updateLiveStreamTask:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1876,8 +1927,57 @@ void FLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTEngineA
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        FLTDeleteLiveStreamTaskRequest *input = [FLTDeleteLiveStreamTaskRequest fromMap:message];
-        FLTIntValue *output = [api removeLiveStreamTask:input error:&error];
+        NEFLTDeleteLiveStreamTaskRequest *input = [NEFLTDeleteLiveStreamTaskRequest fromMap:message];
+        NEFLTIntValue *output = [api removeLiveStreamTask:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.EngineApi.setClientRole"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        NEFLTIntValue *input = [NEFLTIntValue fromMap:message];
+        NEFLTIntValue *output = [api setClientRole:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.EngineApi.getConnectionState"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        NEFLTIntValue *output = [api getConnectionState:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.EngineApi.uploadSdkInfo"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        NEFLTIntValue *output = [api uploadSdkInfo:&error];
         callback(wrapResult([output toMap], error));
       }];
     }

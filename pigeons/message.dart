@@ -4,15 +4,18 @@ class CreateEngineRequest {
   String appKey;
   String logDir;
   int logLevel;
-  bool autoSubscribeAudio;
-  int videoEncodeMode;
-  int videoDecodeMode;
+  bool audioAutoSubscribe;
+  bool audioDisableOverrideSpeakerOnReceiver;
+  bool audioDisableSWAECOnHeadset;
+  bool audioAINSEnabled;
   bool serverRecordAudio;
   bool serverRecordVideo;
   int serverRecordMode;
   bool serverRecordSpeaker;
   bool publishSelfStream;
-  bool videoCaptureObserver;
+  bool videoCaptureObserverEnabled;
+  int videoEncodeMode;
+  int videoDecodeMode;
   int videoSendMode;
 }
 
@@ -22,7 +25,7 @@ class JoinChannelRequest {
   int uid;
 }
 
-class SubscribeRemoteAudioStreamRequest {
+class SubscribeRemoteAudioRequest {
   int uid;
   bool subscribe;
 }
@@ -43,9 +46,14 @@ class SetLocalVideoConfigRequest {
   int degradationPrefer;
 }
 
-class SubscribeRemoteVideoStreamRequest {
+class SubscribeRemoteVideoRequest {
   int uid;
   int streamType;
+  bool subscribe;
+}
+
+class SubscribeRemoteSubStreamVideoRequest {
+  int uid;
   bool subscribe;
 }
 
@@ -151,9 +159,8 @@ abstract class EngineApi {
   IntValue joinChannel(JoinChannelRequest request);
   IntValue leaveChannel();
   IntValue enableLocalAudio(BoolValue enable);
-  IntValue subscribeRemoteAudioStream(
-      SubscribeRemoteAudioStreamRequest request);
-  IntValue subscribeAllRemoteAudioStreams(BoolValue subscribe);
+  IntValue subscribeRemoteAudio(SubscribeRemoteAudioRequest request);
+  IntValue subscribeAllRemoteAudio(BoolValue subscribe);
   IntValue setAudioProfile(SetAudioProfileRequest request);
   IntValue enableDualStreamMode(BoolValue enable);
   IntValue setLocalVideoConfig(SetLocalVideoConfigRequest request);
@@ -162,8 +169,9 @@ abstract class EngineApi {
   IntValue enableLocalVideo(BoolValue enable);
   IntValue startScreenCapture(IntValue screenProfile);
   IntValue stopScreenCapture();
-  IntValue subscribeRemoteVideoStream(
-      SubscribeRemoteVideoStreamRequest request);
+  IntValue subscribeRemoteVideo(SubscribeRemoteVideoRequest request);
+  IntValue subscribeRemoteSubStreamVideo(
+      SubscribeRemoteSubStreamVideoRequest request);
   IntValue muteLocalAudioStream(BoolValue mute);
   IntValue muteLocalVideoStream(BoolValue mute);
   IntValue startAudioDump();
@@ -176,6 +184,10 @@ abstract class EngineApi {
   IntValue addLiveStreamTask(AddOrUpdateLiveStreamTaskRequest request);
   IntValue updateLiveStreamTask(AddOrUpdateLiveStreamTaskRequest request);
   IntValue removeLiveStreamTask(DeleteLiveStreamTaskRequest request);
+
+  IntValue setClientRole(IntValue role);
+  IntValue getConnectionState();
+  IntValue uploadSdkInfo();
 }
 
 @HostApi()
@@ -245,7 +257,7 @@ void configurePigeon(PigeonOptions opts) {
   opts.dartOut = 'lib/src/internal/messages.dart';
   opts.objcHeaderOut = 'ios/Classes/messages.h';
   opts.objcSourceOut = 'ios/Classes/messages.m';
-  opts.objcOptions.prefix = 'FLT';
+  opts.objcOptions.prefix = 'NEFLT';
   opts.javaOut = 'android/src/main/java/com/netease/nertcflutter/Messages.java';
   opts.javaOptions.package = 'com.netease.nertcflutter';
 }

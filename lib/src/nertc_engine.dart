@@ -60,15 +60,19 @@ class NERtcEngine {
       ..appKey = appKey
       ..logDir = options?.logDir
       ..logLevel = options?.logLevel
-      ..autoSubscribeAudio = options?.autoSubscribeAudio
+      ..audioAutoSubscribe = options?.audioAutoSubscribe
+      ..audioDisableOverrideSpeakerOnReceiver =
+          options?.audioDisableOverrideSpeakerOnReceiver
+      ..audioAINSEnabled = options?.audioAINSEnabled
+      ..audioDisableSWAECOnHeadset = options?.audioDisableSWAECOnHeadset
       ..videoEncodeMode = options?.videoEncodeMode?.index
       ..videoDecodeMode = options?.videoDecodeMode?.index
+      ..videoCaptureObserverEnabled = options?.videoCaptureObserverEnabled
       ..serverRecordAudio = options?.serverRecordAudio
       ..serverRecordVideo = options?.serverRecordVideo
       ..serverRecordMode = options?.serverRecordMode?.index
       ..serverRecordSpeaker = options?.serverRecordSpeaker
       ..publishSelfStream = options?.publishSelfStream
-      ..videoCaptureObserver = options?.videoCaptureObserver
       ..videoSendMode = options?.videoSendMode?.index);
   }
 
@@ -131,11 +135,11 @@ class NERtcEngine {
   ///
   /// [uid] 指定用户的 ID
   /// [subscribe] true: 订阅指定音频流（默认）false: 取消订阅指定音频流
-  Future<int> subscribeRemoteAudioStream(int uid, bool subscribe) async {
+  Future<int> subscribeRemoteAudio(int uid, bool subscribe) async {
     assert(uid != null);
     assert(subscribe != null);
-    IntValue reply = await _api
-        .subscribeRemoteAudioStream(SubscribeRemoteAudioStreamRequest()
+    IntValue reply =
+        await _api.subscribeRemoteAudio(SubscribeRemoteAudioRequest()
           ..uid = uid
           ..subscribe = subscribe);
     return reply.value;
@@ -144,10 +148,10 @@ class NERtcEngine {
   ///订阅／取消订阅所有用户音频（后续加入的用户也同样生效）
   ///
   /// [subscribe] true: 订阅 false: 取消订阅
-  Future<int> subscribeAllRemoteAudioStreams(bool subscribe) async {
+  Future<int> subscribeAllRemoteAudio(bool subscribe) async {
     assert(subscribe != null);
-    IntValue reply = await _api
-        .subscribeAllRemoteAudioStreams(BoolValue()..value = subscribe);
+    IntValue reply =
+        await _api.subscribeAllRemoteAudio(BoolValue()..value = subscribe);
     return reply.value;
   }
 
@@ -200,8 +204,8 @@ class NERtcEngine {
     return reply.value;
   }
 
-  /// 开启屏幕共享
-  Future<int> startScreenCapture(int screenProfile) async {
+  /// 开启辅流形式的屏幕共享
+  Future<int> startScreenCapture(int screenProfile, int contentPrefer) async {
     if (defaultTargetPlatform == TargetPlatform.android) {
       IntValue reply =
           await _api.startScreenCapture(IntValue()..value = screenProfile);
@@ -211,7 +215,7 @@ class NERtcEngine {
     }
   }
 
-  /// 停止屏幕共享
+  /// 关闭辅流形式的屏幕共享
   Future<int> stopScreenCapture() async {
     if (defaultTargetPlatform == TargetPlatform.android) {
       IntValue reply = await _api.stopScreenCapture();
@@ -221,16 +225,30 @@ class NERtcEngine {
     }
   }
 
-  /// 订阅 / 取消订阅指定远端用户的视频流
-  Future<int> subscribeRemoteVideoStream(
+  /// 订阅或取消订阅指定远端用户的视频流
+  Future<int> subscribeRemoteVideo(
       int uid, int streamType, bool subscribe) async {
     assert(uid != null);
     assert(streamType != null);
     assert(subscribe != null);
-    IntValue reply = await _api
-        .subscribeRemoteVideoStream(SubscribeRemoteVideoStreamRequest()
+    IntValue reply =
+        await _api.subscribeRemoteVideo(SubscribeRemoteVideoRequest()
           ..uid = uid
           ..streamType = streamType
+          ..subscribe = subscribe);
+    return reply.value;
+  }
+
+  /// 订阅或取消订阅别人的辅流视频
+  ///
+  /// [uid] userID
+  /// [subscribe] 是否订阅
+  Future<int> subscribeRemoteSubStreamVideo(int uid, bool subscribe) async {
+    assert(uid != null);
+    assert(subscribe != null);
+    IntValue reply = await _api
+        .subscribeRemoteSubStreamVideo(SubscribeRemoteSubStreamVideoRequest()
+          ..uid = uid
           ..subscribe = subscribe);
     return reply.value;
   }
@@ -361,6 +379,7 @@ class NERtcEngine {
   }
 
   /// 删除房间推流任务。通话中有效
+  ///
   /// [taskId]   直播任务id
   /// [DeleteLiveTaskCallback]  操作结果回调，方法调用成功才有回调
   Future<int> removeLiveStreamTask(
@@ -376,6 +395,57 @@ class NERtcEngine {
         await _api.removeLiveStreamTask(DeleteLiveStreamTaskRequest()
           ..serial = serial
           ..taskId = taskId);
+    return reply.value;
+  }
+
+  /// 调节录音音量
+  /// 加入频道前后都可以调用
+  /// 调节范围为：[0~400]
+  /// 0: 静音
+  /// 100: 原始音量 (默认)
+  /// 400: 最大可为原始音量的 4 倍(自带溢出保护)
+  ///
+  /// [volume] 调节的音量值。
+  Future<int> adjustRecordingSignalVolume(int volume) async {
+    IntValue reply =
+        await _api.adjustRecordingSignalVolume(IntValue()..value = volume);
+    return reply.value;
+  }
+
+  /// 调节播放音量
+  /// 加入频道前后都可以调用
+  /// 调节范围为：[0~400]
+  /// 0: 静音
+  /// 100: 原始音量 (默认)
+  /// 400: 最大可为原始音量的 4 倍(自带溢出保护)
+  ///
+  /// [volume] 调节的音量值。
+  Future<int> adjustPlaybackSignalVolume(int volume) async {
+    IntValue reply =
+        await _api.adjustPlaybackSignalVolume(IntValue()..value = volume);
+    return reply.value;
+  }
+
+  /// 设置用户角色
+  /// 在加入频道前或在频道中，用户可以通过setClientRole 接口设置本端模式为观众或主播模式。
+  /// [role] 用户角色.  [NERtcClientRole]
+  Future<int> setClientRole(int role) async {
+    IntValue reply = await _api.setClientRole(IntValue()..value = role);
+    return reply.value;
+  }
+
+  /// 获取连接状态
+  ///
+  /// 状态参考 [NERtcConnectionState]
+  Future<int> getConnectionState() async {
+    IntValue reply = await _api.getConnectionState();
+    return reply.value;
+  }
+
+  /// 上传SDK日志信息
+  /// 只能在加入频道后调用
+  Future<int> uploadSdkInfo() async {
+    IntValue reply = await _api.uploadSdkInfo();
     return reply.value;
   }
 
