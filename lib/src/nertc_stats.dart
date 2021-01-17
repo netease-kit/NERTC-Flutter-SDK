@@ -220,10 +220,12 @@ class NERtcAudioSendStats {
   }
 }
 
-/// 远端视频流的统计信息
-class NERtcVideoRecvStats {
-  /// 用户 ID，指定是哪个用户的视频流
-  int uid;
+
+/// 远端每条视频流的统计信息
+class NERtcVideoLayerRecvStats {
+
+  /// 流的类型. [NERtcVideoStreamType]
+  int layerType;
 
   /// 视频流宽
   int width;
@@ -252,8 +254,8 @@ class NERtcVideoRecvStats {
   /// 接收视频的平均卡顿率
   int frozenRate;
 
-  NERtcVideoRecvStats.fromMap(Map stats)
-      : uid = stats['uid'],
+  NERtcVideoLayerRecvStats.fromMap(Map stats)
+      : layerType = stats['layerType'],
         width = stats['width'],
         height = stats['height'],
         receivedBitrate = stats['receivedBitrate'],
@@ -266,17 +268,44 @@ class NERtcVideoRecvStats {
 
   @override
   String toString() {
-    return 'NERtcVideoRecvStats{uid: $uid, width: $width, height: $height, '
-        'receivedBitrate: $receivedBitrate, fps: $fps, '
-        'packetLossRate: $packetLossRate, '
-        'decoderOutputFrameRate: $decoderOutputFrameRate,'
-        'rendererOutputFrameRate: $rendererOutputFrameRate,'
+    return 'NERtcVideoLayerRecvStats{layerType: $layerType,'
+        ' width: $width, height: $height, '
+        'receivedBitrate: $receivedBitrate, '
+        'fps: $fps, packetLossRate: $packetLossRate, '
+        'decoderOutputFrameRate: $decoderOutputFrameRate, '
+        'rendererOutputFrameRate: $rendererOutputFrameRate, '
         'totalFrozenTime: $totalFrozenTime, frozenRate: $frozenRate}';
   }
 }
 
-/// 本地视频流上传统计信息
-class NERtcVideoSendStats {
+/// 远端视频流的统计信息
+class NERtcVideoRecvStats {
+  /// 用户 ID，指定是哪个用户的视频流
+  int uid;
+
+  /// 当前uid 每条流的接收下行统计信息
+  List<NERtcVideoLayerRecvStats> layers = List();
+
+  NERtcVideoRecvStats.fromMap(Map stats) {
+    uid = stats['uid'];
+    List mapLayers = stats['layers'];
+    for(var layer in mapLayers) {
+        layers.add(NERtcVideoLayerRecvStats.fromMap(layer));
+    }
+  }
+
+  @override
+  String toString() {
+    return 'NERtcVideoRecvStats{uid: $uid, layers: $layers}';
+  }
+}
+
+
+/// 本地视频单条流统计信息
+class NERtcVideoLayerSendStats {
+  /// 流的类型. [NERtcVideoStreamType]
+  int layerType;
+
   /// 视频流宽
   int width;
 
@@ -295,23 +324,52 @@ class NERtcVideoSendStats {
   /// 编码器的目标码率(kbps)
   int targetBitrate;
 
+  /// 编码器的实际编码码率(kbps)
+  int encoderBitrate;
+
   /// 视频发送帧率
   int sentFrameRate;
 
-  NERtcVideoSendStats.fromMap(Map stats)
-      : width = stats['width'],
+  /// 视频渲染帧率
+  int renderFrameRate;
+
+  NERtcVideoLayerSendStats.fromMap(Map stats)
+      : layerType = stats['layerType'],
+        width = stats['width'],
         height = stats['height'],
         sendBitrate = stats['sendBitrate'],
         encoderOutputFrameRate = stats['encoderOutputFrameRate'],
         captureFrameRate = stats['captureFrameRate'],
         targetBitrate = stats['targetBitrate'],
-        sentFrameRate = stats['sentFrameRate'];
+        encoderBitrate = stats['encoderBitrate'],
+        sentFrameRate = stats['sentFrameRate'],
+        renderFrameRate = stats['renderFrameRate'];
 
   @override
   String toString() {
-    return 'NERtcVideoSendStats{width: $width, height: $height, '
-        'sendBitrate: $sendBitrate, encoderOutputFrameRate: $encoderOutputFrameRate, '
-        'captureFrameRate: $captureFrameRate, targetBitrate: $targetBitrate, sentFrameRate: $sentFrameRate}';
+    return 'NERtcVideoLayerSendStats{layerType: $layerType, '
+        'width: $width, height: $height, sendBitrate: $sendBitrate, '
+        'encoderOutputFrameRate: $encoderOutputFrameRate, '
+        'captureFrameRate: $captureFrameRate, targetBitrate: $targetBitrate, '
+        'sentFrameRate: $sentFrameRate}';
+  }
+}
+
+/// 本地视频流上传统计信息
+class NERtcVideoSendStats {
+  /// 具体每条流的上行统计信息
+  List<NERtcVideoLayerSendStats> layers =  List();
+
+  NERtcVideoSendStats.fromMap(Map stats) {
+    List mapLayers = stats['layers'];
+    for(var layer in mapLayers) {
+      layers.add(NERtcVideoLayerSendStats.fromMap(layer));
+    }
+  }
+
+  @override
+  String toString() {
+    return 'NERtcVideoSendStats{layers: $layers}';
   }
 }
 

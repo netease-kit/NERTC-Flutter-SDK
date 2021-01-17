@@ -90,9 +90,33 @@ class _ChannelEventHandler with _EventHandler {
       case 'onWarning':
         _handleOnWarning(call);
         return true;
+      case 'onClientRoleChange':
+        _handleOnClientRoleChange(call);
+        return true;
+      case 'onUserSubStreamVideoStart':
+        _handleOnUserSubStreamVideoStart(call);
+        return true;
+      case 'onUserSubStreamVideoStop':
+        _handleOnUserSubStreamVideoStop(call);
+        return true;
       default:
         return false;
     }
+  }
+
+  void _handleOnClientRoleChange(MethodCall call) {
+    Map arguments = call.arguments;
+    _callback.onClientRoleChange(arguments['oldRole'], arguments['newRole']);
+  }
+
+  void _handleOnUserSubStreamVideoStart(MethodCall call) {
+    Map arguments = call.arguments;
+    _callback.onUserSubStreamVideoStart(arguments['uid'], arguments['maxProfile']);
+  }
+
+  void _handleOnUserSubStreamVideoStop(MethodCall call) {
+    Map arguments = call.arguments;
+    _callback.onUserSubStreamVideoStop(arguments['uid']);
   }
 
   void _handleOnJoinChannel(MethodCall call) {

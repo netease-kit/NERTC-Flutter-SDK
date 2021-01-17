@@ -1,10 +1,13 @@
 package com.netease.nertcflutter;
 
+import com.netease.lava.nertc.sdk.NERtcConstants;
 import com.netease.lava.nertc.sdk.live.NERtcLiveStreamTaskInfo.NERtcLiveStreamMode;
 import com.netease.lava.nertc.sdk.live.NERtcLiveStreamUserTranscoding.NERtcLiveStreamVideoScaleMode;
+import com.netease.lava.nertc.sdk.video.NERtcEncodeConfig.NERtcVideoFrameRate;
 import com.netease.lava.nertc.sdk.video.NERtcRemoteVideoStreamType;
+import com.netease.lava.nertc.sdk.video.NERtcScreenConfig;
+import com.netease.lava.nertc.sdk.video.NERtcScreenConfig.NERtcSubStreamContentPrefer;
 import com.netease.lava.nertc.sdk.video.NERtcVideoConfig.NERtcDegradationPreference;
-import com.netease.lava.nertc.sdk.video.NERtcVideoConfig.NERtcVideoFrameRate;
 
 import static com.netease.lava.nertc.sdk.NERtcConstants.MediaCodecMode.MEDIA_CODEC_HARDWARE;
 import static com.netease.lava.nertc.sdk.NERtcConstants.MediaCodecMode.MEDIA_CODEC_SOFTWARE;
@@ -57,6 +60,7 @@ public class FLTUtils {
                 return NERtcVideoFrameRate.FRAME_RATE_FPS_30;
         }
     }
+
     static NERtcRemoteVideoStreamType int2RemoteVideoStreamType(int intValue) {
         for (NERtcRemoteVideoStreamType value : NERtcRemoteVideoStreamType.values()) {
             if(intValue == value.ordinal()) {
@@ -66,6 +70,24 @@ public class FLTUtils {
         throw new RuntimeException("int2RemoteVideoStreamType error: $intValue");
     }
 
+    static int int2UserRole(int intValue) {
+        switch (intValue) {
+            case 1:
+                return NERtcConstants.UserRole.CLIENT_ROLE_AUDIENCE;
+            case 0:
+            default:
+                return NERtcConstants.UserRole.CLIENT_ROLE_BROADCASTER;
+        }
+    }
 
+    static NERtcSubStreamContentPrefer int2SubStreamContentPrefer(int intValue) {
+        switch (intValue) {
+            case 1:
+                return NERtcSubStreamContentPrefer.CONTENT_PREFER_DETAILS;
+            case 0:
+            default:
+                return NERtcSubStreamContentPrefer.CONTENT_PREFER_MOTION;
+        }
+    }
 
 }

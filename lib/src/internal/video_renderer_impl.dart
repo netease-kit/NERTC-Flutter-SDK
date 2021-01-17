@@ -14,6 +14,7 @@ class _NERtcVideoRendererImpl extends NERtcVideoRenderer {
 
   bool _local = false;
   int _uid = -1;
+  bool _subStream = false;
 
   Future<void> initialize() async {
     IntValue reply = await _api.createVideoRenderer();
@@ -21,10 +22,10 @@ class _NERtcVideoRendererImpl extends NERtcVideoRenderer {
     _rendererEventSubscription =
         EventChannel('NERtcFlutterRenderer/Texture$_textureId')
             .receiveBroadcastStream()
-            .listen(_onRenererEvent);
+            .listen(_onRendererEvent);
   }
 
-  void _onRenererEvent(dynamic event) {
+  void _onRendererEvent(dynamic event) {
     final Map<dynamic, dynamic> map = event;
     switch (map['event']) {
       case 'onFrameResolutionChanged':
@@ -48,23 +49,46 @@ class _NERtcVideoRendererImpl extends NERtcVideoRenderer {
 
   int get textureId => _textureId;
 
+  @override
   Future<int> addToRemoteVideoSink(int uid) {
     _local = false;
     _uid = uid;
-    return _setSource(_local, _uid, _textureId);
+    _subStream = false;
+    return _setSource(_local, _subStream, _uid, _textureId);
   }
 
+  @override
   Future<int> addToLocalVideoSink() {
     _local = true;
     _uid = 0;
-    return _setSource(_local, _uid, _textureId);
+    _subStream = false;
+    return _setSource(_local, _subStream, _uid, _textureId);
   }
 
-  Future<int> _setSource(bool local, int uid, int textureId) async {
+  @override
+  Future<int> addToLocalSubStreamVideoSink() {
+    _local = true;
+    _uid = 0;
+    _subStream = true;
+    return _setSource(_local, _subStream, _uid, _textureId);
+  }
+
+  @override
+  Future<int> addToRemoteSubStreamVideoSink(int uid) {
+    _local = false;
+    _uid = uid;
+    _subStream = true;
+    return _setSource(_local, _subStream, _uid, _textureId);
+  }
+
+  Future<int> _setSource(
+      bool local, bool subStream, int uid, int textureId) async {
     if (textureId == null) return -1;
     if (local) {
-      IntValue reply =
-          await _api.setupLocalVideoRenderer(IntValue()..value = textureId);
+      IntValue reply = _subStream
+          ? await _api
+              .setupLocalSubStreamVideoRenderer(IntValue()..value = textureId)
+          : await _api.setupLocalVideoRenderer(IntValue()..value = textureId);
       if (Platform.isAndroid) {
         if (_mirror == false) {
           await _api.setMirror(SetVideoRendererMirrorRequest()
@@ -74,10 +98,15 @@ class _NERtcVideoRendererImpl extends NERtcVideoRenderer {
       }
       return reply.value;
     } else {
-      IntValue reply =
-          await _api.setupRemoteVideoRenderer(SetupRemoteVideoRendererRequest()
-            ..textureId = textureId
-            ..uid = uid);
+      IntValue reply = _subStream
+          ? await _api.setupRemoteSubStreamVideoRenderer(
+              SetupRemoteSubStreamVideoRendererRequest()
+                ..textureId = textureId
+                ..uid = uid)
+          : await _api
+              .setupRemoteVideoRenderer(SetupRemoteVideoRendererRequest()
+                ..textureId = textureId
+                ..uid = uid);
       return reply.value;
     }
   }
@@ -99,7 +128,7 @@ class _NERtcVideoRendererImpl extends NERtcVideoRenderer {
 
   @override
   Future<void> dispose() async {
-    await _setSource(_local, _uid, null);
+    await _setSource(_local, _subStream, _uid, null);
     await _rendererEventSubscription?.cancel();
     await _api.disposeVideoRenderer(IntValue()..value = textureId);
     return super.dispose();

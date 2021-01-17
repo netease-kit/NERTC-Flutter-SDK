@@ -27,6 +27,7 @@ import com.netease.lava.nertc.sdk.live.NERtcLiveStreamLayout;
 import com.netease.lava.nertc.sdk.live.NERtcLiveStreamTaskInfo;
 import com.netease.lava.nertc.sdk.live.NERtcLiveStreamUserTranscoding;
 import com.netease.lava.nertc.sdk.video.NERtcEglContextWrapper;
+import com.netease.lava.nertc.sdk.video.NERtcScreenConfig;
 import com.netease.lava.nertc.sdk.video.NERtcVideoConfig;
 import com.netease.lava.webrtc.EglBase;
 import com.netease.lava.webrtc.EglBase10;
@@ -52,8 +53,8 @@ import com.netease.nertcflutter.Messages.SetEffectSendVolumeRequest;
 import com.netease.nertcflutter.Messages.SetLocalVideoConfigRequest;
 import com.netease.nertcflutter.Messages.SetupRemoteVideoRendererRequest;
 import com.netease.nertcflutter.Messages.StartAudioMixingRequest;
-import com.netease.nertcflutter.Messages.SubscribeRemoteAudioStreamRequest;
-import com.netease.nertcflutter.Messages.SubscribeRemoteVideoStreamRequest;
+import com.netease.nertcflutter.Messages.SubscribeRemoteAudioRequest;
+import com.netease.nertcflutter.Messages.SubscribeRemoteVideoRequest;
 import com.netease.nertcflutter.Messages.VideoRendererApi;
 import com.netease.yunxin.base.utils.StringUtils;
 
@@ -146,13 +147,14 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
     static class ActivityResultListener implements PluginRegistry.ActivityResultListener {
 
         final SuccessCallback successCallback;
-        final Number screenProfile;
+        final NERtcScreenConfig screenConfig;
         final RemoveActivityResultListener removeActivityResultListener;
         boolean alreadyCalled = false;
 
-        ActivityResultListener(SuccessCallback successCallback, Number screenProfile, RemoveActivityResultListener removeActivityResultListener) {
+        ActivityResultListener(SuccessCallback successCallback, NERtcScreenConfig screenConfig,
+                               RemoveActivityResultListener removeActivityResultListener) {
             this.successCallback = successCallback;
-            this.screenProfile = screenProfile;
+            this.screenConfig = screenConfig;
             this.removeActivityResultListener = removeActivityResultListener;
         }
 
@@ -165,7 +167,7 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
                     if (resultCode != Activity.RESULT_OK || data == null) {
                         successCallback.onSuccess(-1);
                     } else {
-                        int ret = NERtcEx.getInstance().startScreenCapture(screenProfile.intValue(), data,
+                        int ret = NERtcEx.getInstance().startScreenCapture(screenConfig, data,
                                 new MediaProjection.Callback() {
                                     @Override
                                     public void onStop() {
@@ -212,15 +214,29 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
         option.eglContext = sharedEglContext.getEglContext();
 
         NERtcParameters parameters = new NERtcParameters();
-        if (arg.getAutoSubscribeAudio() != null) {
-            parameters.setBoolean(NERtcParameters.KEY_AUTO_SUBSCRIBE_AUDIO, arg.getAutoSubscribeAudio());
+        //Audio
+        if (arg.getAudioAutoSubscribe() != null) {
+            parameters.setBoolean(NERtcParameters.KEY_AUTO_SUBSCRIBE_AUDIO, arg.getAudioAutoSubscribe());
         }
+        if(arg.getAudioAINSEnabled() != null) {
+            parameters.setBoolean(NERtcParameters.KEY_AUDIO_AI_NS_ENABLE, arg.getAudioAINSEnabled());
+        }
+
+        //Video
         if (arg.getVideoEncodeMode() != null) {
-            parameters.setString(NERtcParameters.KEY_VIDEO_ENCODE_MODE, FLTUtils.int2VideoEncodeDecodeMode(arg.getVideoEncodeMode().intValue()));
+            parameters.setString(NERtcParameters.KEY_VIDEO_ENCODE_MODE,
+                    FLTUtils.int2VideoEncodeDecodeMode(arg.getVideoEncodeMode().intValue()));
         }
         if (arg.getVideoDecodeMode() != null) {
-            parameters.setString(NERtcParameters.KEY_VIDEO_DECODE_MODE, FLTUtils.int2VideoEncodeDecodeMode(arg.getVideoDecodeMode().intValue()));
+            parameters.setString(NERtcParameters.KEY_VIDEO_DECODE_MODE,
+                    FLTUtils.int2VideoEncodeDecodeMode(arg.getVideoDecodeMode().intValue()));
         }
+        if (arg.getVideoSendMode() != null) {
+            parameters.setInteger(NERtcParameters.KEY_VIDEO_SEND_MODE, arg.getVideoSendMode().intValue());
+        }
+
+
+        //录制
         if (arg.getServerRecordAudio() != null) {
             parameters.setBoolean(NERtcParameters.KEY_SERVER_RECORD_AUDIO, arg.getServerRecordAudio());
         }
@@ -233,11 +249,10 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
         if (arg.getServerRecordSpeaker() != null) {
             parameters.setBoolean(NERtcParameters.KEY_SERVER_RECORD_SPEAKER, arg.getServerRecordSpeaker());
         }
+
+        //其他参数
         if (arg.getPublishSelfStream() != null) {
             parameters.setBoolean(NERtcParameters.KEY_PUBLISH_SELF_STREAM, arg.getPublishSelfStream());
-        }
-        if (arg.getVideoSendMode() != null) {
-            parameters.setInteger(NERtcParameters.KEY_VIDEO_SEND_MODE, arg.getVideoSendMode().intValue());
         }
 
         try {
@@ -324,7 +339,7 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
     }
 
     @Override
-    public IntValue subscribeRemoteAudioStream(SubscribeRemoteAudioStreamRequest arg) {
+    public IntValue subscribeRemoteAudio(SubscribeRemoteAudioRequest arg) {
         IntValue result = new IntValue();
         int ret = NERtcEx.getInstance().subscribeRemoteAudioStream(arg.getUid(), arg.getSubscribe());
         result.setValue((long) ret);
@@ -332,7 +347,7 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
     }
 
     @Override
-    public IntValue subscribeAllRemoteAudioStreams(BoolValue arg) {
+    public IntValue subscribeAllRemoteAudio(BoolValue arg) {
         IntValue result = new IntValue();
         int ret = NERtcEx.getInstance().subscribeAllRemoteAudioStreams(arg.getValue());
         result.setValue((long) ret);
@@ -368,13 +383,12 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
         config.bitrate = arg.getBitrate().intValue();
         config.minBitrate = arg.getMinBitrate().intValue();
         config.degradationPrefer = FLTUtils.int2DegradationPreference(arg.getDegradationPrefer().intValue());
-
+        config.width = arg.getWidth().intValue();
+        config.height = arg.getHeight().intValue();
         int ret = NERtcEx.getInstance().setLocalVideoConfig(config);
         result.setValue((long) ret);
         return result;
     }
-
-
 
 
     @Override
@@ -410,29 +424,35 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
 
 
     @Override
-    public void startScreenCapture(IntValue arg, SuccessCallback successCallback) {
-        if (applicationContext == null) {
-            Log.e("NERtcEngine", "startScreenCapture error: Android context is required to screen capture and cannot be null.");
-            successCallback.onSuccess(-1);
-            return;
-        }
+    public void startScreenCapture(Messages.StartScreenCaptureRequest arg, SuccessCallback successCallback) {
         if (activity == null) {
-            Log.e("NERtcEngine", "startScreenCapture error: Android activity is required to screen capture and cannot be null.");
+            Log.e("NERtcEngine", "startScreenCapture error: " +
+                    "Android activity is required to screen capture and cannot be null.");
             successCallback.onSuccess(-2);
             return;
         }
         if (addActivityResultListener == null) {
-            Log.e("NERtcEngine", "startScreenCapture error: Activity result listener is required to screen capture and cannot be null.");
+            Log.e("NERtcEngine", "startScreenCapture error: " +
+                    "Activity result listener is required to screen capture and cannot be null.");
             successCallback.onSuccess(-3);
             return;
         }
         if (removeActivityResultListener == null) {
-            Log.e("NERtcEngine", "startScreenCapture error: Activity result listener is required to screen capture and cannot be null.");
+            Log.e("NERtcEngine", "startScreenCapture error: " +
+                    "Activity result listener is required to screen capture and cannot be null.");
             successCallback.onSuccess(-4);
             return;
         }
 
-        ActivityResultListener activityResultListener = new ActivityResultListener(successCallback, arg.getValue().intValue(), removeActivityResultListener);
+        NERtcScreenConfig config = new NERtcScreenConfig();
+        config.bitrate = arg.getBitrate().intValue();
+        config.contentPrefer = FLTUtils.int2SubStreamContentPrefer(arg.getContentPrefer().intValue());
+        config.frameRate = FLTUtils.int2VideoFrameRate(arg.getFrameRate().intValue());
+        config.minBitrate = arg.getMinBitrate().intValue();
+        config.minFramerate = arg.getMinFrameRate().intValue();
+        config.videoProfile = arg.getVideoProfile().intValue();
+        ActivityResultListener activityResultListener = new ActivityResultListener(successCallback,
+                config, removeActivityResultListener);
         addActivityResultListener.addListener(activityResultListener);
         requestScreenCapture(applicationContext, activity);
     }
@@ -445,10 +465,20 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
         return result;
     }
 
+
     @Override
-    public IntValue subscribeRemoteVideoStream(SubscribeRemoteVideoStreamRequest arg) {
+    public IntValue subscribeRemoteSubStreamVideo(Messages.SubscribeRemoteSubStreamVideoRequest arg) {
         IntValue result = new IntValue();
-        int ret = NERtcEx.getInstance().subscribeRemoteVideoStream(arg.getUid(), FLTUtils.int2RemoteVideoStreamType(arg.getStreamType().intValue()),
+        int ret = NERtcEx.getInstance().subscribeRemoteSubStreamVideo(arg.getUid(), arg.getSubscribe());
+        result.setValue((long) ret);
+        return result;
+    }
+
+    @Override
+    public IntValue subscribeRemoteVideo(SubscribeRemoteVideoRequest arg) {
+        IntValue result = new IntValue();
+        int ret = NERtcEx.getInstance().subscribeRemoteVideoStream(arg.getUid(),
+                FLTUtils.int2RemoteVideoStreamType(arg.getStreamType().intValue()),
                 arg.getSubscribe());
         result.setValue((long) ret);
         return result;
@@ -724,6 +754,30 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
             invokeMethod.invokeMethod("onOnceEvent", map);
         });
         result.setValue((long) ret);
+        return result;
+    }
+
+    @Override
+    public IntValue setClientRole(IntValue arg) {
+        IntValue result = new IntValue();
+        int ret = NERtcEx.getInstance().setClientRole(FLTUtils.int2UserRole(arg.getValue().intValue()));
+        result.setValue((long) ret);
+        return result;
+    }
+
+    @Override
+    public IntValue getConnectionState() {
+        int ret = NERtcEx.getInstance().getConnectionState();
+        IntValue result = new IntValue();
+        result.setValue((long) ret);
+        return result;
+    }
+
+    @Override
+    public IntValue uploadSdkInfo() {
+        NERtcEx.getInstance().uploadSdkInfo();
+        IntValue result = new IntValue();
+        result.setValue((long) 0);
         return result;
     }
 
@@ -1132,7 +1186,8 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
         IntValue result = new IntValue();
         TextureRegistry.SurfaceTextureEntry entry = registry.createSurfaceTexture();
         if (sharedEglContext != null) {
-            FlutterVideoRenderer renderer = new FlutterVideoRenderer(messenger, entry, getEglBaseContext(sharedEglContext.getEglContext()));
+            FlutterVideoRenderer renderer = new FlutterVideoRenderer(messenger,
+                    entry, getEglBaseContext(sharedEglContext.getEglContext()));
             renderers.put(entry.id(), renderer);
             result.setValue(renderer.id());
         } else {
@@ -1176,6 +1231,30 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
             renderer = renderers.get(arg.getTextureId());
         }
         int ret = NERtc.getInstance().setupRemoteVideoCanvas(renderer, arg.getUid());
+        result.setValue((long) ret);
+        return result;
+    }
+
+    @Override
+    public IntValue setupLocalSubStreamVideoRenderer(IntValue arg) {
+        IntValue result = new IntValue();
+        FlutterVideoRenderer renderer = null;
+        if (arg.getValue() != null) {
+            renderer = renderers.get(arg.getValue());
+        }
+        int ret = NERtcEx.getInstance().setupLocalSubStreamVideoCanvas(renderer);
+        result.setValue((long) ret);
+        return result;
+    }
+
+    @Override
+    public IntValue setupRemoteSubStreamVideoRenderer(Messages.SetupRemoteSubStreamVideoRendererRequest arg) {
+        IntValue result = new IntValue();
+        FlutterVideoRenderer renderer = null;
+        if (arg.getTextureId() != null) {
+            renderer = renderers.get(arg.getTextureId());
+        }
+        int ret = NERtcEx.getInstance().setupRemoteSubStreamVideoCanvas(renderer, arg.getUid());
         result.setValue((long) ret);
         return result;
     }

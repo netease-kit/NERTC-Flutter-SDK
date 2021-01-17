@@ -4,7 +4,7 @@
 #import <FlutterVideoRenderer.h>
 #import "FLNERtcEngineVideoFrameDelegate.h"
 
-@interface NERtcPlugin () <FLTEngineApi, FLTDeviceManagerApi, FLTAudioMixingApi, FLTAudioEffectApi, FLTVideoRendererApi, NERtcEngineDelegateEx, NERtcEngineMediaStatsObserver>
+@interface NERtcPlugin () <NEFLTEngineApi, NEFLTDeviceManagerApi, NEFLTAudioMixingApi, NEFLTAudioEffectApi, NEFLTVideoRendererApi, NERtcEngineDelegateEx, NERtcEngineMediaStatsObserver>
 @property(nonatomic, strong) NSMutableDictionary<NSNumber *, FlutterVideoRenderer *> *renderers;
 
 @end
@@ -25,11 +25,11 @@
 + (void)registerWithRegistrar:(nonnull NSObject<FlutterPluginRegistrar> *)registrar {
     NERtcPlugin* instance = [[NERtcPlugin alloc] initWithRegistrar:registrar];
     [registrar publish:instance];
-    FLTEngineApiSetup(registrar.messenger, instance);
-    FLTDeviceManagerApiSetup(registrar.messenger, instance);
-    FLTAudioEffectApiSetup(registrar.messenger, instance);
-    FLTAudioMixingApiSetup(registrar.messenger, instance);
-    FLTVideoRendererApiSetup(registrar.messenger, instance);
+    NEFLTEngineApiSetup(registrar.messenger, instance);
+    NEFLTDeviceManagerApiSetup(registrar.messenger, instance);
+    NEFLTAudioEffectApiSetup(registrar.messenger, instance);
+    NEFLTAudioMixingApiSetup(registrar.messenger, instance);
+    NEFLTVideoRendererApiSetup(registrar.messenger, instance);
 }
 
 - (void)detachFromEngineForRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
@@ -51,9 +51,9 @@
 }
 
 
-#pragma mark - FLTEngineApi
+#pragma mark - NEFLTEngineApi
 
-- (nullable FLTIntValue *)create:(nonnull FLTCreateEngineRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)create:(nonnull NEFLTCreateEngineRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:EngineApi#create");
 #endif
@@ -61,8 +61,17 @@
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     
     // Audio
-    if(input.autoSubscribeAudio != nil) {
-        [params setObject:input.autoSubscribeAudio forKey:kNERtcKeyAutoSubscribeAudio];
+    if(input.audioAutoSubscribe != nil) {
+        [params setObject:input.audioAutoSubscribe forKey:kNERtcKeyAutoSubscribeAudio];
+    }
+    if(input.audioAINSEnabled != nil) {
+        [params setObject:input.audioAINSEnabled forKey:KNERtcKeyAudioAINSEnable];
+    }
+    if(input.audioDisableSWAECOnHeadset != nil) {
+        [params setObject:input.audioDisableSWAECOnHeadset forKey:KNERtcKeyDisableSWAECOnHeadset];
+    }
+    if(input.audioDisableOverrideSpeakerOnReceiver != nil) {
+        [params setObject:input.audioDisableOverrideSpeakerOnReceiver forKey:KNERtcKeyDisableOverrideSpeakerOnReceiver];
     }
     
     // Server Record
@@ -89,7 +98,10 @@
     if(input.videoSendMode != nil) {
         [params setObject:input.videoSendMode forKey:kNERtcKeyVideoSendOnPubType];
     }
-    
+    if(input.videoCaptureObserverEnabled!= nil) {
+        [params setObject:input.videoCaptureObserverEnabled forKey:kNERtcKeyVideoCaptureObserverEnabled];
+    }
+   
     [params setObject:@(YES) forKey:kNERtcKeyVideoPreferMetalRender];
     
     //Live Stream
@@ -97,10 +109,7 @@
         [params setObject:input.publishSelfStream forKey:kNERtcKeyPublishSelfStreamEnabled];
     }
 
-    if(input.videoCaptureObserver!= nil) {
-        [params setObject:input.videoCaptureObserver forKey:kNERtcKeyVideoCaptureObserverEnabled];
-    }
-   
+
     [[NERtcEngine sharedEngine] setParameters: params];
     
     NERtcEngineContext *context = [[NERtcEngineContext alloc] init];
@@ -114,17 +123,17 @@
     }
     context.engineDelegate = self;
     int ret = [[NERtcEngine sharedEngine] setupEngineWithContext:context];
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     result.value = @(ret);
     return result;
 }
 
 
-- (nullable FLTIntValue *)joinChannel:(nonnull FLTJoinChannelRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)joinChannel:(nonnull NEFLTJoinChannelRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:EngineApi#joinChannel");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine sharedEngine] joinChannelWithToken:input.token channelName:input.channelName myUid:input.uid.unsignedLongLongValue completion:^(NSError * _Nullable error, uint64_t channelId, uint64_t elapesd) {
         long code;
         if(error) {
@@ -139,43 +148,43 @@
 }
 
 
-- (nullable FLTIntValue *)leaveChannel:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)leaveChannel:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:EngineApi#leaveChannel");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine  sharedEngine] leaveChannel];
     result.value = @(ret);
     return result;
 }
 
 
-- (nullable FLTIntValue *)enableLocalAudio:(nonnull FLTBoolValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)enableLocalAudio:(nonnull NEFLTBoolValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:EngineApi#enableLocalAudio");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine  sharedEngine] enableLocalAudio: input.value.boolValue];
     result.value = @(ret);
     return result;
 }
 
-- (nullable FLTIntValue *)enableLocalVideo:(nonnull FLTBoolValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)enableLocalVideo:(nonnull NEFLTBoolValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:EngineApi#enableLocalVideo");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine  sharedEngine] enableLocalVideo: input.value.boolValue];
     result.value = @(ret);
     return result;
 }
 
 
-- (nullable FLTIntValue *)setLocalVideoConfig:(nonnull FLTSetLocalVideoConfigRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)setLocalVideoConfig:(nonnull NEFLTSetLocalVideoConfigRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:EngineApi#setLocalVideoConfig");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:input.frontCamera.boolValue ? @(NO) : @(YES) forKey:kNERtcKeyVideoStartWithBackCamera];
@@ -189,133 +198,135 @@
     config.frameRate = input.frameRate.intValue;
     config.minFrameRate = input.minBitrate.intValue;
     config.degradationPreference = input.degradationPrefer.intValue;
+    config.width = input.width.intValue;
+    config.height = input.height.intValue;
     int ret = [[NERtcEngine  sharedEngine] setLocalVideoConfig:config];
     result.value = @(ret);
     return result;
 }
 
 
-- (nullable FLTIntValue *)setAudioProfile:(nonnull FLTSetAudioProfileRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)setAudioProfile:(nonnull NEFLTSetAudioProfileRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:EngineApi#setAudioProfile");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine  sharedEngine] setAudioProfile: (NERtcAudioProfileType)input.profile.intValue scenario:(NERtcAudioScenarioType)input.scenario.intValue];
     result.value = @(ret);
     return result;
 }
 
 
-- (nullable FLTIntValue *)muteLocalAudioStream:(nonnull FLTBoolValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)muteLocalAudioStream:(nonnull NEFLTBoolValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:EngineApi#muteLocalAudioStream");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine  sharedEngine] muteLocalAudio: input.value.boolValue];
     result.value = @(ret);
     return result;
 }
 
 
-- (nullable FLTIntValue *)subscribeRemoteAudioStream:(nonnull FLTSubscribeRemoteAudioStreamRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)subscribeRemoteAudio:(nonnull NEFLTSubscribeRemoteAudioRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
-    NSLog(@"FlutterCalled:EngineApi#subscribeRemoteAudioStream");
+    NSLog(@"FlutterCalled:EngineApi#subscribeRemoteAudio");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine sharedEngine] subscribeRemoteAudio:input.subscribe.boolValue forUserID:input.uid.unsignedLongLongValue];
     result.value = @(ret);
     return result;
 }
 
 
-- (nullable FLTIntValue *)subscribeAllRemoteAudioStreams:(nonnull FLTBoolValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)subscribeAllRemoteAudio:(nonnull NEFLTBoolValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
-    NSLog(@"FlutterCalled:EngineApi#subscribeAllRemoteAudioStreams");
+    NSLog(@"FlutterCalled:EngineApi#subscribeAllRemoteAudio");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine sharedEngine] subscribeAllRemoteAudio:input.value.boolValue];
     result.value = @(ret);
     return result;
 }
 
 
-- (nullable FLTIntValue *)subscribeRemoteVideoStream:(nonnull FLTSubscribeRemoteVideoStreamRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)subscribeRemoteVideo:(nonnull NEFLTSubscribeRemoteVideoRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
-    NSLog(@"FlutterCalled:EngineApi#subscribeRemoteVideoStream");
+    NSLog(@"FlutterCalled:EngineApi#subscribeRemoteVideo");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine sharedEngine] subscribeRemoteVideo:input.subscribe.boolValue forUserID:input.uid.unsignedLongLongValue streamType:input.streamType.intValue];
     result.value = @(ret);
     return result;
 }
 
-- (nullable FLTIntValue *)startVideoPreview:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)startVideoPreview:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:EngineApi#startVideoPreview");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine sharedEngine] startPreview];
     result.value = @(ret);
     return result;
 }
 
-- (nullable FLTIntValue *)stopVideoPreview:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)stopVideoPreview:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:EngineApi#stopVideoPreview");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine sharedEngine] stopPreview];
     result.value = @(ret);
     return result;
 }
 
 
-- (nullable FLTIntValue *)muteLocalVideoStream:(nonnull FLTBoolValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)muteLocalVideoStream:(nonnull NEFLTBoolValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:EngineApi#muteLocalVideoStream");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine  sharedEngine] muteLocalVideo: input.value.boolValue];
     result.value = @(ret);
     return result;
 }
 
 
-- (nullable FLTIntValue *)startAudioDump:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)startAudioDump:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:EngineApi#startAudioDump");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine  sharedEngine] startAudioDump];
     result.value = @(ret);
     return result;
 }
 
-- (nullable FLTIntValue *)stopAudioDump:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)stopAudioDump:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:EngineApi#stopAudioDump");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine  sharedEngine] stopAudioDump];
     result.value = @(ret);
     return result;
 }
 
-- (nullable FLTIntValue *)enableAudioVolumeIndication:(nonnull FLTEnableAudioVolumeIndicationRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)enableAudioVolumeIndication:(nonnull NEFLTEnableAudioVolumeIndicationRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:EngineApi#enableAudioVolumeIndication");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine  sharedEngine] enableAudioVolumeIndication: input.enable.boolValue interval:input.interval.unsignedLongLongValue];
     result.value = @(ret);
     return result;
 }
 
-- (nullable FLTIntValue *)adjustRecordingSignalVolume:(nonnull FLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)adjustRecordingSignalVolume:(nonnull NEFLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:EngineApi#adjustRecordingSignalVolume");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine  sharedEngine] adjustRecordingSignalVolume: input.value.unsignedIntValue];
     result.value = @(ret);
     return result;
@@ -334,57 +345,77 @@
 }
 
 
-- (nullable FLTIntValue *)adjustPlaybackSignalVolume:(nonnull FLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)adjustPlaybackSignalVolume:(nonnull NEFLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:EngineApi#adjustPlaybackSignalVolume");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine  sharedEngine] adjustPlaybackSignalVolume: input.value.unsignedIntValue];
     result.value = @(ret);
     return result;
 }
 
 
-- (nullable FLTIntValue *)setStatsEventCallback:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)setStatsEventCallback:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:EngineApi#setStatsEventCallback");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine  sharedEngine] addEngineMediaStatsObserver:self];
     result.value = @(ret);
     return result;
 }
 
 
-- (nullable FLTIntValue *)clearStatsEventCallback:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)clearStatsEventCallback:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:EngineApi#clearStatsEventCallback");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine  sharedEngine] cleanupEngineMediaStatsObserver];
     result.value = @(ret);
     return result;
 }
 
 
-//TODO:
-- (nullable FLTIntValue *)startScreenCapture:(nonnull FLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)startScreenCapture:(NEFLTStartScreenCaptureRequest*)input error:(FlutterError *_Nullable *_Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:EngineApi#startScreenCapture");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
-    result.value = @(-1);
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
+    NERtcVideoSubStreamEncodeConfiguration* config = [[NERtcVideoSubStreamEncodeConfiguration alloc] init];
+    if(input.contentPrefer != nil) {
+        config.contentPrefer = input.contentPrefer.intValue;
+    }
+    if(input.videoProfile != nil) {
+        config.maxProfile = input.videoProfile.intValue;
+    }
+    if(input.frameRate != nil) {
+        config.frameRate = input.frameRate.intValue;
+    }
+    if(input.minFrameRate != nil) {
+        config.minFrameRate = input.minFrameRate.intValue;
+    }
+    if(input.bitrate != nil) {
+        config.bitrate = input.bitrate.intValue;
+    }
+    if(input.minBitrate != nil) {
+        config.minBitrate = input.minBitrate.intValue;
+    }
+    int ret = [[NERtcEngine sharedEngine] startScreenCapture:config];
+    result.value = @(ret);
     return result;
 }
 
 
-//TODO:
-- (nullable FLTIntValue *)stopScreenCapture:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+
+- (nullable NEFLTIntValue *)stopScreenCapture:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:EngineApi#stopScreenCapture");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
-    result.value = @(-1);
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
+    int ret = [[NERtcEngine sharedEngine] stopScreenCapture];
+    result.value = @(ret);
     return result;
 }
 
@@ -407,32 +438,32 @@
     });
 }
 
-- (nullable FLTIntValue *)enableDualStreamMode:(nonnull FLTBoolValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)enableDualStreamMode:(nonnull NEFLTBoolValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:EngineApi#enableDualStreamMode");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine  sharedEngine] enableDualStreamMode:input.value.boolValue];
     result.value = @(ret);
     return result;
 }
 
 
-- (nullable FLTIntValue *)setChannelProfile:(nonnull FLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)setChannelProfile:(nonnull NEFLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:EngineApi#setChannelProfile");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine  sharedEngine] setChannelProfile:input.value.intValue];
     result.value = @(ret);
     return result;
 }
 
-- (nullable FLTIntValue *)addLiveStreamTask:(nonnull FLTAddOrUpdateLiveStreamTaskRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)addLiveStreamTask:(nonnull NEFLTAddOrUpdateLiveStreamTaskRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:EngineApi#addLiveStreamTask");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     NERtcLiveStreamTaskInfo* taskInfo = [[NERtcLiveStreamTaskInfo alloc] init];
     NSNumber* serial = input.serial;
     if(input.taskId != nil) {
@@ -533,11 +564,11 @@
 }
 
 
-- (nullable FLTIntValue *)removeLiveStreamTask:(nonnull FLTDeleteLiveStreamTaskRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)removeLiveStreamTask:(nonnull NEFLTDeleteLiveStreamTaskRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:EngineApi#removeLiveStreamTask");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     NSNumber* serial = input.serial;
     int ret = [[NERtcEngine sharedEngine] removeLiveStreamTask:input.taskId compeltion:^(NSString * _Nonnull taskId, kNERtcLiveStreamError errorCode) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -555,11 +586,11 @@
 }
 
 
-- (nullable FLTIntValue *)updateLiveStreamTask:(nonnull FLTAddOrUpdateLiveStreamTaskRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)updateLiveStreamTask:(nonnull NEFLTAddOrUpdateLiveStreamTaskRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:EngineApi#updateLiveStreamTask");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     NERtcLiveStreamTaskInfo* taskInfo = [[NERtcLiveStreamTaskInfo alloc] init];
     NSNumber* serial = input.serial;
     if(input.taskId != nil) {
@@ -658,22 +689,66 @@
     return result;
 }
 
+- (nullable NEFLTIntValue *)getConnectionState:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+#ifdef DEBUG
+    NSLog(@"FlutterCalled:EngineApi#getConnectionState");
+#endif
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
+    NERtcConnectionStateType ret = [[NERtcEngine  sharedEngine] connectionState];
+    result.value = @(ret);
+    return result;
+}
 
 
-#pragma mark - FLTVideoRendererApi
+- (nullable NEFLTIntValue *)setClientRole:(nonnull NEFLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+#ifdef DEBUG
+    NSLog(@"FlutterCalled:EngineApi#setClientRole");
+#endif
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
+    int ret = [[NERtcEngine  sharedEngine] setClientRole:input.value.intValue];
+    result.value = @(ret);
+    return result;
+}
 
-- (nullable FLTIntValue *)createVideoRenderer:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+
+
+- (nullable NEFLTIntValue *)subscribeRemoteSubStreamVideo:(nonnull NEFLTSubscribeRemoteSubStreamVideoRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+#ifdef DEBUG
+    NSLog(@"FlutterCalled:EngineApi#subscribeRemoteSubStreamVideo");
+#endif
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
+    int ret = [[NERtcEngine  sharedEngine] subscribeRemoteSubStreamVideo:input.subscribe.boolValue forUserID:input.uid.unsignedLongLongValue];
+    result.value = @(ret);
+    return result;
+}
+
+
+- (nullable NEFLTIntValue *)uploadSdkInfo:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+#ifdef DEBUG
+    NSLog(@"FlutterCalled:EngineApi#uploadSdkInfo");
+#endif
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
+    int ret = [[NERtcEngine  sharedEngine] uploadSdkInfo];
+    result.value = @(ret);
+    return result;
+}
+
+
+
+#pragma mark - NEFLTVideoRendererApi
+
+- (nullable NEFLTIntValue *)createVideoRenderer:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:VideoRendererApi#createVideoRenderer");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     FlutterVideoRenderer* renderer = [self createWithTextureRegistry:_textures messenger:_messenger];
     self.renderers[@(renderer.textureId)] = renderer;
     result.value = @(renderer.textureId);
     return result;
 }
 
-- (void)disposeVideoRenderer:(nonnull FLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (void)disposeVideoRenderer:(nonnull NEFLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:VideoRendererApi#disposeVideoRenderer");
 #endif
@@ -682,11 +757,11 @@
     [self.renderers removeObjectForKey:input.value];
 }
 
-- (nullable FLTIntValue *)setupLocalVideoRenderer:(nonnull FLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)setupLocalVideoRenderer:(nonnull NEFLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:VideoRendererApi#setupLocalVideoRenderer");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     FlutterVideoRenderer *renderer = self.renderers[input.value];
     NERtcVideoCanvas *canvas = [[NERtcVideoCanvas alloc] init];
     canvas.useExternalRender = YES;
@@ -696,11 +771,11 @@
     return result;
 }
 
-- (nullable FLTIntValue *)setupRemoteVideoRenderer:(nonnull FLTSetupRemoteVideoRendererRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)setupRemoteVideoRenderer:(nonnull NEFLTSetupRemoteVideoRendererRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:VideoRendererApi#setupRemoteVideoRenderer");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     FlutterVideoRenderer *renderer = self.renderers[input.textureId];
     NERtcVideoCanvas *canvas = [[NERtcVideoCanvas alloc] init];
     canvas.useExternalRender = YES;
@@ -710,11 +785,11 @@
     return result;
 }
 
-- (nullable FLTIntValue *)setMirror:(nonnull FLTSetVideoRendererMirrorRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)setMirror:(nonnull NEFLTSetVideoRendererMirrorRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:VideoRendererApi#setMirror");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     FlutterVideoRenderer *renderer = self.renderers[input.textureId];
     int ret = -1;
     if(renderer) {
@@ -725,197 +800,227 @@
     return result;
 }
 
+- (nullable NEFLTIntValue *)setupLocalSubStreamVideoRenderer:(nonnull NEFLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+#ifdef DEBUG
+    NSLog(@"FlutterCalled:VideoRendererApi#setupLocalSubStreamVideoRenderer");
+#endif
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
+    FlutterVideoRenderer *renderer = self.renderers[input.value];
+    NERtcVideoCanvas *canvas = [[NERtcVideoCanvas alloc] init];
+    canvas.useExternalRender = YES;
+    canvas.externalVideoRender = renderer;
+    int ret = [[NERtcEngine sharedEngine] setupLocalSubStreamVideoCanvas:canvas];
+    result.value = @(ret);
+    return result;
+}
 
-#pragma mark - FLTDeviceManagerApi
 
-- (nullable FLTIntValue *)setDeviceEventCallback:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)setupRemoteSubStreamVideoRenderer:(nonnull NEFLTSetupRemoteSubStreamVideoRendererRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+#ifdef DEBUG
+    NSLog(@"FlutterCalled:VideoRendererApi#setupRemoteSubStreamVideoRenderer");
+#endif
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
+    FlutterVideoRenderer *renderer = self.renderers[input.textureId];
+    NERtcVideoCanvas *canvas = [[NERtcVideoCanvas alloc] init];
+    canvas.useExternalRender = YES;
+    canvas.externalVideoRender = renderer;
+    int ret = [[NERtcEngine sharedEngine] setupRemoteSubStreamVideoCanvas:canvas forUserID:input.uid.unsignedLongLongValue];
+    result.value = @(ret);
+    return result;
+}
+
+
+
+#pragma mark - NEFLTDeviceManagerApi
+
+- (nullable NEFLTIntValue *)setDeviceEventCallback:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:DeviceManagerApi#setupRemoteVideoRenderer");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     _deviceCallbackEnabled = YES;
     result.value = @(0);
     return result;
 }
 
-- (nullable FLTIntValue *)clearDeviceEventCallback:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)clearDeviceEventCallback:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:DeviceManagerApi#clearDeviceEventCallback");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     _deviceCallbackEnabled = NO;
     result.value = @(0);
     return result;
 }
 
 
-- (nullable FLTBoolValue *)isSpeakerphoneOn:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTBoolValue *)isSpeakerphoneOn:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:DeviceManagerApi#isSpeakerphoneOn");
 #endif
-    FLTBoolValue* result = [[FLTBoolValue alloc] init];
+    NEFLTBoolValue* result = [[NEFLTBoolValue alloc] init];
     bool enabled = false;
     [[NERtcEngine  sharedEngine] getLoudspeakerMode:&enabled];
     result.value = [NSNumber numberWithBool:enabled];
     return result;
 }
 
-- (nullable FLTIntValue *)setSpeakerphoneOn:(nonnull FLTBoolValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)setSpeakerphoneOn:(nonnull NEFLTBoolValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:DeviceManagerApi#setSpeakerphoneOn");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine  sharedEngine] setLoudspeakerMode:input.value.boolValue];
     result.value = @(ret);
     return result;
 }
 
 
-- (nullable FLTIntValue *)enableEarback:(nonnull FLTEnableEarbackRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)enableEarback:(nonnull NEFLTEnableEarbackRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:DeviceManagerApi#enableEarback");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine sharedEngine] enableEarback:input.enabled.boolValue volume:input.volume.unsignedIntValue];
     result.value = @(ret);
     return result;
 }
 
-- (nullable FLTIntValue *)setEarbackVolume:(nonnull FLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)setEarbackVolume:(nonnull NEFLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:DeviceManagerApi#setEarbackVolume");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine sharedEngine] setEarbackVolume:input.value.unsignedIntValue];
     result.value = @(ret);
     return result;
 }
 
-- (nullable FLTIntValue *)setCameraTorchOn:(nonnull FLTBoolValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)setCameraTorchOn:(nonnull NEFLTBoolValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:DeviceManagerApi#setCameraTorchOn");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine sharedEngine] setCameraTorchOn:input.value.boolValue];
     result.value = @(ret);
     return result;
 }
 
-- (nullable FLTIntValue *)setCameraZoomFactor:(nonnull FLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)setCameraZoomFactor:(nonnull NEFLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:DeviceManagerApi#setCameraZoomFactor");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine sharedEngine] setCameraZoomFactor:input.value.floatValue];
     result.value = @(ret);
     return result;
 }
 
-- (nullable FLTDoubleValue *)getCameraMaxZoom:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTDoubleValue *)getCameraMaxZoom:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:DeviceManagerApi#getCameraMaxZoom");
 #endif
-    FLTDoubleValue* result = [[FLTDoubleValue alloc] init];
+    NEFLTDoubleValue* result = [[NEFLTDoubleValue alloc] init];
     float ret = [[NERtcEngine sharedEngine] maxCameraZoomScale];
     result.value = @(ret);
     return result;
 }
 
-- (nullable FLTIntValue *)setCameraFocusPosition:(nonnull FLTSetCameraFocusPositionRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)setCameraFocusPosition:(nonnull NEFLTSetCameraFocusPositionRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:DeviceManagerApi#setCameraFocusPosition");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine sharedEngine] setCameraFocusPositionX:input.x.floatValue Y:input.y.floatValue];
     result.value = @(ret);
     return result;
 }
 
-- (nullable FLTIntValue *)setPlayoutDeviceMute:(nonnull FLTBoolValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)setPlayoutDeviceMute:(nonnull NEFLTBoolValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:DeviceManagerApi#setPlayoutDeviceMute");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine sharedEngine] setPlayoutDeviceMute:input.value.boolValue];
     result.value = @(ret);
     return result;
 }
 
-- (nullable FLTBoolValue *)isPlayoutDeviceMute:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTBoolValue *)isPlayoutDeviceMute:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:DeviceManagerApi#isPlayoutDeviceMute");
 #endif
-    FLTBoolValue* result = [[FLTBoolValue alloc] init];
+    NEFLTBoolValue* result = [[NEFLTBoolValue alloc] init];
     bool muted = false;
     [[NERtcEngine  sharedEngine] getPlayoutDeviceMute:&muted];
     result.value = [NSNumber numberWithBool:muted];
     return result;
 }
 
-- (nullable FLTIntValue *)setRecordDeviceMute:(nonnull FLTBoolValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)setRecordDeviceMute:(nonnull NEFLTBoolValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:DeviceManagerApi#setRecordDeviceMute");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine sharedEngine] setRecordDeviceMute:input.value.boolValue];
     result.value = @(ret);
     return result;
 }
 
 
-- (nullable FLTBoolValue *)isRecordDeviceMute:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTBoolValue *)isRecordDeviceMute:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:DeviceManagerApi#isRecordDeviceMute");
 #endif
-    FLTBoolValue* result = [[FLTBoolValue alloc] init];
+    NEFLTBoolValue* result = [[NEFLTBoolValue alloc] init];
     bool muted = false;
     [[NERtcEngine  sharedEngine] getRecordDeviceMute:&muted];
     result.value = [NSNumber numberWithBool:muted];
     return result;
 }
 
-- (nullable FLTIntValue *)switchCamera:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)switchCamera:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:DeviceManagerApi#switchCamera");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine sharedEngine] switchCamera];
     result.value = @(ret);
     return result;
 }
 
-- (nullable FLTIntValue *)setAudioFocusMode:(nonnull FLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)setAudioFocusMode:(nonnull NEFLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
     //ignore
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     result.value = @(-1L);
     return result;
 }
 
 
 
-#pragma mark - FLTAudioMixingApi
+#pragma mark - NEFLTAudioMixingApi
 
-- (nullable FLTIntValue *)setAudioMixingEventCallback:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)setAudioMixingEventCallback:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:AudioMixingApi#setAudioMixingEventCallback");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     _audioMixingCallbackEnabled = YES;
     result.value = @(0);
     return result;
 }
 
-- (nullable FLTIntValue *)clearAudioMixingEventCallback:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)clearAudioMixingEventCallback:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:AudioMixingApi#clearAudioMixingEventCallback");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     _audioMixingCallbackEnabled = NO;
     result.value = @(0);
     return result;
 }
 
-- (nullable FLTIntValue *)startAudioMixing:(nonnull FLTStartAudioMixingRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)startAudioMixing:(nonnull NEFLTStartAudioMixingRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:AudioMixingApi#startAudioMixing");
 #endif
@@ -939,56 +1044,56 @@
         option.playbackVolume = input.playbackVolume.unsignedIntValue;
     }
     int ret = [[NERtcEngine  sharedEngine] startAudioMixingWithOption:option];
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     result.value = @(ret);
     return result;
 }
 
-- (nullable FLTIntValue *)stopAudioMixing:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)stopAudioMixing:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:AudioMixingApi#stopAudioMixing");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine  sharedEngine] stopAudioMixing];
     result.value = @(ret);
     return result;
 }
 
-- (nullable FLTIntValue *)pauseAudioMixing:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)pauseAudioMixing:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:AudioMixingApi#pauseAudioMixing");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine  sharedEngine] pauseAudioMixing];
     result.value = @(ret);
     return result;
 }
 
-- (nullable FLTIntValue *)resumeAudioMixing:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)resumeAudioMixing:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:AudioMixingApi#resumeAudioMixing");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine  sharedEngine] resumeAudioMixing];
     result.value = @(ret);
     return result;
 }
 
-- (nullable FLTIntValue *)setAudioMixingSendVolume:(nonnull FLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)setAudioMixingSendVolume:(nonnull NEFLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:AudioMixingApi#setAudioMixingSendVolume");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine  sharedEngine] setAudioMixingSendVolume: input.value.unsignedIntValue];
     result.value = @(ret);
     return result;
 }
 
-- (nullable FLTIntValue *)getAudioMixingSendVolume:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)getAudioMixingSendVolume:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:AudioMixingApi#getAudioMixingSendVolume");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     uint32_t volume = 0;
     int ret = [[NERtcEngine sharedEngine] getAudioMixingSendVolume:&volume];
     if(ret == 0) {
@@ -999,22 +1104,22 @@
     return result;
 }
 
-- (nullable FLTIntValue *)setAudioMixingPlaybackVolume:(nonnull FLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)setAudioMixingPlaybackVolume:(nonnull NEFLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:AudioMixingApi#setAudioMixingPlaybackVolume");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine  sharedEngine] setAudioMixingPlaybackVolume: input.value.unsignedIntValue];
     result.value = @(ret);
     return result;
 }
 
 
-- (nullable FLTIntValue *)getAudioMixingPlaybackVolume:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)getAudioMixingPlaybackVolume:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:AudioMixingApi#getAudioMixingPlaybackVolume");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     uint32_t volume = 0;
     int ret = [[NERtcEngine sharedEngine] getAudioMixingPlaybackVolume:&volume];
     if(ret == 0) {
@@ -1026,21 +1131,21 @@
 }
 
 
-- (nullable FLTIntValue *)setAudioMixingPosition:(nonnull FLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)setAudioMixingPosition:(nonnull NEFLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:AudioMixingApi#setAudioMixingPosition");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine  sharedEngine] setAudioMixingPosition:input.value.unsignedLongLongValue];
     result.value = @(ret);
     return result;
 }
 
-- (nullable FLTIntValue *)getAudioMixingCurrentPosition:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)getAudioMixingCurrentPosition:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:AudioMixingApi#getAudioMixingCurrentPosition");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     uint64_t position = 0;
     int ret = [[NERtcEngine sharedEngine] getAudioMixingCurrentPosition:&position];
     if(ret == 0) {
@@ -1051,11 +1156,11 @@
     return result;
 }
 
-- (nullable FLTIntValue *)getAudioMixingDuration:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)getAudioMixingDuration:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:AudioMixingApi#getAudioMixingDuration");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     uint64_t position = 0;
     int ret = [[NERtcEngine sharedEngine] getAudioMixingCurrentPosition:&position];
     if(ret == 0) {
@@ -1067,35 +1172,35 @@
 }
 
 
-#pragma mark - FLTAudioEffectApi
+#pragma mark - NEFLTAudioEffectApi
 
-- (nullable FLTIntValue *)setAudioEffectEventCallback:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)setAudioEffectEventCallback:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:AudioEffectApi#setAudioEffectEventCallback");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     _audioEffetCallbackEnabled = YES;
     result.value = @(0);
     return result;
 }
 
-- (nullable FLTIntValue *)clearAudioEffectEventCallback:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)clearAudioEffectEventCallback:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
     
 #ifdef DEBUG
     NSLog(@"FlutterCalled:AudioEffectApi#clearAudioEffectEventCallback");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     _audioEffetCallbackEnabled = NO;
     result.value = @(0);
     return result;
 }
 
-- (nullable FLTIntValue *)playEffect:(nonnull FLTPlayEffectRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)playEffect:(nonnull NEFLTPlayEffectRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
     
 #ifdef DEBUG
     NSLog(@"FlutterCalled:AudioEffectApi#playEffect");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     NERtcCreateAudioEffectOption* option = [[NERtcCreateAudioEffectOption alloc] init];
     if(input.path != nil) {
         option.path = input.path;
@@ -1121,88 +1226,88 @@
 }
 
 
-- (nullable FLTIntValue *)stopEffect:(nonnull FLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)stopEffect:(nonnull NEFLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:AudioEffectApi#stopEffect");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine sharedEngine] stopEffectWitdId:input.value.unsignedIntValue];
     result.value = @(ret);
     return result;
 }
 
-- (nullable FLTIntValue *)stopAllEffects:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)stopAllEffects:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
     
 #ifdef DEBUG
     NSLog(@"FlutterCalled:AudioEffectApi#stopAllEffects");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine sharedEngine] stopAllEffects];
     result.value = @(ret);
     return result;
 }
 
-- (nullable FLTIntValue *)pauseEffect:(nonnull FLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)pauseEffect:(nonnull NEFLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
     
 #ifdef DEBUG
     NSLog(@"FlutterCalled:AudioEffectApi#pauseEffect");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine sharedEngine] pauseEffectWitdId:input.value.unsignedIntValue];
     result.value = @(ret);
     return result;
 }
 
-- (nullable FLTIntValue *)pauseAllEffects:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)pauseAllEffects:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
     
 #ifdef DEBUG
     NSLog(@"FlutterCalled:AudioEffectApi#pauseAllEffects");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine sharedEngine] pauseAllEffects];
     result.value = @(ret);
     return result;
 }
 
-- (nullable FLTIntValue *)resumeEffect:(nonnull FLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)resumeEffect:(nonnull NEFLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
     
 #ifdef DEBUG
     NSLog(@"FlutterCalled:AudioEffectApi#resumeEffect");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine sharedEngine] resumeEffectWitdId:input.value.unsignedIntValue];
     result.value = @(ret);
     return result;
 }
 
-- (nullable FLTIntValue *)resumeAllEffects:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)resumeAllEffects:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
     
 #ifdef DEBUG
     NSLog(@"FlutterCalled:AudioEffectApi#resumeAllEffects");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine sharedEngine] resumeAllEffects];
     result.value = @(ret);
     return result;
 }
 
-- (nullable FLTIntValue *)setEffectSendVolume:(nonnull FLTSetEffectSendVolumeRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)setEffectSendVolume:(nonnull NEFLTSetEffectSendVolumeRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
     
 #ifdef DEBUG
     NSLog(@"FlutterCalled:AudioEffectApi#setEffectSendVolume");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine sharedEngine] setEffectSendVolumeWithId:input.effectId.unsignedIntValue volume:input.volume.unsignedIntValue];
     result.value = @(ret);
     return result;
 }
 
-- (nullable FLTIntValue *)getEffectSendVolume:(nonnull FLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)getEffectSendVolume:(nonnull NEFLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
     
 #ifdef DEBUG
     NSLog(@"FlutterCalled:AudioEffectApi#getEffectSendVolume");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     uint32_t volume = 0;
     int ret = [[NERtcEngine sharedEngine] getEffectSendVolumeWithId:input.value.unsignedIntValue volume:&volume];
     if(ret == 0) {
@@ -1214,22 +1319,22 @@
 }
 
 
-- (nullable FLTIntValue *)setEffectPlaybackVolume:(nonnull FLTSetEffectPlaybackVolumeRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)setEffectPlaybackVolume:(nonnull NEFLTSetEffectPlaybackVolumeRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
     
 #ifdef DEBUG
     NSLog(@"FlutterCalled:AudioEffectApi#setEffectPlaybackVolume");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     int ret = [[NERtcEngine sharedEngine] setEffectPlaybackVolumeWithId:input.effectId.unsignedIntValue volume:input.volume.unsignedIntValue];
     result.value = @(ret);
     return result;
 }
 
-- (nullable FLTIntValue *)getEffectPlaybackVolume:(nonnull FLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+- (nullable NEFLTIntValue *)getEffectPlaybackVolume:(nonnull NEFLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:AudioEffectApi#getEffectPlaybackVolume");
 #endif
-    FLTIntValue* result = [[FLTIntValue alloc] init];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
     uint32_t volume = 0;
     int ret = [[NERtcEngine sharedEngine] getEffectPlaybackVolumeWithId:input.value.unsignedIntValue volume:&volume];
     if(ret == 0) {
@@ -1295,6 +1400,21 @@
 - (void)onNERtcEngineUserVideoDidStop:(uint64_t)userID {
     [_channel invokeMethod:@"onUserVideoStop" arguments:@{@"uid":@(userID)}];
 }
+
+- (void)onNERtcEngineDidClientRoleChanged:(NERtcClientRole)oldRole newRole:(NERtcClientRole)newRole {
+    [_channel invokeMethod:@"onClientRoleChange" arguments:@{@"oldRole":@(oldRole), @"newRole":@(newRole)}];
+}
+
+
+- (void)onNERtcEngineUserSubStreamDidStartWithUserID:(uint64_t)userID subStreamProfile:(NERtcVideoProfileType)profile {
+    [_channel invokeMethod:@"onUserSubStreamVideoStart" arguments:@{@"uid":@(userID), @"maxProfile":@(profile)}];
+}
+
+
+- (void)onNERtcEngineUserSubStreamDidStop:(uint64_t)userID {
+    [_channel invokeMethod:@"onUserSubStreamVideoStop" arguments:@{@"uid":@(userID)}];
+}
+
 
 
 #pragma mark - LiveStreamDelegate
@@ -1432,7 +1552,7 @@
 }
 
 - (void)onNERtcEngineHardwareResourceReleased:(NERtcError)result {
-    // ignore
+    [_channel invokeMethod:@"onNERtcEngineHardwareResourceReleased" arguments:@{@"result":@(result)}];
 }
 
 - (void)onNERtcEngineNetworkConnectionTypeChanged:(NERtcNetworkConnectionType)newConnectionType {
@@ -1490,6 +1610,20 @@
     }
 }
 
+- (void)onNERtcCameraExposureChanged:(CGPoint)exposurePoint {
+    
+}
+
+
+- (void)onNERtcCameraFocusChanged:(CGPoint)focusPoint {
+
+}
+
+- (void)onNERtcEngineAudioHasHowling {
+    [_channel invokeMethod:@"onAudioHasHowling" arguments:nil];
+}
+
+
 
 #pragma mark - NERtcEngineMediaStatsObserver
 
@@ -1510,13 +1644,24 @@
 - (void)onLocalVideoStat:(nonnull NERtcVideoSendStats *)stat {
     if(!stat) return;
     NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
-    [dictionary setValue:[NSNumber numberWithInt:stat.encodedFrameWidth] forKey:@"width"];
-    [dictionary setValue:[NSNumber numberWithInt:stat.encodedFrameHeight] forKey:@"height"];
-    [dictionary setValue:[NSNumber numberWithLongLong:stat.bitRate] forKey:@"sendBitrate"];
-    [dictionary setValue:[NSNumber numberWithInt:stat.encoderOutputFrameRate] forKey:@"encoderOutputFrameRate"];
-    [dictionary setValue:[NSNumber numberWithInt:stat.captureFrameRate] forKey:@"captureFrameRate"];
-    [dictionary setValue:[NSNumber numberWithInt:stat.targetBitrate] forKey:@"targetBitrate"];
-    [dictionary setValue:[NSNumber numberWithInt:stat.sentFrameRate] forKey:@"sentFrameRate"];
+    if(stat.videoLayers) {
+        NSMutableArray* layers = [[NSMutableArray alloc] init];
+        for(NERtcVideoLayerSendStats* layerStat in stat.videoLayers) {
+            NSMutableDictionary *layer = [[NSMutableDictionary alloc] init];
+            [layer setValue:[NSNumber numberWithInt:layerStat.layerType] forKey:@"layerType"];
+            [layer setValue:[NSNumber numberWithInt:layerStat.width] forKey:@"width"];
+            [layer setValue:[NSNumber numberWithInt:layerStat.height] forKey:@"height"];
+            [layer setValue:[NSNumber numberWithLongLong:layerStat.sendBitrate] forKey:@"sendBitrate"];
+            [layer setValue:[NSNumber numberWithInt:layerStat.encoderOutputFrameRate] forKey:@"encoderOutputFrameRate"];
+            [layer setValue:[NSNumber numberWithInt:layerStat.captureFrameRate] forKey:@"captureFrameRate"];
+            [layer setValue:[NSNumber numberWithInt:layerStat.targetBitrate] forKey:@"targetBitrate"];
+            [layer setValue:[NSNumber numberWithInt:layerStat.encoderBitrate] forKey:@"encoderBitrate"];
+            [layer setValue:[NSNumber numberWithInt:layerStat.sentFrameRate] forKey:@"sentFrameRate"];
+            [layer setValue:[NSNumber numberWithInt:layerStat.renderFrameRate] forKey:@"renderFrameRate"];
+            [layers addObject:layer];
+        }
+        [dictionary setValue:layers forKey:@"layers"];
+    }
     [_channel invokeMethod:@"onLocalVideoStats" arguments:dictionary];
 }
 
@@ -1559,14 +1704,24 @@
         for(NERtcVideoRecvStats* stat in stats) {
             NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
             [dictionary setValue:[NSNumber numberWithUnsignedLongLong:stat.uid] forKey:@"uid"];
-            [dictionary setValue:[NSNumber numberWithInt:stat.width] forKey:@"width"];
-            [dictionary setValue:[NSNumber numberWithInt:stat.height] forKey:@"height"];
-            [dictionary setValue:[NSNumber numberWithLongLong:stat.receivedBitrate] forKey:@"receivedBitrate"];
-            [dictionary setValue:[NSNumber numberWithInt:stat.packetLossRate] forKey:@"packetLossRate"];
-            [dictionary setValue:[NSNumber numberWithInt:stat.decoderOutputFrameRate] forKey:@"decoderOutputFrameRate"];
-            [dictionary setValue:[NSNumber numberWithInt:stat.rendererOutputFrameRate] forKey:@"rendererOutputFrameRate"];
-            [dictionary setValue:[NSNumber numberWithLongLong:stat.totalFrozenTime] forKey:@"totalFrozenTime"];
-            [dictionary setValue:[NSNumber numberWithInt:stat.frozenRate] forKey:@"frozenRate"];
+            NSMutableArray* layers = [[NSMutableArray alloc] init];
+            if(stat.videoLayers) {
+                for(NERtcVideoLayerRecvStats* layerStat in stat.videoLayers) {
+                    NSMutableDictionary *layer = [[NSMutableDictionary alloc] init];
+                    [layer setValue:[NSNumber numberWithInt:layerStat.layerType] forKey:@"layerType"];
+                    [layer setValue:[NSNumber numberWithInt:layerStat.width] forKey:@"width"];
+                    [layer setValue:[NSNumber numberWithInt:layerStat.height] forKey:@"height"];
+                    [layer setValue:[NSNumber numberWithLongLong:layerStat.receivedBitrate] forKey:@"receivedBitrate"];
+                    [layer setValue:[NSNumber numberWithInt:layerStat.fps] forKey:@"fps"];
+                    [layer setValue:[NSNumber numberWithInt:layerStat.packetLossRate] forKey:@"packetLossRate"];
+                    [layer setValue:[NSNumber numberWithInt:layerStat.decoderOutputFrameRate] forKey:@"decoderOutputFrameRate"];
+                    [layer setValue:[NSNumber numberWithInt:layerStat.rendererOutputFrameRate] forKey:@"rendererOutputFrameRate"];
+                    [layer setValue:[NSNumber numberWithLongLong:layerStat.totalFrozenTime] forKey:@"totalFrozenTime"];
+                    [layer setValue:[NSNumber numberWithInt:layerStat.frozenRate] forKey:@"frozenRate"];
+                    [layers addObject:layer];
+                }
+            }
+            [dictionary setValue:layers forKey:@"layers"];
             [array addObject:dictionary];
         }
         [_channel invokeMethod:@"onRemoteVideoStats" arguments:array];

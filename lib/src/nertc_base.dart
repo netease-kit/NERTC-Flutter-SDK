@@ -30,11 +30,13 @@ class NERtcOptions {
   /// 是否自动订阅音频（默认订阅）
   final bool audioAutoSubscribe;
 
-  /// 系统切换听筒事件时，禁用切换到扬声器
+  /// 系统切换听筒事件时，禁用切换到扬声器.
+  /// 仅在iOS平台有效.
   /// 默认值 false, 如设置 true 则禁止SDK在系统切换到听筒时做切换扬声器操作，需要用户自己处理切换听筒事件
   final bool audioDisableOverrideSpeakerOnReceiver;
 
   /// 设置耳机时不使用软件回声消除功能
+  /// 仅在iOS平台有效.
   /// 默认值 false,如设置true 则SDK在耳机模式下不使用软件回声消除功能，会对某些机型下 耳机的音质效果有影响
   final bool audioDisableSWAECOnHeadset;
 
@@ -57,8 +59,7 @@ class NERtcOptions {
   final bool publishSelfStream;
 
   /// 是否允许视频帧回调.
-  ///
-  /// 参数仅在 iOS 平台有效
+  /// 仅在iOS平台有效.
   final bool videoCaptureObserverEnabled;
 
   /// 视频编码模式
@@ -69,6 +70,26 @@ class NERtcOptions {
 
   /// 视频发布模式
   final NERtcVideoSendMode videoSendMode;
+}
+
+/// Camera类型
+/// 仅 Android 平台支持
+class NERtcCameraType {
+  /// 使用 android.hardware.camera 进行视频采集
+  /// 默认情况下使用 [camera1]
+  static const int camera1 = 1;
+
+  /// 使用 android.hardware.camera2 进行视频采集
+  static const int camera2 = 2;
+}
+
+///屏幕共享编码策略倾向
+class NERtcSubStreamContentPrefer {
+  /// （默认）内容类型为动画。当共享的内容是视频、电影或游戏时，推荐用户选择该内容类型
+  static const int motion = 0;
+
+  /// 内容类型为细节。当共享的内容是图片或文字时，推荐选择该内容类型（该模式下帧率最高10帧）
+  static const int details = 1;
 }
 
 /// 视频设置参数
@@ -103,13 +124,45 @@ class NERtcVideoConfig {
   /// 自定义高 <=0 表示采用 [videoProfile] 档位
   int height = 0;
 
+  /// Camera 类型，仅 Android 平台支持
+  int cameraType = NERtcCameraType.camera1;
+
   @override
   String toString() {
     return 'NERtcVideoConfig{videoProfile: $videoProfile, '
-        'videoCropMode: $videoCropMode, frontCamera: $frontCamera, '
-        'frameRate: $frameRate, minFrameRate: $minFrameRate,'
-        ' bitrate: $bitrate, minBitrate: $minBitrate, '
-        'degradationPrefer: $degradationPrefer, width:$width, height:$height}';
+        'videoCropMode: $videoCropMode, frontCamera: $frontCamera,'
+        ' frameRate: $frameRate, minFrameRate: $minFrameRate, '
+        'bitrate: $bitrate, minBitrate: $minBitrate, '
+        'degradationPrefer: $degradationPrefer, '
+        'width: $width, height: $height, cameraType: $cameraType}';
+  }
+}
+
+/// 屏幕录制编码参数
+class NERtcScreenConfig {
+  /// 屏幕共享编码策略倾向
+  int contentPrefer = NERtcSubStreamContentPrefer.motion;
+
+  /// 视频档位，默认高清模式
+  int videoProfile = NERtcVideoProfile.standard;
+
+  /// 视频编码帧率
+  int frameRate = NERtcVideoFrameRate.fps_30;
+
+  /// 最小帧率。0：表示使用默认帧率
+  int minFrameRate = 0;
+
+  /// 视频编码码率，单位为Kbps。 0：表示使用默认码率，手动设置请参考码表
+  int bitrate = 0;
+
+  /// 视频编码最小码率，单位为Kbps。直播场景下使用，0：表示使用默认
+  int minBitrate = 0;
+
+  @override
+  String toString() {
+    return 'NERtcScreenConfig{contentPrefer: $contentPrefer, '
+        'videoProfile: $videoProfile, frameRate: $frameRate, '
+        'minFrameRate: $minFrameRate, bitrate: $bitrate, minBitrate: $minBitrate}';
   }
 }
 
@@ -163,6 +216,15 @@ class NERtcVideoCropMode {
 
   ///1:1 裁剪
   static const int crop_1x1 = 3;
+}
+
+/// 视频流类型
+class NERtcVideoStreamType {
+  /// 主流
+  static const int main = 1;
+
+  /// 辅流
+  int sub = 2;
 }
 
 ///网络类型定义
@@ -576,10 +638,10 @@ class NERtcRemoteVideoStreamType {
 /// 与会者角色， 主播/观众
 class NERtcUserRole {
   /// 主播模式，能发送和接收数据
-  static const int broadcaster = 1;
+  static const int broadcaster = 0;
 
   /// 观众模式，只能接收数据
-  static const int audience = 2;
+  static const int audience = 1;
 }
 
 /// 语音设备类型

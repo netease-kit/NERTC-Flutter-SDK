@@ -67,6 +67,27 @@ class SetupRemoteVideoRendererRequest {
   }
 }
 
+class SetupRemoteSubStreamVideoRendererRequest {
+  int uid;
+  int textureId;
+
+  // ignore: unused_element
+  Object encode() {
+    final Map<Object, Object> pigeonMap = <Object, Object>{};
+    pigeonMap['uid'] = uid;
+    pigeonMap['textureId'] = textureId;
+    return pigeonMap;
+  }
+
+  // ignore: unused_element
+  static SetupRemoteSubStreamVideoRendererRequest decode(Object message) {
+    final Map<Object, Object> pigeonMap = message as Map<Object, Object>;
+    return SetupRemoteSubStreamVideoRendererRequest()
+      ..uid = pigeonMap['uid'] as int
+      ..textureId = pigeonMap['textureId'] as int;
+  }
+}
+
 class StartAudioMixingRequest {
   String path;
   int loopCount;
@@ -394,6 +415,9 @@ class SetLocalVideoConfigRequest {
   int bitrate;
   int minBitrate;
   int degradationPrefer;
+  int width;
+  int height;
+  int cameraType;
 
   // ignore: unused_element
   Object encode() {
@@ -406,6 +430,9 @@ class SetLocalVideoConfigRequest {
     pigeonMap['bitrate'] = bitrate;
     pigeonMap['minBitrate'] = minBitrate;
     pigeonMap['degradationPrefer'] = degradationPrefer;
+    pigeonMap['width'] = width;
+    pigeonMap['height'] = height;
+    pigeonMap['cameraType'] = cameraType;
     return pigeonMap;
   }
 
@@ -420,7 +447,43 @@ class SetLocalVideoConfigRequest {
       ..minFrameRate = pigeonMap['minFrameRate'] as int
       ..bitrate = pigeonMap['bitrate'] as int
       ..minBitrate = pigeonMap['minBitrate'] as int
-      ..degradationPrefer = pigeonMap['degradationPrefer'] as int;
+      ..degradationPrefer = pigeonMap['degradationPrefer'] as int
+      ..width = pigeonMap['width'] as int
+      ..height = pigeonMap['height'] as int
+      ..cameraType = pigeonMap['cameraType'] as int;
+  }
+}
+
+class StartScreenCaptureRequest {
+  int contentPrefer;
+  int videoProfile;
+  int frameRate;
+  int minFrameRate;
+  int bitrate;
+  int minBitrate;
+
+  // ignore: unused_element
+  Object encode() {
+    final Map<Object, Object> pigeonMap = <Object, Object>{};
+    pigeonMap['contentPrefer'] = contentPrefer;
+    pigeonMap['videoProfile'] = videoProfile;
+    pigeonMap['frameRate'] = frameRate;
+    pigeonMap['minFrameRate'] = minFrameRate;
+    pigeonMap['bitrate'] = bitrate;
+    pigeonMap['minBitrate'] = minBitrate;
+    return pigeonMap;
+  }
+
+  // ignore: unused_element
+  static StartScreenCaptureRequest decode(Object message) {
+    final Map<Object, Object> pigeonMap = message as Map<Object, Object>;
+    return StartScreenCaptureRequest()
+      ..contentPrefer = pigeonMap['contentPrefer'] as int
+      ..videoProfile = pigeonMap['videoProfile'] as int
+      ..frameRate = pigeonMap['frameRate'] as int
+      ..minFrameRate = pigeonMap['minFrameRate'] as int
+      ..bitrate = pigeonMap['bitrate'] as int
+      ..minBitrate = pigeonMap['minBitrate'] as int;
   }
 }
 
@@ -641,6 +704,52 @@ class VideoRendererApi {
     final Object encoded = arg.encode();
     const BasicMessageChannel<Object> channel =
         BasicMessageChannel<Object>('dev.flutter.pigeon.VideoRendererApi.setupRemoteVideoRenderer', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
+      throw PlatformException(
+        code: error['code'] as String,
+        message: error['message'] as String,
+        details: error['details'],
+      );
+    } else {
+      return IntValue.decode(replyMap['result']);
+    }
+  }
+
+  Future<IntValue> setupLocalSubStreamVideoRenderer(IntValue arg) async {
+    final Object encoded = arg.encode();
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.VideoRendererApi.setupLocalSubStreamVideoRenderer', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
+      throw PlatformException(
+        code: error['code'] as String,
+        message: error['message'] as String,
+        details: error['details'],
+      );
+    } else {
+      return IntValue.decode(replyMap['result']);
+    }
+  }
+
+  Future<IntValue> setupRemoteSubStreamVideoRenderer(SetupRemoteSubStreamVideoRendererRequest arg) async {
+    final Object encoded = arg.encode();
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.VideoRendererApi.setupRemoteSubStreamVideoRenderer', StandardMessageCodec());
     final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
@@ -1998,7 +2107,7 @@ class EngineApi {
     }
   }
 
-  Future<IntValue> startScreenCapture(IntValue arg) async {
+  Future<IntValue> startScreenCapture(StartScreenCaptureRequest arg) async {
     final Object encoded = arg.encode();
     const BasicMessageChannel<Object> channel =
         BasicMessageChannel<Object>('dev.flutter.pigeon.EngineApi.startScreenCapture', StandardMessageCodec());

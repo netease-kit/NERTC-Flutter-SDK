@@ -48,7 +48,7 @@ class NERtcEngine {
 
   EngineApi _api = EngineApi();
 
-  /// Configure
+  /// 创建 NERtc 引擎
   Future<void> create(
       {@required String appKey,
       @required NERtcChannelEventCallback channelEventCallback,
@@ -188,7 +188,10 @@ class NERtcEngine {
       ..minFrameRate = videoConfig.minFrameRate
       ..bitrate = videoConfig.bitrate
       ..minBitrate = videoConfig.minBitrate
-      ..degradationPrefer = videoConfig.degradationPrefer);
+      ..degradationPrefer = videoConfig.degradationPrefer
+      ..width = videoConfig.width
+      ..height = videoConfig.height
+      ..cameraType = videoConfig.cameraType);
     return reply.value;
   }
 
@@ -205,10 +208,15 @@ class NERtcEngine {
   }
 
   /// 开启辅流形式的屏幕共享
-  Future<int> startScreenCapture(int screenProfile, int contentPrefer) async {
+  Future<int> startScreenCapture(NERtcScreenConfig config) async {
     if (defaultTargetPlatform == TargetPlatform.android) {
-      IntValue reply =
-          await _api.startScreenCapture(IntValue()..value = screenProfile);
+      IntValue reply = await _api.startScreenCapture(StartScreenCaptureRequest()
+        ..bitrate = config.bitrate
+        ..contentPrefer = config.contentPrefer
+        ..frameRate = config.frameRate
+        ..minBitrate = config.minBitrate
+        ..minFrameRate = config.minFrameRate
+        ..videoProfile = config.videoProfile);
       return reply.value;
     } else {
       return Future.value(-1);

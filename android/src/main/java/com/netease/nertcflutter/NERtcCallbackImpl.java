@@ -112,6 +112,29 @@ public class NERtcCallbackImpl implements NERtcCallbackEx {
     }
 
     @Override
+    public void onClientRoleChange(int oldRole, int newRole) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("oldRole", oldRole);
+        map.put("newRole", newRole);
+        callback.invokeMethod("onClientRoleChange", map);
+    }
+
+    @Override
+    public void onUserSubStreamVideoStart(long uid, int maxProfile) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("uid", uid);
+        map.put("maxProfile", maxProfile);
+        callback.invokeMethod("onUserSubStreamVideoStart", map);
+    }
+
+    @Override
+    public void onUserSubStreamVideoStop(long uid) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("uid", uid);
+        callback.invokeMethod("onUserSubStreamVideoStop", map);
+    }
+
+    @Override
     public void onUserAudioMute(long uid, boolean muted) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("uid", uid);
@@ -277,10 +300,22 @@ public class NERtcCallbackImpl implements NERtcCallbackEx {
 
     @Override
     public void onCameraFocusChanged(Rect rect) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("bottom", rect.bottom);
+        map.put("left", rect.left);
+        map.put("top", rect.top);
+        map.put("right", rect.right);
+        callback.invokeMethod("onCameraFocusChanged", map);
     }
 
     @Override
     public void onCameraExposureChanged(Rect rect) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("bottom", rect.bottom);
+        map.put("left", rect.left);
+        map.put("top", rect.top);
+        map.put("right", rect.right);
+        callback.invokeMethod("onCameraExposureChanged", map);
     }
 
     @Override

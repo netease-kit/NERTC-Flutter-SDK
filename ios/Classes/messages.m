@@ -34,6 +34,10 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
 +(NEFLTSetupRemoteVideoRendererRequest*)fromMap:(NSDictionary*)dict;
 -(NSDictionary*)toMap;
 @end
+@interface NEFLTSetupRemoteSubStreamVideoRendererRequest ()
++(NEFLTSetupRemoteSubStreamVideoRendererRequest*)fromMap:(NSDictionary*)dict;
+-(NSDictionary*)toMap;
+@end
 @interface NEFLTStartAudioMixingRequest ()
 +(NEFLTStartAudioMixingRequest*)fromMap:(NSDictionary*)dict;
 -(NSDictionary*)toMap;
@@ -84,6 +88,10 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
 @end
 @interface NEFLTSetLocalVideoConfigRequest ()
 +(NEFLTSetLocalVideoConfigRequest*)fromMap:(NSDictionary*)dict;
+-(NSDictionary*)toMap;
+@end
+@interface NEFLTStartScreenCaptureRequest ()
++(NEFLTStartScreenCaptureRequest*)fromMap:(NSDictionary*)dict;
 -(NSDictionary*)toMap;
 @end
 @interface NEFLTSubscribeRemoteVideoRequest ()
@@ -142,6 +150,24 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
 @implementation NEFLTSetupRemoteVideoRendererRequest
 +(NEFLTSetupRemoteVideoRendererRequest*)fromMap:(NSDictionary*)dict {
   NEFLTSetupRemoteVideoRendererRequest* result = [[NEFLTSetupRemoteVideoRendererRequest alloc] init];
+  result.uid = dict[@"uid"];
+  if ((NSNull *)result.uid == [NSNull null]) {
+    result.uid = nil;
+  }
+  result.textureId = dict[@"textureId"];
+  if ((NSNull *)result.textureId == [NSNull null]) {
+    result.textureId = nil;
+  }
+  return result;
+}
+-(NSDictionary*)toMap {
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.uid ? self.uid : [NSNull null]), @"uid", (self.textureId ? self.textureId : [NSNull null]), @"textureId", nil];
+}
+@end
+
+@implementation NEFLTSetupRemoteSubStreamVideoRendererRequest
++(NEFLTSetupRemoteSubStreamVideoRendererRequest*)fromMap:(NSDictionary*)dict {
+  NEFLTSetupRemoteSubStreamVideoRendererRequest* result = [[NEFLTSetupRemoteSubStreamVideoRendererRequest alloc] init];
   result.uid = dict[@"uid"];
   if ((NSNull *)result.uid == [NSNull null]) {
     result.uid = nil;
@@ -496,10 +522,56 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
   if ((NSNull *)result.degradationPrefer == [NSNull null]) {
     result.degradationPrefer = nil;
   }
+  result.width = dict[@"width"];
+  if ((NSNull *)result.width == [NSNull null]) {
+    result.width = nil;
+  }
+  result.height = dict[@"height"];
+  if ((NSNull *)result.height == [NSNull null]) {
+    result.height = nil;
+  }
+  result.cameraType = dict[@"cameraType"];
+  if ((NSNull *)result.cameraType == [NSNull null]) {
+    result.cameraType = nil;
+  }
   return result;
 }
 -(NSDictionary*)toMap {
-  return [NSDictionary dictionaryWithObjectsAndKeys:(self.videoProfile ? self.videoProfile : [NSNull null]), @"videoProfile", (self.videoCropMode ? self.videoCropMode : [NSNull null]), @"videoCropMode", (self.frontCamera ? self.frontCamera : [NSNull null]), @"frontCamera", (self.frameRate ? self.frameRate : [NSNull null]), @"frameRate", (self.minFrameRate ? self.minFrameRate : [NSNull null]), @"minFrameRate", (self.bitrate ? self.bitrate : [NSNull null]), @"bitrate", (self.minBitrate ? self.minBitrate : [NSNull null]), @"minBitrate", (self.degradationPrefer ? self.degradationPrefer : [NSNull null]), @"degradationPrefer", nil];
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.videoProfile ? self.videoProfile : [NSNull null]), @"videoProfile", (self.videoCropMode ? self.videoCropMode : [NSNull null]), @"videoCropMode", (self.frontCamera ? self.frontCamera : [NSNull null]), @"frontCamera", (self.frameRate ? self.frameRate : [NSNull null]), @"frameRate", (self.minFrameRate ? self.minFrameRate : [NSNull null]), @"minFrameRate", (self.bitrate ? self.bitrate : [NSNull null]), @"bitrate", (self.minBitrate ? self.minBitrate : [NSNull null]), @"minBitrate", (self.degradationPrefer ? self.degradationPrefer : [NSNull null]), @"degradationPrefer", (self.width ? self.width : [NSNull null]), @"width", (self.height ? self.height : [NSNull null]), @"height", (self.cameraType ? self.cameraType : [NSNull null]), @"cameraType", nil];
+}
+@end
+
+@implementation NEFLTStartScreenCaptureRequest
++(NEFLTStartScreenCaptureRequest*)fromMap:(NSDictionary*)dict {
+  NEFLTStartScreenCaptureRequest* result = [[NEFLTStartScreenCaptureRequest alloc] init];
+  result.contentPrefer = dict[@"contentPrefer"];
+  if ((NSNull *)result.contentPrefer == [NSNull null]) {
+    result.contentPrefer = nil;
+  }
+  result.videoProfile = dict[@"videoProfile"];
+  if ((NSNull *)result.videoProfile == [NSNull null]) {
+    result.videoProfile = nil;
+  }
+  result.frameRate = dict[@"frameRate"];
+  if ((NSNull *)result.frameRate == [NSNull null]) {
+    result.frameRate = nil;
+  }
+  result.minFrameRate = dict[@"minFrameRate"];
+  if ((NSNull *)result.minFrameRate == [NSNull null]) {
+    result.minFrameRate = nil;
+  }
+  result.bitrate = dict[@"bitrate"];
+  if ((NSNull *)result.bitrate == [NSNull null]) {
+    result.bitrate = nil;
+  }
+  result.minBitrate = dict[@"minBitrate"];
+  if ((NSNull *)result.minBitrate == [NSNull null]) {
+    result.minBitrate = nil;
+  }
+  return result;
+}
+-(NSDictionary*)toMap {
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.contentPrefer ? self.contentPrefer : [NSNull null]), @"contentPrefer", (self.videoProfile ? self.videoProfile : [NSNull null]), @"videoProfile", (self.frameRate ? self.frameRate : [NSNull null]), @"frameRate", (self.minFrameRate ? self.minFrameRate : [NSNull null]), @"minFrameRate", (self.bitrate ? self.bitrate : [NSNull null]), @"bitrate", (self.minBitrate ? self.minBitrate : [NSNull null]), @"minBitrate", nil];
 }
 @end
 
@@ -706,6 +778,40 @@ void NEFLTVideoRendererApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<N
         FlutterError *error;
         NEFLTSetupRemoteVideoRendererRequest *input = [NEFLTSetupRemoteVideoRendererRequest fromMap:message];
         NEFLTIntValue *output = [api setupRemoteVideoRenderer:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VideoRendererApi.setupLocalSubStreamVideoRenderer"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        NEFLTIntValue *input = [NEFLTIntValue fromMap:message];
+        NEFLTIntValue *output = [api setupLocalSubStreamVideoRenderer:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VideoRendererApi.setupRemoteSubStreamVideoRenderer"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        NEFLTSetupRemoteSubStreamVideoRendererRequest *input = [NEFLTSetupRemoteSubStreamVideoRendererRequest fromMap:message];
+        NEFLTIntValue *output = [api setupRemoteSubStreamVideoRenderer:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     }
@@ -1457,7 +1563,7 @@ void NEFLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<NEFLTEng
             [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
                 FlutterError *error;
                 [api release:&error withCompletion:^() {
-                    FLTIntValue* output = [[FLTIntValue alloc] init];
+                    NEFLTIntValue* output = [[NEFLTIntValue alloc] init];
                     output.value = @(0);
                     callback(wrapResult([output toMap], error));
                 }];
@@ -1467,6 +1573,7 @@ void NEFLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<NEFLTEng
         else {
             [channel setMessageHandler:nil];
         }
+
   }
   {
     FlutterBasicMessageChannel *channel =
@@ -1709,7 +1816,7 @@ void NEFLTEngineApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<NEFLTEng
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        NEFLTIntValue *input = [NEFLTIntValue fromMap:message];
+        NEFLTStartScreenCaptureRequest *input = [NEFLTStartScreenCaptureRequest fromMap:message];
         NEFLTIntValue *output = [api startScreenCapture:input error:&error];
         callback(wrapResult([output toMap], error));
       }];

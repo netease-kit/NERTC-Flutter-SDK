@@ -10,6 +10,8 @@ import com.netease.lava.nertc.sdk.stats.NERtcAudioSendStats;
 import com.netease.lava.nertc.sdk.stats.NERtcNetworkQualityInfo;
 import com.netease.lava.nertc.sdk.stats.NERtcStats;
 import com.netease.lava.nertc.sdk.stats.NERtcStatsObserver;
+import com.netease.lava.nertc.sdk.stats.NERtcVideoLayerRecvStats;
+import com.netease.lava.nertc.sdk.stats.NERtcVideoLayerSendStats;
 import com.netease.lava.nertc.sdk.stats.NERtcVideoRecvStats;
 import com.netease.lava.nertc.sdk.stats.NERtcVideoSendStats;
 import com.netease.nertcflutter.NERtcEngine.CallbackMethod;
@@ -146,28 +148,48 @@ public class NERtcStatsObserverImpl implements NERtcStatsObserver {
 
     private HashMap<String, Object> toMap(NERtcVideoSendStats stats) {
         HashMap<String, Object> map = new HashMap<>();
-        map.put("width", stats.width);
-        map.put("height", stats.height);
-        map.put("sendBitrate", stats.sendBitrate);
-        map.put("encoderOutputFrameRate", stats.encoderOutputFrameRate);
-        map.put("captureFrameRate", stats.captureFrameRate);
-        map.put("targetBitrate", stats.targetBitrate);
-        map.put("sentFrameRate", stats.sentFrameRate);
+        ArrayList<HashMap<String, Object>> layers = new ArrayList<>();
+        if(stats.videoLayers != null) {
+            for(NERtcVideoLayerSendStats stat : stats.videoLayers) {
+                HashMap<String, Object> mapLayer = new HashMap<>();
+                mapLayer.put("layerType", stat.layerType);
+                map.put("width", stat.width);
+                map.put("height", stat.height);
+                map.put("sendBitrate", stat.sendBitrate);
+                map.put("encoderOutputFrameRate", stat.encoderOutputFrameRate);
+                map.put("captureFrameRate", stat.captureFrameRate);
+                map.put("targetBitrate", stat.targetBitrate);
+                map.put("encoderBitrate", stat.encoderBitrate);
+                map.put("sentFrameRate", stat.sentFrameRate);
+                map.put("renderFrameRate", stat.renderFrameRate);
+                layers.add(mapLayer);
+            }
+        }
+        map.put("layers", layers);
         return map;
     }
 
     private HashMap<String, Object> toMap(NERtcVideoRecvStats stats) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("uid", stats.uid);
-        map.put("width", stats.width);
-        map.put("height", stats.height);
-        map.put("receivedBitrate", stats.receivedBitrate);
-        map.put("fps", stats.fps);
-        map.put("packetLossRate", stats.packetLossRate);
-        map.put("decoderOutputFrameRate", stats.decoderOutputFrameRate);
-        map.put("rendererOutputFrameRate", stats.rendererOutputFrameRate);
-        map.put("totalFrozenTime", stats.totalFrozenTime);
-        map.put("frozenRate", stats.frozenRate);
+        ArrayList<HashMap<String, Object>> layers = new ArrayList<>();
+        if(stats.layers != null) {
+            for(NERtcVideoLayerRecvStats stat : stats.layers) {
+                HashMap<String, Object> mapLayer = new HashMap<>();
+                mapLayer.put("layerType", stat.layerType);
+                mapLayer.put("width", stat.width);
+                mapLayer.put("height", stat.height);
+                mapLayer.put("receivedBitrate", stat.receivedBitrate);
+                mapLayer.put("fps", stat.fps);
+                mapLayer.put("packetLossRate", stat.packetLossRate);
+                mapLayer.put("decoderOutputFrameRate", stat.decoderOutputFrameRate);
+                mapLayer.put("rendererOutputFrameRate", stat.rendererOutputFrameRate);
+                mapLayer.put("totalFrozenTime", stat.totalFrozenTime);
+                mapLayer.put("frozenRate", stat.frozenRate);
+                layers.add(mapLayer);
+            }
+        }
+        map.put("layers", layers);
         return map;
     }
 

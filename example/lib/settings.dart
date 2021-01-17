@@ -54,6 +54,10 @@ class Settings {
       _prefs?.getInt('screenProfile') ?? NERtcScreenProfile.hd1080p;
   set screenProfile(int value) => _prefs?.setInt("screenProfile", value);
 
+  int get screenContentPrefer =>
+      _prefs?.getInt('screenContentPrefer') ?? NERtcSubStreamContentPrefer.motion;
+  set screenContentPrefer(int value) => _prefs?.setInt("screenContentPrefer", value);
+
   int get remoteVideoStreamType =>
       _prefs?.getInt('remoteVideoStreamType') ??
       NERtcRemoteVideoStreamType.high;
@@ -155,10 +159,6 @@ class Settings {
   set audioEffectLoopCount(int value) =>
       _prefs?.setInt("audioEffectLoopCount", value);
 
-  bool get publishSelfStream => _prefs?.getBool('publishSelfStream') ?? false;
-  set publishSelfStream(bool value) =>
-      _prefs?.setBool("publishSelfStream", value);
-
   bool get autoEnableAudio => _prefs?.getBool('autoEnableAudio') ?? true;
   set autoEnableAudio(bool value) => _prefs?.setBool("autoEnableAudio", value);
 
@@ -192,6 +192,7 @@ class _SettingsPageState extends State<SettingsPage> {
   int _degradationPreference = NERtcDegradationPreference.degradationDefault;
   int _videoFrameRate = NERtcVideoFrameRate.fps_30;
   int _screenProfile = NERtcScreenProfile.hd1080p;
+  int _screenContentPrefer = NERtcSubStreamContentPrefer.motion;
   int _remoteVideoStreamType = NERtcRemoteVideoStreamType.high;
   int _videoViewFitType = NERtcVideoViewFitType.contain.index;
   int _videoEncodeMediaCodecMode = Platform.isIOS
@@ -217,7 +218,6 @@ class _SettingsPageState extends State<SettingsPage> {
   bool _audioEffectSendEnabled = true;
   bool _audioEffectPlayEnabled = true;
   int _audioEffectLoopCount = 1;
-  bool _publishSelfStream = false;
   bool _autoEnableAudio = true;
   bool _autoEnableVideo = true;
   bool _autoSubscribeAudio = true;
@@ -240,6 +240,7 @@ class _SettingsPageState extends State<SettingsPage> {
       _degradationPreference = settings.degradationPreference;
       _videoFrameRate = settings.videoFrameRate;
       _screenProfile = settings.screenProfile;
+      _screenContentPrefer = settings.screenContentPrefer;
       _remoteVideoStreamType = settings.remoteVideoStreamType;
       _videoViewFitType = settings.videoViewFitType;
       _videoEncodeMediaCodecMode = settings.videoEncodeMediaCodecMode;
@@ -260,7 +261,6 @@ class _SettingsPageState extends State<SettingsPage> {
       _audioEffectSendEnabled = settings.audioEffectSendEnabled;
       _audioEffectPlayEnabled = settings.audioEffectPlayEnabled;
       _audioEffectLoopCount = settings.audioEffectLoopCount;
-      _publishSelfStream = settings.publishSelfStream;
       _autoEnableAudio = settings.autoEnableAudio;
       _autoEnableVideo = settings.autoEnableVideo;
       _autoSubscribeAudio = settings.autoSubscribeAudio;
@@ -304,19 +304,6 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
         Column(
           children: [
-            SwitchListTile(
-              title: const Text('推送自身流'),
-              subtitle: Text('推送自身流'),
-              onChanged: (bool value) {
-                setState(() {
-                  _publishSelfStream = value;
-                  settings.publishSelfStream = _publishSelfStream;
-                });
-              },
-              value: _publishSelfStream,
-            ),
-            Divider(
-                height: 1, color: Colors.grey, indent: 15.0, endIndent: 15.0),
             SwitchListTile(
               title: const Text('自动开启音频'),
               subtitle: Text('自动开启音频'),
@@ -686,6 +673,15 @@ class _SettingsPageState extends State<SettingsPage> {
             Divider(
                 height: 1, color: Colors.grey, indent: 15.0, endIndent: 15.0),
             ListTile(
+              title: const Text('录屏模式'),
+              subtitle: Text(_subStreamContentPrefer(_screenContentPrefer)),
+              onTap: () {
+                _selectSubStreamContentPrefer();
+              },
+            ),
+            Divider(
+                height: 1, color: Colors.grey, indent: 15.0, endIndent: 15.0),
+            ListTile(
               title: const Text('订阅分辨率'),
               subtitle: Text(_remoteVideoStreamTypeToString(_screenProfile)),
               onTap: () {
@@ -1042,6 +1038,36 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
+  Future<void> _selectSubStreamContentPrefer() async {
+    int contentPrefer = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return SimpleDialog(
+            title: const Text('录屏模式'),
+            children: <Widget>[
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context, NERtcSubStreamContentPrefer.motion);
+                },
+                child: const Text('motion'),
+              ),
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context, NERtcSubStreamContentPrefer.details);
+                },
+                child: const Text('details'),
+              ),
+            ],
+          );
+        });
+    if (contentPrefer != null) {
+      setState(() {
+        _screenContentPrefer = contentPrefer;
+        settings.screenContentPrefer = _screenContentPrefer;
+      });
+    }
+  }
+
   Future<void> _selectScreenProfile() async {
     int screenProfile = await showDialog(
         context: context,
@@ -1327,6 +1353,17 @@ class _SettingsPageState extends State<SettingsPage> {
         return '1080p';
       default:
         return '1080p';
+    }
+  }
+
+  String _subStreamContentPrefer(int contentPrefer) {
+    switch (contentPrefer) {
+      case NERtcSubStreamContentPrefer.motion:
+        return 'motion';
+      case NERtcSubStreamContentPrefer.details:
+        return 'details';
+      default:
+        return 'motion';
     }
   }
 

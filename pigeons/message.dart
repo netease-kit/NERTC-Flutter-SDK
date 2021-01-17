@@ -44,6 +44,18 @@ class SetLocalVideoConfigRequest {
   int bitrate;
   int minBitrate;
   int degradationPrefer;
+  int width;
+  int height;
+  int cameraType;
+}
+
+class StartScreenCaptureRequest {
+  int contentPrefer;
+  int videoProfile;
+  int frameRate;
+  int minFrameRate;
+  int bitrate;
+  int minBitrate;
 }
 
 class SubscribeRemoteVideoRequest {
@@ -58,6 +70,11 @@ class SubscribeRemoteSubStreamVideoRequest {
 }
 
 class SetupRemoteVideoRendererRequest {
+  int uid;
+  int textureId;
+}
+
+class SetupRemoteSubStreamVideoRendererRequest {
   int uid;
   int textureId;
 }
@@ -167,7 +184,7 @@ abstract class EngineApi {
   IntValue startVideoPreview();
   IntValue stopVideoPreview();
   IntValue enableLocalVideo(BoolValue enable);
-  IntValue startScreenCapture(IntValue screenProfile);
+  IntValue startScreenCapture(StartScreenCaptureRequest request);
   IntValue stopScreenCapture();
   IntValue subscribeRemoteVideo(SubscribeRemoteVideoRequest request);
   IntValue subscribeRemoteSubStreamVideo(
@@ -196,6 +213,8 @@ abstract class VideoRendererApi {
   IntValue setMirror(SetVideoRendererMirrorRequest request);
   IntValue setupLocalVideoRenderer(IntValue textureId);
   IntValue setupRemoteVideoRenderer(SetupRemoteVideoRendererRequest request);
+  IntValue setupLocalSubStreamVideoRenderer(IntValue textureId);
+  IntValue setupRemoteSubStreamVideoRenderer(SetupRemoteSubStreamVideoRendererRequest request);
   void disposeVideoRenderer(IntValue textureId);
 }
 

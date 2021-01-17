@@ -86,6 +86,32 @@ public class Messages {
   }
 
   /** Generated class from Pigeon that represents data sent in messages. */
+  public static class SetupRemoteSubStreamVideoRendererRequest {
+    private Long uid;
+    public Long getUid() { return uid; }
+    public void setUid(Long setterArg) { this.uid = setterArg; }
+
+    private Long textureId;
+    public Long getTextureId() { return textureId; }
+    public void setTextureId(Long setterArg) { this.textureId = setterArg; }
+
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("uid", uid);
+      toMapResult.put("textureId", textureId);
+      return toMapResult;
+    }
+    static SetupRemoteSubStreamVideoRendererRequest fromMap(HashMap map) {
+      SetupRemoteSubStreamVideoRendererRequest fromMapResult = new SetupRemoteSubStreamVideoRendererRequest();
+      Object uid = map.get("uid");
+      fromMapResult.uid = (uid == null) ? null : ((uid instanceof Integer) ? (Integer)uid : (Long)uid);
+      Object textureId = map.get("textureId");
+      fromMapResult.textureId = (textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId);
+      return fromMapResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
   public static class StartAudioMixingRequest {
     private String path;
     public String getPath() { return path; }
@@ -585,6 +611,18 @@ public class Messages {
     public Long getDegradationPrefer() { return degradationPrefer; }
     public void setDegradationPrefer(Long setterArg) { this.degradationPrefer = setterArg; }
 
+    private Long width;
+    public Long getWidth() { return width; }
+    public void setWidth(Long setterArg) { this.width = setterArg; }
+
+    private Long height;
+    public Long getHeight() { return height; }
+    public void setHeight(Long setterArg) { this.height = setterArg; }
+
+    private Long cameraType;
+    public Long getCameraType() { return cameraType; }
+    public void setCameraType(Long setterArg) { this.cameraType = setterArg; }
+
     HashMap toMap() {
       HashMap<String, Object> toMapResult = new HashMap<>();
       toMapResult.put("videoProfile", videoProfile);
@@ -595,6 +633,9 @@ public class Messages {
       toMapResult.put("bitrate", bitrate);
       toMapResult.put("minBitrate", minBitrate);
       toMapResult.put("degradationPrefer", degradationPrefer);
+      toMapResult.put("width", width);
+      toMapResult.put("height", height);
+      toMapResult.put("cameraType", cameraType);
       return toMapResult;
     }
     static SetLocalVideoConfigRequest fromMap(HashMap map) {
@@ -615,6 +656,66 @@ public class Messages {
       fromMapResult.minBitrate = (minBitrate == null) ? null : ((minBitrate instanceof Integer) ? (Integer)minBitrate : (Long)minBitrate);
       Object degradationPrefer = map.get("degradationPrefer");
       fromMapResult.degradationPrefer = (degradationPrefer == null) ? null : ((degradationPrefer instanceof Integer) ? (Integer)degradationPrefer : (Long)degradationPrefer);
+      Object width = map.get("width");
+      fromMapResult.width = (width == null) ? null : ((width instanceof Integer) ? (Integer)width : (Long)width);
+      Object height = map.get("height");
+      fromMapResult.height = (height == null) ? null : ((height instanceof Integer) ? (Integer)height : (Long)height);
+      Object cameraType = map.get("cameraType");
+      fromMapResult.cameraType = (cameraType == null) ? null : ((cameraType instanceof Integer) ? (Integer)cameraType : (Long)cameraType);
+      return fromMapResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class StartScreenCaptureRequest {
+    private Long contentPrefer;
+    public Long getContentPrefer() { return contentPrefer; }
+    public void setContentPrefer(Long setterArg) { this.contentPrefer = setterArg; }
+
+    private Long videoProfile;
+    public Long getVideoProfile() { return videoProfile; }
+    public void setVideoProfile(Long setterArg) { this.videoProfile = setterArg; }
+
+    private Long frameRate;
+    public Long getFrameRate() { return frameRate; }
+    public void setFrameRate(Long setterArg) { this.frameRate = setterArg; }
+
+    private Long minFrameRate;
+    public Long getMinFrameRate() { return minFrameRate; }
+    public void setMinFrameRate(Long setterArg) { this.minFrameRate = setterArg; }
+
+    private Long bitrate;
+    public Long getBitrate() { return bitrate; }
+    public void setBitrate(Long setterArg) { this.bitrate = setterArg; }
+
+    private Long minBitrate;
+    public Long getMinBitrate() { return minBitrate; }
+    public void setMinBitrate(Long setterArg) { this.minBitrate = setterArg; }
+
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("contentPrefer", contentPrefer);
+      toMapResult.put("videoProfile", videoProfile);
+      toMapResult.put("frameRate", frameRate);
+      toMapResult.put("minFrameRate", minFrameRate);
+      toMapResult.put("bitrate", bitrate);
+      toMapResult.put("minBitrate", minBitrate);
+      return toMapResult;
+    }
+    static StartScreenCaptureRequest fromMap(HashMap map) {
+      StartScreenCaptureRequest fromMapResult = new StartScreenCaptureRequest();
+      Object contentPrefer = map.get("contentPrefer");
+      fromMapResult.contentPrefer = (contentPrefer == null) ? null : ((contentPrefer instanceof Integer) ? (Integer)contentPrefer : (Long)contentPrefer);
+      Object videoProfile = map.get("videoProfile");
+      fromMapResult.videoProfile = (videoProfile == null) ? null : ((videoProfile instanceof Integer) ? (Integer)videoProfile : (Long)videoProfile);
+      Object frameRate = map.get("frameRate");
+      fromMapResult.frameRate = (frameRate == null) ? null : ((frameRate instanceof Integer) ? (Integer)frameRate : (Long)frameRate);
+      Object minFrameRate = map.get("minFrameRate");
+      fromMapResult.minFrameRate = (minFrameRate == null) ? null : ((minFrameRate instanceof Integer) ? (Integer)minFrameRate : (Long)minFrameRate);
+      Object bitrate = map.get("bitrate");
+      fromMapResult.bitrate = (bitrate == null) ? null : ((bitrate instanceof Integer) ? (Integer)bitrate : (Long)bitrate);
+      Object minBitrate = map.get("minBitrate");
+      fromMapResult.minBitrate = (minBitrate == null) ? null : ((minBitrate instanceof Integer) ? (Integer)minBitrate : (Long)minBitrate);
       return fromMapResult;
     }
   }
@@ -846,6 +947,8 @@ public class Messages {
     IntValue setMirror(SetVideoRendererMirrorRequest arg);
     IntValue setupLocalVideoRenderer(IntValue arg);
     IntValue setupRemoteVideoRenderer(SetupRemoteVideoRendererRequest arg);
+    IntValue setupLocalSubStreamVideoRenderer(IntValue arg);
+    IntValue setupRemoteSubStreamVideoRenderer(SetupRemoteSubStreamVideoRendererRequest arg);
     void disposeVideoRenderer(IntValue arg);
 
     /** Sets up an instance of `VideoRendererApi` to handle messages through the `binaryMessenger` */
@@ -921,6 +1024,48 @@ public class Messages {
               @SuppressWarnings("ConstantConditions")
               SetupRemoteVideoRendererRequest input = SetupRemoteVideoRendererRequest.fromMap((HashMap)message);
               IntValue output = api.setupRemoteVideoRenderer(input);
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VideoRendererApi.setupLocalSubStreamVideoRenderer", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              IntValue input = IntValue.fromMap((HashMap)message);
+              IntValue output = api.setupLocalSubStreamVideoRenderer(input);
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VideoRendererApi.setupRemoteSubStreamVideoRenderer", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              SetupRemoteSubStreamVideoRendererRequest input = SetupRemoteSubStreamVideoRendererRequest.fromMap((HashMap)message);
+              IntValue output = api.setupRemoteSubStreamVideoRenderer(input);
               wrapped.put("result", output.toMap());
             }
             catch (Exception exception) {
@@ -1880,7 +2025,7 @@ public class Messages {
     IntValue startVideoPreview();
     IntValue stopVideoPreview();
     IntValue enableLocalVideo(BoolValue arg);
-    void startScreenCapture(IntValue arg, SuccessCallback successCallback);
+    void startScreenCapture(StartScreenCaptureRequest arg, SuccessCallback successCallback);
     IntValue stopScreenCapture();
     IntValue subscribeRemoteVideo(SubscribeRemoteVideoRequest arg);
     IntValue subscribeRemoteSubStreamVideo(SubscribeRemoteSubStreamVideoRequest arg);
@@ -2232,7 +2377,7 @@ public class Messages {
             HashMap<String, HashMap> wrapped = new HashMap<>();
             try {
               @SuppressWarnings("ConstantConditions")
-              IntValue input = IntValue.fromMap((HashMap)message);
+              StartScreenCaptureRequest input = StartScreenCaptureRequest.fromMap((HashMap)message);
               api.startScreenCapture(input,  result -> {
                 HashMap<String, Object> toMapResult = new HashMap<>();
                 toMapResult.put("value", result);

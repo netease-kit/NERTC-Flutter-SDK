@@ -10,6 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class NEFLTIntValue;
 @class NEFLTSetVideoRendererMirrorRequest;
 @class NEFLTSetupRemoteVideoRendererRequest;
+@class NEFLTSetupRemoteSubStreamVideoRendererRequest;
 @class NEFLTStartAudioMixingRequest;
 @class NEFLTPlayEffectRequest;
 @class NEFLTSetEffectSendVolumeRequest;
@@ -23,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class NEFLTSubscribeRemoteAudioRequest;
 @class NEFLTSetAudioProfileRequest;
 @class NEFLTSetLocalVideoConfigRequest;
+@class NEFLTStartScreenCaptureRequest;
 @class NEFLTSubscribeRemoteVideoRequest;
 @class NEFLTSubscribeRemoteSubStreamVideoRequest;
 @class NEFLTEnableAudioVolumeIndicationRequest;
@@ -39,6 +41,11 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface NEFLTSetupRemoteVideoRendererRequest : NSObject
+@property(nonatomic, strong, nullable) NSNumber * uid;
+@property(nonatomic, strong, nullable) NSNumber * textureId;
+@end
+
+@interface NEFLTSetupRemoteSubStreamVideoRendererRequest : NSObject
 @property(nonatomic, strong, nullable) NSNumber * uid;
 @property(nonatomic, strong, nullable) NSNumber * textureId;
 @end
@@ -134,6 +141,18 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong, nullable) NSNumber * bitrate;
 @property(nonatomic, strong, nullable) NSNumber * minBitrate;
 @property(nonatomic, strong, nullable) NSNumber * degradationPrefer;
+@property(nonatomic, strong, nullable) NSNumber * width;
+@property(nonatomic, strong, nullable) NSNumber * height;
+@property(nonatomic, strong, nullable) NSNumber * cameraType;
+@end
+
+@interface NEFLTStartScreenCaptureRequest : NSObject
+@property(nonatomic, strong, nullable) NSNumber * contentPrefer;
+@property(nonatomic, strong, nullable) NSNumber * videoProfile;
+@property(nonatomic, strong, nullable) NSNumber * frameRate;
+@property(nonatomic, strong, nullable) NSNumber * minFrameRate;
+@property(nonatomic, strong, nullable) NSNumber * bitrate;
+@property(nonatomic, strong, nullable) NSNumber * minBitrate;
 @end
 
 @interface NEFLTSubscribeRemoteVideoRequest : NSObject
@@ -179,6 +198,8 @@ NS_ASSUME_NONNULL_BEGIN
 -(nullable NEFLTIntValue *)setMirror:(NEFLTSetVideoRendererMirrorRequest*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(nullable NEFLTIntValue *)setupLocalVideoRenderer:(NEFLTIntValue*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(nullable NEFLTIntValue *)setupRemoteVideoRenderer:(NEFLTSetupRemoteVideoRendererRequest*)input error:(FlutterError *_Nullable *_Nonnull)error;
+-(nullable NEFLTIntValue *)setupLocalSubStreamVideoRenderer:(NEFLTIntValue*)input error:(FlutterError *_Nullable *_Nonnull)error;
+-(nullable NEFLTIntValue *)setupRemoteSubStreamVideoRenderer:(NEFLTSetupRemoteSubStreamVideoRendererRequest*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(void)disposeVideoRenderer:(NEFLTIntValue*)input error:(FlutterError *_Nullable *_Nonnull)error;
 @end
 
@@ -258,7 +279,7 @@ extern void NEFLTDeviceManagerApiSetup(id<FlutterBinaryMessenger> binaryMessenge
 -(nullable NEFLTIntValue *)startVideoPreview:(FlutterError *_Nullable *_Nonnull)error;
 -(nullable NEFLTIntValue *)stopVideoPreview:(FlutterError *_Nullable *_Nonnull)error;
 -(nullable NEFLTIntValue *)enableLocalVideo:(NEFLTBoolValue*)input error:(FlutterError *_Nullable *_Nonnull)error;
--(nullable NEFLTIntValue *)startScreenCapture:(NEFLTIntValue*)input error:(FlutterError *_Nullable *_Nonnull)error;
+-(nullable NEFLTIntValue *)startScreenCapture:(NEFLTStartScreenCaptureRequest*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(nullable NEFLTIntValue *)stopScreenCapture:(FlutterError *_Nullable *_Nonnull)error;
 -(nullable NEFLTIntValue *)subscribeRemoteVideo:(NEFLTSubscribeRemoteVideoRequest*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(nullable NEFLTIntValue *)subscribeRemoteSubStreamVideo:(NEFLTSubscribeRemoteSubStreamVideoRequest*)input error:(FlutterError *_Nullable *_Nonnull)error;

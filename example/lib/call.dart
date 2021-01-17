@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:FLTNERTC/settings.dart';
 import 'package:FLTNERTC/utils.dart';
 import 'package:flutter/material.dart';
@@ -28,11 +30,31 @@ class _CallPageState extends State<CallPage>
   _UserSession _localSession = _UserSession();
 
   bool _showControlPanel = false;
+
+  // Control 1
   bool isAudioEnabled = false;
   bool isVideoEnabled = false;
   bool isFrontCamera = true;
   bool isFrontCameraMirror = true;
   bool isSpeakerphoneOn = false;
+
+  // Control 2
+  bool isAudioDumpEnabled = false;
+  bool isEarBackEnabled = false;
+  bool isScreenRecordEnabled = false;
+
+  // Control 3
+  bool isLeaveChannel = false;
+  bool isAudience = false;
+  bool isAudioMixPlaying = false;
+  bool isAudioEffectPlaying = false;
+
+  // Control 4
+  bool isMuteAudio = false;
+  bool isMuteVideo = false;
+  bool isMuteMic = false;
+  bool isMuteSpeaker = false;
+  bool isSubAllAudio = true;
 
   @override
   void initState() {
@@ -88,31 +110,173 @@ class _CallPageState extends State<CallPage>
   Widget buildControlPanel(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
-      children: [buildControlPanel1(context), buildControlPanel3(context)],
+      children: [
+        buildControlPanel1(context),
+        buildControlPanel2(context),
+        buildControlPanel3(context),
+        buildControlPanel4(context)
+      ],
     );
   }
 
-  Widget buildControlPanel3(BuildContext context) {
+  Widget buildControlPanel4(BuildContext context) {
+    List<Widget> children = List();
+    children.add(Expanded(
+        child: buildControlButton(
+      () {
+        bool muteAudio = !isMuteAudio;
+        _engine.muteLocalAudioStream(muteAudio).then((value) {
+          if (value == 0) {
+            setState(() {
+              isMuteAudio = muteAudio;
+            });
+          }
+        });
+      },
+      Text(
+        isMuteAudio ? '取消静音' : '静音',
+        style: TextStyle(fontSize: 10),
+      ),
+    )));
+    children.add(Expanded(
+        child: buildControlButton(
+      () {
+        bool muteVideo = !isMuteVideo;
+        _engine.muteLocalVideoStream(muteVideo).then((value) {
+          if (value == 0) {
+            setState(() {
+              isMuteVideo = muteVideo;
+            });
+          }
+        });
+      },
+      Text(
+        isMuteVideo ? 'UnMuteVideo' : 'MuteVideo',
+        style: TextStyle(fontSize: 10),
+      ),
+    )));
+    children.add(Expanded(
+        child: buildControlButton(
+      () {
+        bool muteMic = !isMuteMic;
+        _engine.deviceManager.setRecordDeviceMute(muteMic).then((value) {
+          if (value == 0) {
+            setState(() {
+              isMuteMic = muteMic;
+            });
+          }
+        });
+      },
+      Text(
+        isMuteMic ? 'UnMuteMic' : 'MuteMic',
+        style: TextStyle(fontSize: 10),
+      ),
+    )));
+    children.add(Expanded(
+        child: buildControlButton(
+      () {
+        bool muteSpeaker = !isMuteSpeaker;
+        _engine.deviceManager.setPlayoutDeviceMute(muteSpeaker).then((value) {
+          if (value == 0) {
+            setState(() {
+              isMuteSpeaker = muteSpeaker;
+            });
+          }
+        });
+      },
+      Text(
+        isMuteSpeaker ? 'UnMuteSpeaker' : 'MuteSpeaker',
+        style: TextStyle(fontSize: 10),
+      ),
+    )));
+    children.add(Expanded(
+        child: buildControlButton(
+      () {
+        bool subAllAudio = !isSubAllAudio;
+        _engine.subscribeAllRemoteAudio(subAllAudio).then((value) {
+          if (value == 0) {
+            setState(() {
+              isSubAllAudio = subAllAudio;
+            });
+          }
+        });
+      },
+      Text(
+        isSubAllAudio ? 'UnSubAllA' : 'SubAllA',
+        style: TextStyle(fontSize: 10),
+      ),
+    )));
     return Container(
-        height: 50,
+        height: 40,
         child: Row(
-          children: [
-            Expanded(
-              child: buildControlButton(() {
-                Navigator.pop(context);
-              },
-                  Text(
-                    '离开房间',
-                    style: TextStyle(fontSize: 12),
-                  )),
-            ),
-          ],
+          children: children,
+        ));
+  }
+
+  Widget buildControlPanel3(BuildContext context) {
+    List<Widget> children = List();
+    children.add(Expanded(
+        child: buildControlButton(
+      () {
+        bool leaveChannel = !isLeaveChannel;
+        if (leaveChannel) {
+          _engine.leaveChannel().then((value) {
+            if (value == 0) {
+              setState(() {
+                isLeaveChannel = leaveChannel;
+              });
+            }
+          });
+        } else {
+          _initCallbacks()
+              .then((value) => _initAudio())
+              .then((value) => _initVideo())
+              .then((value) => _initRenderer())
+              .then((value) => _engine.joinChannel('', widget.cid, widget.uid))
+              .then((value) {
+            if (value == 0) {
+              setState(() {
+                isLeaveChannel = leaveChannel;
+              });
+            }
+          });
+        }
+      },
+      Text(
+        isLeaveChannel ? '加入房间' : '离开房间',
+        style: TextStyle(fontSize: 12),
+      ),
+    )));
+    children.add(Expanded(
+        child: buildControlButton(
+      () {
+        bool audience = !isAudience;
+        _engine
+            .setClientRole(
+                audience ? NERtcUserRole.audience : NERtcUserRole.broadcaster)
+            .then((value) {
+          if (value == 0) {
+            setState(() {
+              isAudience = audience;
+            });
+          }
+        });
+      },
+      Text(
+        isAudience ? '切主播' : '切观众',
+        style: TextStyle(fontSize: 12),
+      ),
+    )));
+    return Container(
+        height: 40,
+        child: Row(
+          children: children,
         ));
   }
 
   Widget buildControlPanel1(BuildContext context) {
     return Container(
-        height: 50,
+        height: 40,
         child: Row(
           children: [
             Expanded(
@@ -188,6 +352,104 @@ class _CallPageState extends State<CallPage>
         ));
   }
 
+  Widget buildControlPanel2(BuildContext context) {
+    List<Widget> children = List();
+    children.add(Expanded(
+        child: buildControlButton(
+      () {
+        bool audioDumpEnabled = !isAudioDumpEnabled;
+        if (audioDumpEnabled) {
+          _engine.startAudioDump().then((value) {
+            if (value == 0) {
+              setState(() {
+                isAudioDumpEnabled = audioDumpEnabled;
+              });
+            }
+          });
+        } else {
+          _engine.stopAudioDump().then((value) {
+            if (value == 0) {
+              setState(() {
+                isAudioDumpEnabled = audioDumpEnabled;
+              });
+            }
+          });
+        }
+      },
+      Text(
+        isAudioDumpEnabled ? '录音关' : '录音开',
+        style: TextStyle(fontSize: 12),
+      ),
+    )));
+    children.add(Expanded(
+        child: buildControlButton(
+      () {
+        bool earBackEnabled = !isEarBackEnabled;
+        _engine.deviceManager.enableEarBack(earBackEnabled, 100).then((value) {
+          if (value == 0) {
+            setState(() {
+              isEarBackEnabled = earBackEnabled;
+            });
+          }
+        });
+      },
+      Text(
+        isEarBackEnabled ? '耳返关' : '耳返关开',
+        style: TextStyle(fontSize: 12),
+      ),
+    )));
+    if (Platform.isAndroid) {
+      children.add(Expanded(
+          child: buildControlButton(
+        () {
+          bool screenRecordEnabled = !isScreenRecordEnabled;
+          if (screenRecordEnabled) {
+            NERtcScreenConfig config = NERtcScreenConfig();
+            config.contentPrefer = _settings.screenContentPrefer;
+            _engine.startScreenCapture(config).then((value) {
+              if (value == 0) {
+                setState(() {
+                  isScreenRecordEnabled = screenRecordEnabled;
+                });
+              }
+            });
+          } else {
+            _engine.stopScreenCapture().then((value) {
+              if (value == 0) {
+                setState(() {
+                  isScreenRecordEnabled = screenRecordEnabled;
+                });
+              }
+            });
+          }
+        },
+        Text(
+          isScreenRecordEnabled ? '屏幕录制关' : '屏幕录制开',
+          style: TextStyle(fontSize: 12),
+        ),
+      )));
+    }
+    children.add(Expanded(
+        child: buildControlButton(
+      () {
+        _engine.uploadSdkInfo().then((value) {
+          Fluttertoast.showToast(
+              msg: 'upload sdk info result:$value',
+              gravity: ToastGravity.CENTER);
+        });
+      },
+      Text(
+        '上传日志',
+        style: TextStyle(fontSize: 12),
+      ),
+    )));
+    return Container(
+        height: 40,
+        child: Row(
+          children: children,
+        ));
+  }
+
   Widget buildVideoViews(BuildContext context) {
     return GridView.builder(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -216,8 +478,8 @@ class _CallPageState extends State<CallPage>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                '${session.uid}',
-                style: TextStyle(color: Colors.red),
+                session.subStream ? '${session.uid} @ Sub' : '${session.uid}',
+                style: TextStyle(color: Colors.red, fontSize: 10),
               )
             ],
           )
@@ -233,7 +495,7 @@ class _CallPageState extends State<CallPage>
   void _initRtcEngine() async {
     _localSession.uid = widget.uid;
     NERtcOptions options = NERtcOptions(
-        autoSubscribeAudio: _settings.autoSubscribeAudio,
+        audioAutoSubscribe: _settings.autoSubscribeAudio,
         serverRecordSpeaker: _settings.serverRecordSpeaker,
         serverRecordAudio: _settings.serverRecordAudio,
         serverRecordVideo: _settings.serverRecordVideo,
@@ -427,7 +689,7 @@ class _CallPageState extends State<CallPage>
         session.renderer = renderer;
         session.renderer.addToRemoteVideoSink(uid);
         if (_settings.autoSubscribeVideo) {
-          _engine.subscribeRemoteVideoStream(
+          _engine.subscribeRemoteVideo(
               uid, NERtcRemoteVideoStreamType.high, true);
         }
         break;
@@ -518,7 +780,8 @@ class _CallPageState extends State<CallPage>
   void onConnectionStateChanged(int state, int reason) {
     Fluttertoast.showToast(
         msg:
-            'onConnectionStateChanged#state:${Utils.connectionState2String(state)}, reason:${Utils.connectionStateChangeReason2String(reason)}',
+            'onConnectionStateChanged#state:${Utils.connectionState2String(state)}, '
+            'reason:${Utils.connectionStateChangeReason2String(reason)}',
         gravity: ToastGravity.CENTER);
   }
 
@@ -541,7 +804,8 @@ class _CallPageState extends State<CallPage>
   void onAudioDeviceStateChange(int deviceType, int deviceState) {
     Fluttertoast.showToast(
         msg:
-            'onAudioDeviceStateChange#deviceType:${Utils.audioDeviceType2String(deviceType)}, deviceState:${Utils.audioDeviceState2String(deviceState)}',
+            'onAudioDeviceStateChange#deviceType:${Utils.audioDeviceType2String(deviceType)}, '
+            'deviceState:${Utils.audioDeviceState2String(deviceState)}',
         gravity: ToastGravity.CENTER);
   }
 
@@ -552,9 +816,37 @@ class _CallPageState extends State<CallPage>
             'onVideoDeviceStageChange#${Utils.videoDeviceState2String(deviceState)}',
         gravity: ToastGravity.CENTER);
   }
+
+  @override
+  void onClientRoleChange(int oldRole, int newRole) {
+    Fluttertoast.showToast(
+        msg: 'onClientRoleChange#oldRole:$oldRole, newRole:$newRole',
+        gravity: ToastGravity.CENTER);
+  }
+
+  @override
+  void onUserSubStreamVideoStart(int uid, int maxProfile) {
+    Fluttertoast.showToast(
+        msg:
+            'onClientRoleChange#uid:$uid, maxProfile:${Utils.videoProfile2String(maxProfile)}',
+        gravity: ToastGravity.CENTER);
+  }
+
+  @override
+  void onUserSubStreamVideoStop(int uid) {
+    Fluttertoast.showToast(
+        msg: 'onClientRoleChange#$uid', gravity: ToastGravity.CENTER);
+  }
+
+  @override
+  void onAudioHasHowling() {
+    Fluttertoast.showToast(
+        msg: 'onAudioHasHowling', gravity: ToastGravity.CENTER);
+  }
 }
 
 class _UserSession {
   int uid;
   NERtcVideoRenderer renderer;
+  bool subStream = false;
 }
