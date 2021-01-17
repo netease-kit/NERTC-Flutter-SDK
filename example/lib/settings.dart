@@ -209,6 +209,7 @@ class _SettingsPageState extends State<SettingsPage> {
   bool _serverRecordAudio = false;
   bool _serverRecordVideo = false;
   int _serverRecordMode = NERtcServerRecordMode.mixAndSingle.index;
+  String _audioMixingFileUrl = Settings.defaultFileUrl;
   String _audioMixingFilePath = '';
   bool _audioMixingSendEnabled = true;
   bool _audioMixingPlayEnabled = true;
@@ -435,13 +436,15 @@ class _SettingsPageState extends State<SettingsPage> {
               onChanged: (bool value) {
                 setState(() {
                   if(value) {
-                    settings.audioMixingFileUrl = Settings.defaultFileUrl;
+                    _audioMixingFileUrl = Settings.defaultFileUrl;
+                    settings.audioMixingFileUrl = _audioMixingFileUrl;
                   } else {
-                    settings.audioMixingFileUrl = '';
+                    _audioMixingFileUrl = '';
+                    settings.audioMixingFileUrl = _audioMixingFileUrl;
                   }
                 });
               },
-              value: settings.audioMixingFileUrl.isNotEmpty,
+              value: _audioMixingFileUrl.isNotEmpty,
             ),
             Divider(
                 height: 1, color: Colors.grey, indent: 15.0, endIndent: 15.0),

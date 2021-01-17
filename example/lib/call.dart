@@ -879,6 +879,8 @@ class _CallPageState extends State<CallPage>
             'onConnectionStateChanged#state:${Utils.connectionState2String(state)}, '
             'reason:${Utils.connectionStateChangeReason2String(reason)}',
         gravity: ToastGravity.CENTER);
+    print('onConnectionStateChanged#state:${Utils.connectionState2String(state)}, '
+        'reason:${Utils.connectionStateChangeReason2String(reason)}');
   }
 
   @override
