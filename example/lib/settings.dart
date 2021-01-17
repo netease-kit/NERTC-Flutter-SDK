@@ -6,6 +6,7 @@ import 'package:nertc/nertc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Settings {
+  static final defaultFileUrl = 'http://music.163.com/song/media/outer/url?id=30431364.mp3';
   static final Settings _instance = Settings._();
   SharedPreferences _prefs;
 
@@ -117,7 +118,7 @@ class Settings {
 
   String get audioMixingFileUrl =>
       _prefs?.getString('audioMixingFileUrl') ??
-      'https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3';
+          defaultFileUrl;
   set audioMixingFileUrl(String value) =>
       _prefs?.setString("audioMixingFileUrl", value);
 
@@ -208,8 +209,6 @@ class _SettingsPageState extends State<SettingsPage> {
   bool _serverRecordAudio = false;
   bool _serverRecordVideo = false;
   int _serverRecordMode = NERtcServerRecordMode.mixAndSingle.index;
-  String _audioMixingFileUrl =
-      'https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3';
   String _audioMixingFilePath = '';
   bool _audioMixingSendEnabled = true;
   bool _audioMixingPlayEnabled = true;
@@ -252,7 +251,6 @@ class _SettingsPageState extends State<SettingsPage> {
       _serverRecordAudio = settings.serverRecordAudio;
       _serverRecordVideo = settings.serverRecordVideo;
       _serverRecordMode = settings.serverRecordMode;
-      _audioMixingFileUrl = settings.audioMixingFileUrl;
       _audioMixingFilePath = settings.audioMixingFilePath;
       _audioMixingSendEnabled = settings.audioMixingSendEnabled;
       _audioMixingPlayEnabled = settings.audioMixingPlayEnabled;
@@ -431,6 +429,22 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
         Column(
           children: [
+            SwitchListTile(
+              title: const Text('URL(优先）'),
+              subtitle: Text('伴音下载播放'),
+              onChanged: (bool value) {
+                setState(() {
+                  if(value) {
+                    settings.audioMixingFileUrl = Settings.defaultFileUrl;
+                  } else {
+                    settings.audioMixingFileUrl = '';
+                  }
+                });
+              },
+              value: settings.audioMixingFileUrl.isNotEmpty,
+            ),
+            Divider(
+                height: 1, color: Colors.grey, indent: 15.0, endIndent: 15.0),
             ListTile(
               title: const Text('文件路径'),
               subtitle: Text(_audioMixingFilePath),

@@ -104,19 +104,32 @@ class NERtcAudioMixingManager {
   }
 }
 
+
+/// 伴音构造参数类
 class NERtcAudioMixingOptions {
   const NERtcAudioMixingOptions(
       {this.path,
-      this.loopCount,
-      this.sendEnabled,
-      this.sendVolume,
-      this.playbackEnabled,
-      this.playbackVolume});
+      this.loopCount = 1,
+      this.sendEnabled = true,
+      this.sendVolume = 100,
+      this.playbackEnabled = true,
+      this.playbackVolume = 100});
 
+  /// 文件地址/URL
   final String path;
+
+  /// 循环次数， <= 0, 表示无限循环，默认 1
   final int loopCount;
+
+  /// 是否发送（默认 true）
   final bool sendEnabled;
+
+  /// 发送音量[0 - 100]（默认 100）
   final int sendVolume;
+
+  /// 是否播放（默认 true）
   final bool playbackEnabled;
+
+  /// 播放音量[0 - 100]（默认 100）
   final int playbackVolume;
 }

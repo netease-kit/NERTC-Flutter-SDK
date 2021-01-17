@@ -215,6 +215,18 @@ class _CallPageState extends State<CallPage>
 
   Widget buildControlPanel3(BuildContext context) {
     List<Widget> children = List();
+    if (Platform.isIOS) {
+      children.add(Expanded(
+          child: buildControlButton(
+        () {
+          _requestPop();
+        },
+        Text(
+          '结束通话',
+          style: TextStyle(fontSize: 12),
+        ),
+      )));
+    }
     children.add(Expanded(
         child: buildControlButton(
       () {
@@ -264,6 +276,69 @@ class _CallPageState extends State<CallPage>
       },
       Text(
         isAudience ? '切主播' : '切观众',
+        style: TextStyle(fontSize: 12),
+      ),
+    )));
+
+    children.add(Expanded(
+        child: buildControlButton(
+      () {
+        bool playAudioMixing = !isAudioMixPlaying;
+        if (playAudioMixing) {
+          String path = _settings.audioMixingFileUrl.isNotEmpty
+              ? _settings.audioMixingFileUrl
+              : _settings.audioEffectFilePath;
+          NERtcAudioMixingOptions options = NERtcAudioMixingOptions(
+              path: path,
+              sendEnabled: _settings.audioMixingSendEnabled,
+              playbackEnabled: _settings.audioMixingPlayEnabled);
+          _engine.audioMixingManager.startAudioMixing(options).then((value) {
+            if (value == 0) {
+              setState(() {
+                isAudioMixPlaying = playAudioMixing;
+              });
+            }
+          });
+        } else {
+          _engine.audioMixingManager.stopAudioMixing().then((value) {
+            if (value == 0) {
+              setState(() {
+                isAudioMixPlaying = playAudioMixing;
+              });
+            }
+          });
+        }
+      },
+      Text(
+        isAudioMixPlaying ? '结束伴音' : '开始伴音',
+        style: TextStyle(fontSize: 12),
+      ),
+    )));
+    children.add(Expanded(
+        child: buildControlButton(
+      () {
+        bool playAudioEffect = !isAudioEffectPlaying;
+        if (playAudioEffect) {
+          NERtcAudioEffectOptions options = NERtcAudioEffectOptions(path: _settings.audioEffectFilePath);
+          _engine.audioEffectManager.playEffect(1, options).then((value) {
+            if (value == 0) {
+              setState(() {
+                isAudioEffectPlaying = playAudioEffect;
+              });
+            }
+          });
+        } else {
+          _engine.audioEffectManager.stopEffect(1).then((value) {
+            if (value == 0) {
+              setState(() {
+                isAudioEffectPlaying = playAudioEffect;
+              });
+            }
+          });
+        }
+      },
+      Text(
+        isAudioEffectPlaying ? '结束音效' : '开始音效',
         style: TextStyle(fontSize: 12),
       ),
     )));
@@ -637,6 +712,7 @@ class _CallPageState extends State<CallPage>
         msg: 'onUserJoined#$uid', gravity: ToastGravity.CENTER);
     _UserSession session = _UserSession();
     session.uid = uid;
+    session.subStream = false;
     _remoteSessions.add(session);
     setState(() {});
   }
@@ -678,20 +754,39 @@ class _CallPageState extends State<CallPage>
         msg:
             'onUserVideoStart#uid:$uid, maxProfile:${Utils.videoProfile2String(maxProfile)}',
         gravity: ToastGravity.CENTER);
-    setupVideoView(uid, maxProfile);
+    setupVideoView(uid, maxProfile, false);
   }
 
-  Future<void> setupVideoView(int uid, int maxProfile) async {
+  Future<void> setupVideoView(int uid, int maxProfile, bool subStream) async {
     NERtcVideoRenderer renderer =
         await VideoRendererFactory.createVideoRenderer();
     for (_UserSession session in _remoteSessions) {
-      if (session.uid == uid) {
+      if (session.uid == uid && subStream == session.subStream) {
         session.renderer = renderer;
-        session.renderer.addToRemoteVideoSink(uid);
-        if (_settings.autoSubscribeVideo) {
-          _engine.subscribeRemoteVideo(
-              uid, NERtcRemoteVideoStreamType.high, true);
+        if (subStream) {
+          session.renderer.addToRemoteSubStreamVideoSink(uid);
+          if (_settings.autoSubscribeVideo) {
+            _engine.subscribeRemoteSubStreamVideo(uid, true);
+          }
+        } else {
+          session.renderer.addToRemoteVideoSink(uid);
+          if (_settings.autoSubscribeVideo) {
+            _engine.subscribeRemoteVideo(
+                uid, NERtcRemoteVideoStreamType.high, true);
+          }
         }
+        break;
+      }
+    }
+    setState(() {});
+  }
+
+  Future<void> releaseVideoView(int uid) async {
+    for (_UserSession session in _remoteSessions) {
+      if (session.uid == uid) {
+        NERtcVideoRenderer renderer = session.renderer;
+        session.renderer = null;
+        renderer?.dispose();
         break;
       }
     }
@@ -702,6 +797,7 @@ class _CallPageState extends State<CallPage>
   void onUserVideoStop(int uid) {
     Fluttertoast.showToast(
         msg: 'onUserVideoStop#$uid', gravity: ToastGravity.CENTER);
+    releaseVideoView(uid);
   }
 
   @override
@@ -828,14 +924,29 @@ class _CallPageState extends State<CallPage>
   void onUserSubStreamVideoStart(int uid, int maxProfile) {
     Fluttertoast.showToast(
         msg:
-            'onClientRoleChange#uid:$uid, maxProfile:${Utils.videoProfile2String(maxProfile)}',
+            'onUserSubStreamVideoStart#uid:$uid, maxProfile:${Utils.videoProfile2String(maxProfile)}',
         gravity: ToastGravity.CENTER);
+
+    _UserSession session = _UserSession();
+    session.uid = uid;
+    session.subStream = true;
+    _remoteSessions.add(session);
+    setupVideoView(uid, maxProfile, true);
   }
 
   @override
   void onUserSubStreamVideoStop(int uid) {
     Fluttertoast.showToast(
-        msg: 'onClientRoleChange#$uid', gravity: ToastGravity.CENTER);
+        msg: 'onUserSubStreamVideoStop#$uid', gravity: ToastGravity.CENTER);
+    for (_UserSession session in _remoteSessions) {
+      if (session.uid == uid && session.subStream) {
+        NERtcVideoRenderer renderer = session.renderer;
+        renderer?.dispose();
+        _remoteSessions.remove(session);
+        break;
+      }
+    }
+    setState(() {});
   }
 
   @override
