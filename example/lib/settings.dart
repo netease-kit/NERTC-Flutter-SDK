@@ -6,7 +6,8 @@ import 'package:nertc/nertc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Settings {
-  static final defaultFileUrl = 'http://music.163.com/song/media/outer/url?id=30431364.mp3';
+  static final defaultFileUrl =
+      'http://music.163.com/song/media/outer/url?id=30431364.mp3';
   static final Settings _instance = Settings._();
   SharedPreferences _prefs;
 
@@ -56,8 +57,10 @@ class Settings {
   set screenProfile(int value) => _prefs?.setInt("screenProfile", value);
 
   int get screenContentPrefer =>
-      _prefs?.getInt('screenContentPrefer') ?? NERtcSubStreamContentPrefer.motion;
-  set screenContentPrefer(int value) => _prefs?.setInt("screenContentPrefer", value);
+      _prefs?.getInt('screenContentPrefer') ??
+      NERtcSubStreamContentPrefer.motion;
+  set screenContentPrefer(int value) =>
+      _prefs?.setInt("screenContentPrefer", value);
 
   int get remoteVideoStreamType =>
       _prefs?.getInt('remoteVideoStreamType') ??
@@ -117,8 +120,7 @@ class Settings {
   set serverRecordMode(int value) => _prefs?.setInt("serverRecordMode", value);
 
   String get audioMixingFileUrl =>
-      _prefs?.getString('audioMixingFileUrl') ??
-          defaultFileUrl;
+      _prefs?.getString('audioMixingFileUrl') ?? defaultFileUrl;
   set audioMixingFileUrl(String value) =>
       _prefs?.setString("audioMixingFileUrl", value);
 
@@ -281,7 +283,7 @@ class _SettingsPageState extends State<SettingsPage> {
             buildAudioSettings(context),
             buildServerRecordSettings(context),
             buildAudioMixingSettings(context),
-            buildAudioEffectSettings(context),
+            if (Platform.isAndroid) buildAudioEffectSettings(context),
             buildOtherSettings(context)
           ],
         ),
@@ -435,7 +437,7 @@ class _SettingsPageState extends State<SettingsPage> {
               subtitle: Text('伴音下载播放'),
               onChanged: (bool value) {
                 setState(() {
-                  if(value) {
+                  if (value) {
                     _audioMixingFileUrl = Settings.defaultFileUrl;
                     settings.audioMixingFileUrl = _audioMixingFileUrl;
                   } else {
@@ -448,15 +450,17 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             Divider(
                 height: 1, color: Colors.grey, indent: 15.0, endIndent: 15.0),
-            ListTile(
-              title: const Text('文件路径'),
-              subtitle: Text(_audioMixingFilePath),
-              onTap: () {
-                _selectAudioMixFilePath();
-              },
-            ),
-            Divider(
-                height: 1, color: Colors.grey, indent: 15.0, endIndent: 15.0),
+            if (Platform.isAndroid)
+              ListTile(
+                title: const Text('文件路径'),
+                subtitle: Text(_audioMixingFilePath),
+                onTap: () {
+                  _selectAudioMixFilePath();
+                },
+              ),
+            if (Platform.isAndroid)
+              Divider(
+                  height: 1, color: Colors.grey, indent: 15.0, endIndent: 15.0),
             SwitchListTile(
               title: const Text('是否发送'),
               subtitle: Text('是否发送'),

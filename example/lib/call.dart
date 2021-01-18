@@ -314,34 +314,37 @@ class _CallPageState extends State<CallPage>
         style: TextStyle(fontSize: 12),
       ),
     )));
-    children.add(Expanded(
-        child: buildControlButton(
-      () {
-        bool playAudioEffect = !isAudioEffectPlaying;
-        if (playAudioEffect) {
-          NERtcAudioEffectOptions options = NERtcAudioEffectOptions(path: _settings.audioEffectFilePath);
-          _engine.audioEffectManager.playEffect(1, options).then((value) {
-            if (value == 0) {
-              setState(() {
-                isAudioEffectPlaying = playAudioEffect;
-              });
-            }
-          });
-        } else {
-          _engine.audioEffectManager.stopEffect(1).then((value) {
-            if (value == 0) {
-              setState(() {
-                isAudioEffectPlaying = playAudioEffect;
-              });
-            }
-          });
-        }
-      },
-      Text(
-        isAudioEffectPlaying ? '结束音效' : '开始音效',
-        style: TextStyle(fontSize: 12),
-      ),
-    )));
+    if (Platform.isAndroid) {
+      children.add(Expanded(
+          child: buildControlButton(
+        () {
+          bool playAudioEffect = !isAudioEffectPlaying;
+          if (playAudioEffect) {
+            NERtcAudioEffectOptions options =
+                NERtcAudioEffectOptions(path: _settings.audioEffectFilePath);
+            _engine.audioEffectManager.playEffect(1, options).then((value) {
+              if (value == 0) {
+                setState(() {
+                  isAudioEffectPlaying = playAudioEffect;
+                });
+              }
+            });
+          } else {
+            _engine.audioEffectManager.stopEffect(1).then((value) {
+              if (value == 0) {
+                setState(() {
+                  isAudioEffectPlaying = playAudioEffect;
+                });
+              }
+            });
+          }
+        },
+        Text(
+          isAudioEffectPlaying ? '结束音效' : '开始音效',
+          style: TextStyle(fontSize: 12),
+        ),
+      )));
+    }
     return Container(
         height: 40,
         child: Row(
@@ -879,7 +882,8 @@ class _CallPageState extends State<CallPage>
             'onConnectionStateChanged#state:${Utils.connectionState2String(state)}, '
             'reason:${Utils.connectionStateChangeReason2String(reason)}',
         gravity: ToastGravity.CENTER);
-    print('onConnectionStateChanged#state:${Utils.connectionState2String(state)}, '
+    print(
+        'onConnectionStateChanged#state:${Utils.connectionState2String(state)}, '
         'reason:${Utils.connectionStateChangeReason2String(reason)}');
   }
 
