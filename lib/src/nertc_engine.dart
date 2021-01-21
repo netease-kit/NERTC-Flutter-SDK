@@ -37,13 +37,13 @@ class NERtcEngine {
   final _ChannelEventHandler _channelEventHandler = _ChannelEventHandler();
   final _OnceEventHandler _onceEventHandler = _OnceEventHandler();
 
-  /// Audio Mixing Manager
+  /// 获取伴音管理模块
   NERtcAudioMixingManager get audioMixingManager => _audioMixingManager;
 
-  /// Device Manager
+  /// 获取设备管理模块
   NERtcDeviceManager get deviceManager => _deviceManager;
 
-  /// Audio Effect Manager
+  /// 获取音效管理模块
   NERtcAudioEffectManager get audioEffectManager => _audioEffectManager;
 
   EngineApi _api = EngineApi();

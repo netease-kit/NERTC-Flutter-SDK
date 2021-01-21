@@ -12,6 +12,7 @@ class NERtcAudioMixingManager {
 
   AudioMixingApi _api = AudioMixingApi();
 
+  /// 设置伴音事件回调
   Future<int> setEventCallback(NERtcAudioMixingEventCallback callback) async {
     assert(callback != null);
     _handler.setCallback(callback);
@@ -19,6 +20,7 @@ class NERtcAudioMixingManager {
     return reply.value;
   }
 
+  /// 清除伴音事件回调
   Future<int> clearEventCallback() async {
     _handler.setCallback(null);
     IntValue reply = await _api.clearAudioMixingEventCallback();
