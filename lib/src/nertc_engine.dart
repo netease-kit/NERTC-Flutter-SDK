@@ -48,7 +48,7 @@ class NERtcEngine {
 
   EngineApi _api = EngineApi();
 
-  /// 创建 NERtc 引擎
+  /// 创建 NERtc 实例
   Future<void> create(
       {@required String appKey,
       @required NERtcChannelEventCallback channelEventCallback,
@@ -76,7 +76,7 @@ class NERtcEngine {
       ..videoSendMode = options?.videoSendMode?.index);
   }
 
-  /// Release rtc engine
+  /// 销毁 NERtc实例，释放资源
   Future<int> release() async {
     this._channelEventHandler.setCallback(null);
     this.clearStatsEventCallback();

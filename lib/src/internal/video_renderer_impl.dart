@@ -50,7 +50,7 @@ class _NERtcVideoRendererImpl extends NERtcVideoRenderer {
   int get textureId => _textureId;
 
   @override
-  Future<int> addToRemoteVideoSink(int uid) {
+  Future<int> attachToRemoteVideo(int uid) {
     _local = false;
     _uid = uid;
     _subStream = false;
@@ -58,7 +58,7 @@ class _NERtcVideoRendererImpl extends NERtcVideoRenderer {
   }
 
   @override
-  Future<int> addToLocalVideoSink() {
+  Future<int> attachToLocalVideo() {
     _local = true;
     _uid = 0;
     _subStream = false;
@@ -66,7 +66,7 @@ class _NERtcVideoRendererImpl extends NERtcVideoRenderer {
   }
 
   @override
-  Future<int> addToLocalSubStreamVideoSink() {
+  Future<int> attachToLocalSubStreamVideo() {
     _local = true;
     _uid = 0;
     _subStream = true;
@@ -74,7 +74,7 @@ class _NERtcVideoRendererImpl extends NERtcVideoRenderer {
   }
 
   @override
-  Future<int> addToRemoteSubStreamVideoSink(int uid) {
+  Future<int> attachToRemoteSubStreamVideo(int uid) {
     _local = false;
     _uid = uid;
     _subStream = true;

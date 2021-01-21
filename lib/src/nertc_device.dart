@@ -138,24 +138,4 @@ class NERtcDeviceManager {
       return -1;
     }
   }
-
-  /// 调节录音音量
-  /// 加入频道前后都可以调用
-  /// 调节范围为：[0~400]
-  /// 0: 静音
-  /// 100: 原始音量 (默认)
-  /// 400: 最大可为原始音量的 4 倍(自带溢出保护)
-  ///
-  /// [volume] 调节的音量值。
-  Future<int> adjustRecordingSignalVolume(int volume) async {}
-
-  /// 调节播放音量
-  /// 加入频道前后都可以调用
-  /// 调节范围为：[0~400]
-  /// 0: 静音
-  /// 100: 原始音量 (默认)
-  /// 400: 最大可为原始音量的 4 倍(自带溢出保护)
-  ///
-  /// [volume] 调节的音量值。
-  Future<int> adjustPlaybackSignalVolume(int volume) async {}
 }

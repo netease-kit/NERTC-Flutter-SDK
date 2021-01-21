@@ -28,7 +28,7 @@ dependencies:
   http: ^0.12.2
   shared_preferences: ^0.5.12+4
   package_info: ^0.4.3+2
-  file_picker: ^2.1.1
+  file_picker: ^2.1.5+1
   fluttertoast: ^7.1.5
 
 dev_dependencies:

@@ -99,6 +99,9 @@ class _ChannelEventHandler with _EventHandler {
       case 'onUserSubStreamVideoStop':
         _handleOnUserSubStreamVideoStop(call);
         return true;
+      case 'onAudioHasHowling':
+        _handleOnAudioHasHowling(call);
+        return true;
       default:
         return false;
     }
@@ -111,7 +114,8 @@ class _ChannelEventHandler with _EventHandler {
 
   void _handleOnUserSubStreamVideoStart(MethodCall call) {
     Map arguments = call.arguments;
-    _callback.onUserSubStreamVideoStart(arguments['uid'], arguments['maxProfile']);
+    _callback.onUserSubStreamVideoStart(
+        arguments['uid'], arguments['maxProfile']);
   }
 
   void _handleOnUserSubStreamVideoStop(MethodCall call) {
@@ -251,5 +255,9 @@ class _ChannelEventHandler with _EventHandler {
   void _handleOnWarning(MethodCall call) {
     Map arguments = call.arguments;
     _callback.onWarning(arguments['code']);
+  }
+
+  void _handleOnAudioHasHowling(call) {
+    _callback.onAudioHasHowling();
   }
 }

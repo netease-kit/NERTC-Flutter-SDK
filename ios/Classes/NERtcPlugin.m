@@ -1415,6 +1415,10 @@
     [_channel invokeMethod:@"onUserSubStreamVideoStop" arguments:@{@"uid":@(userID)}];
 }
 
+- (void)onNERtcEngineAudioHasHowling {
+    [_channel invokeMethod:@"onAudioHasHowling" arguments:nil];
+}
+
 
 
 #pragma mark - LiveStreamDelegate
@@ -1619,9 +1623,7 @@
 
 }
 
-- (void)onNERtcEngineAudioHasHowling {
-    [_channel invokeMethod:@"onAudioHasHowling" arguments:nil];
-}
+
 
 
 

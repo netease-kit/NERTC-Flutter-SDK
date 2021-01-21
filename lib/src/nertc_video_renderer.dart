@@ -34,16 +34,16 @@ abstract class NERtcVideoRenderer extends ValueNotifier<_NERtcVideoValue> {
   Future<void> initialize();
 
   /// 添加为远端用户视频画布
-  Future<int> addToRemoteVideoSink(int uid);
+  Future<int> attachToRemoteVideo(int uid);
 
   /// 添加为远端用户辅流视频画布
-  Future<int> addToRemoteSubStreamVideoSink(int uid);
+  Future<int> attachToRemoteSubStreamVideo(int uid);
 
   /// 添加为本地用户视频画布
-  Future<int> addToLocalVideoSink();
+  Future<int> attachToLocalVideo();
 
   /// 添加为本地用户辅流视频画布
-  Future<int> addToLocalSubStreamVideoSink();
+  Future<int> attachToLocalSubStreamVideo();
 
   /// 设置画面是否镜像
   Future<int> setMirror(bool mirror);

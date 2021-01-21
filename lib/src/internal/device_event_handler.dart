@@ -24,17 +24,11 @@ class _DeviceEventHandler with _EventHandler {
       case 'onVideoDeviceStateChange':
         _handleOnVideoDeviceStageChange(call);
         return true;
-      case 'onAudioHasHowling':
-        _handleOnAudioHasHowling(call);
-        return true;
       default:
         return false;
     }
   }
 
-  void _handleOnAudioHasHowling(call) {
-    _callback.onAudioHasHowling();
-  }
   void _handleOnAudioDeviceChanged(MethodCall call) {
     Map arguments = call.arguments;
     _callback.onAudioDeviceChanged(arguments['selected']);

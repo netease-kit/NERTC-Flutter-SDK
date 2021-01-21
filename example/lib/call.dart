@@ -628,7 +628,7 @@ class _CallPageState extends State<CallPage>
   Future<void> _initRenderer() async {
     _localSession.renderer = await VideoRendererFactory.createVideoRenderer();
     _localSession.renderer.setMirror(isFrontCamera && isFrontCameraMirror);
-    _localSession.renderer.addToLocalVideoSink();
+    _localSession.renderer.attachToLocalVideo();
     setState(() {});
   }
 
@@ -730,7 +730,6 @@ class _CallPageState extends State<CallPage>
         NERtcVideoRenderer renderer = session.renderer;
         renderer?.dispose();
         _remoteSessions.remove(session);
-        break;
       }
     }
     setState(() {});
@@ -767,12 +766,12 @@ class _CallPageState extends State<CallPage>
       if (session.uid == uid && subStream == session.subStream) {
         session.renderer = renderer;
         if (subStream) {
-          session.renderer.addToRemoteSubStreamVideoSink(uid);
+          session.renderer.attachToRemoteSubStreamVideo(uid);
           if (_settings.autoSubscribeVideo) {
             _engine.subscribeRemoteSubStreamVideo(uid, true);
           }
         } else {
-          session.renderer.addToRemoteVideoSink(uid);
+          session.renderer.attachToRemoteVideo(uid);
           if (_settings.autoSubscribeVideo) {
             _engine.subscribeRemoteVideo(
                 uid, NERtcRemoteVideoStreamType.high, true);

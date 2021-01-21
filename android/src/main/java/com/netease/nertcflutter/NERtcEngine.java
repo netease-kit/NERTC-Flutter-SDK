@@ -73,6 +73,8 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
 
     private final NERtcStatsObserverImpl observer;
 
+    private final NERtcAudioProcessObserverImpl audioProcessObserver;
+
     private NERtcEglContextWrapper sharedEglContext = null;
 
     private final Context applicationContext;
@@ -123,6 +125,7 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
         this.invokeMethod = method;
         this.callback = new NERtcCallbackImpl(method);
         this.observer = new NERtcStatsObserverImpl(method);
+        this.audioProcessObserver = new NERtcAudioProcessObserverImpl(method);
         this.applicationContext = applicationContext;
         this.addActivityResultListener = null;
         this.removeActivityResultListener = null;
@@ -258,6 +261,7 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
         try {
             NERtcEx.getInstance().setParameters(parameters);
             NERtcEx.getInstance().init(applicationContext, appKey, callback, option);
+            NERtcEx.getInstance().setAudioProcessObserver(audioProcessObserver);
         } catch (Exception e) {
             Log.e("NERtcEngine", "Create RTC engine exception:" + e.toString());
             result.setValue(-3L);
@@ -268,6 +272,7 @@ public class NERtcEngine implements EngineApi, AudioEffectApi, AudioMixingApi, D
     @Override
     public IntValue release() {
         NERtcEx.getInstance().setStatsObserver(null);
+        NERtcEx.getInstance().setAudioProcessObserver(null);
         callback.setAudioMixingCallbackEnabled(false);
         callback.setDeviceCallbackEnabled(false);
         callback.setAudioEffectCallbackEnabled(false);

@@ -8,6 +8,7 @@ package com.netease.nertcflutter;
 import android.graphics.Rect;
 
 import com.netease.lava.nertc.sdk.NERtcCallbackEx;
+import com.netease.lava.nertc.sdk.audio.NERtcAudioProcessObserver;
 import com.netease.lava.nertc.sdk.stats.NERtcAudioVolumeInfo;
 import com.netease.nertcflutter.NERtcEngine.CallbackMethod;
 
@@ -16,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class NERtcCallbackImpl implements NERtcCallbackEx {
+public class NERtcCallbackImpl implements NERtcCallbackEx{
 
     private final CallbackMethod callback;
 

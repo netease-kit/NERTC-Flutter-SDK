@@ -13,9 +13,7 @@
     <uses-permission android:name="android.permission.BROADCAST_STICKY"/>
 
     <application>
-        <service
-            android:name="com.netease.lava.video.device.screencapture.ScreenShareService"
-            android:foregroundServiceType="mediaProjection" />
+
     </application>
 
 </manifest>

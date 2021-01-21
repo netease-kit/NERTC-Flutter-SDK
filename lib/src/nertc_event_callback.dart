@@ -91,7 +91,7 @@ abstract class NERtcChannelEventCallback {
   /// [maxProfile] 最大支持分辨率 [NERtcVideoProfile]
   void onUserVideoProfileUpdate(int uid, int maxProfile);
 
-  /// 网络断开或者连上提示
+  /// 本地网络类型已改变回调
   ///
   /// [newConnectionType] 参考 [NERtcConnectionType]
   void onConnectionTypeChanged(int newConnectionType);
@@ -165,6 +165,13 @@ abstract class NERtcChannelEventCallback {
   ///
   /// [uid] 远端用户ID.
   void onUserSubStreamVideoStop(int uid);
+
+  ///  啸叫检测回调
+  ///  用于检测是否由于设备距离过近产生啸叫。
+  ///  当检测到有啸叫信号产生的时候，触发该回调一直到啸叫停止
+  ///  上层用户接收到回调信息，代表有啸叫产生，用户可提示用户mute麦克风或者是直接操作mute麦克风
+  ///  啸叫检测用于VoIP场景，音乐场景不支持啸叫检测
+  void onAudioHasHowling();
 }
 
 abstract class NERtcDeviceEventCallback {
@@ -183,13 +190,6 @@ abstract class NERtcDeviceEventCallback {
   ///
   /// [deviceState] 选择的设备 [NERtcVideoDeviceState]
   void onVideoDeviceStageChange(int deviceState);
-
-  /// 啸叫检测回调
-  ///  用于检测是否由于设备距离过近产生啸叫。
-  ///  当检测到有啸叫信号产生的时候，触发该回调一直到啸叫停止
-  ///  上层用户接收到回调信息，代表有啸叫产生，用户可提示用户mute麦克风或者是直接操作mute麦克风
-  ///  啸叫检测用于VoIP场景，音乐场景不支持啸叫检测
-  void onAudioHasHowling();
 }
 
 /// 伴音相关事件通知
