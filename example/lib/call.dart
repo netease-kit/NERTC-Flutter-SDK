@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:FLTNERTC/settings.dart';
-import 'package:FLTNERTC/utils.dart';
+import 'settings.dart';
+import 'utils.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:nertc/nertc.dart';

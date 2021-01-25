@@ -90,10 +90,10 @@
     
     //Video
     if(input.videoEncodeMode != nil) {
-        [params setObject:input.videoEncodeMode == 0 ? @(YES) : @(NO) forKey:kNERtcKeyVideoPreferHWEncode];
+        [params setObject:input.videoEncodeMode.intValue == 0 ? @(YES) : @(NO) forKey:kNERtcKeyVideoPreferHWEncode];
     }
     if(input.videoDecodeMode != nil) {
-        [params setObject:input.videoDecodeMode == 0 ? @(YES) : @(NO) forKey:kNERtcKeyVideoPreferHWDecode];
+        [params setObject:input.videoDecodeMode.intValue == 0 ? @(YES) : @(NO) forKey:kNERtcKeyVideoPreferHWDecode];
     }
     if(input.videoSendMode != nil) {
         [params setObject:input.videoSendMode forKey:kNERtcKeyVideoSendOnPubType];
