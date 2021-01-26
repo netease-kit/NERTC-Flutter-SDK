@@ -1,3 +1,6 @@
+## 3.9.0
+* Upgrade NERtc SDK to 3.9.0
+
 ## 0.3.8+1
 * Upgrade NERtc SDK to 3.8.1
 
