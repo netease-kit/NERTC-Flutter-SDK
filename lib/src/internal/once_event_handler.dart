@@ -1,4 +1,6 @@
-// Copyright (c) 2019-2020 NetEase, Inc. All right reserved.
+// Copyright (c) 2021 NetEase, Inc.  All rights reserved.
+// Use of this source code is governed by a MIT license that can be
+// found in the LICENSE file.
 
 part of nertc;
 
@@ -16,20 +18,19 @@ class _OnceEventHandler with _EventHandler {
   }
 
   @override
-  bool handler(MethodCall call) {
-    switch (call.method) {
+  bool handler(String method, Map<dynamic, dynamic> arguments) {
+    switch (method) {
       case 'onOnceEvent':
-        _handleOnceEvent(call);
+        _handleOnceEvent(arguments);
         return true;
       default:
         return false;
     }
   }
 
-  void _handleOnceEvent(MethodCall call) {
-    Map arguments = call.arguments;
-    int serial = arguments['serial'];
-    OnceEventCallback callback = _handlers.remove(serial);
+  void _handleOnceEvent(Map<dynamic, dynamic> arguments) {
+    int? serial = arguments['serial'];
+    OnceEventCallback? callback = _handlers.remove(serial);
     if (callback != null) callback(arguments['arguments']);
   }
 }

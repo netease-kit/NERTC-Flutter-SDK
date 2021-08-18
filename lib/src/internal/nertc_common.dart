@@ -1,12 +1,14 @@
-// Copyright (c) 2019-2020 NetEase, Inc. All right reserved.
+// Copyright (c) 2021 NetEase, Inc.  All rights reserved.
+// Use of this source code is governed by a MIT license that can be
+// found in the LICENSE file.
 
 part of nertc;
 
 class _NERtcVideoValue {
   const _NERtcVideoValue({
-    this.width,
-    this.height,
-    this.rotation,
+     this.width = 0,
+     this.height = 0,
+     this.rotation = 0,
   });
 
   final int width;
@@ -21,9 +23,9 @@ class _NERtcVideoValue {
         );
 
   _NERtcVideoValue copyWith({
-    int width,
-    int height,
-    int rotation,
+    int? width,
+    int? height,
+    int? rotation,
   }) {
     return _NERtcVideoValue(
       width: width ?? this.width,

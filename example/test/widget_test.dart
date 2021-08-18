@@ -1,3 +1,7 @@
+// Copyright (c) 2021 NetEase, Inc.  All rights reserved.
+// Use of this source code is governed by a MIT license that can be
+// found in the LICENSE file.
+
 // This is a basic Flutter widget test.
 //
 // To perform an interaction with a widget in your test, use the WidgetTester
@@ -5,7 +9,7 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-import 'package:FLTNERTC/main.dart';
+import 'package:flt_nertc/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -19,7 +23,7 @@ void main() {
     expect(
       find.byWidgetPredicate(
         (Widget widget) =>
-            widget is Text && widget.data.startsWith('Running on:'),
+            widget is Text && widget.data!.startsWith('Running on:'),
       ),
       findsOneWidget,
     );

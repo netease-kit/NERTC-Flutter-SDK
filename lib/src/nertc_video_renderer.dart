@@ -1,4 +1,6 @@
-// Copyright (c) 2014-2020 NetEase, Inc. All right reserved.
+// Copyright (c) 2021 NetEase, Inc.  All rights reserved.
+// Use of this source code is governed by a MIT license that can be
+// found in the LICENSE file.
 
 part of nertc;
 
@@ -6,7 +8,7 @@ part of nertc;
 class VideoRendererFactory {
   /// 创建 [NERtcVideoRenderer], 同时进行初始化
   static Future<NERtcVideoRenderer> createVideoRenderer(
-      {NERtcVideoRendererEventListener listener}) async {
+      {NERtcVideoRendererEventListener? listener}) async {
     NERtcVideoRenderer renderer = _NERtcVideoRendererImpl(listener: listener);
     await renderer.initialize();
     return renderer;
@@ -25,9 +27,9 @@ abstract class NERtcVideoRenderer extends ValueNotifier<_NERtcVideoValue> {
   NERtcVideoRenderer({this.rendererEventLister})
       : super(_NERtcVideoValue.uninitialized());
 
-  NERtcVideoRendererEventListener rendererEventLister;
+  NERtcVideoRendererEventListener? rendererEventLister;
 
-  int get textureId;
+  int? get textureId;
 
   bool get canRender;
 
@@ -48,7 +50,7 @@ abstract class NERtcVideoRenderer extends ValueNotifier<_NERtcVideoValue> {
   /// 设置画面是否镜像
   Future<int> setMirror(bool mirror);
 
-  /// 获取画面是否镜像  
+  /// 获取画面是否镜像
   bool getMirrored();
 
   @override

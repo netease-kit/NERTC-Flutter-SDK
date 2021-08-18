@@ -19,57 +19,65 @@ class NERtcOptions {
       this.videoEncodeMode,
       this.videoDecodeMode,
       this.videoCaptureObserverEnabled,
-      this.videoSendMode});
+      this.videoSendMode,
+      this.videoH265Enabled,
+      this.mode1v1Enabled});
 
   /// 日志路径
-  final String logDir;
+  final String? logDir;
 
   /// 日志等级
-  final int logLevel;
+  final int? logLevel;
 
   /// 是否自动订阅音频（默认订阅）
-  final bool audioAutoSubscribe;
+  final bool? audioAutoSubscribe;
 
   /// 系统切换听筒事件时，禁用切换到扬声器.
   /// 仅在iOS平台有效.
   /// 默认值 false, 如设置 true 则禁止SDK在系统切换到听筒时做切换扬声器操作，需要用户自己处理切换听筒事件
-  final bool audioDisableOverrideSpeakerOnReceiver;
+  final bool? audioDisableOverrideSpeakerOnReceiver;
 
   /// 设置耳机时不使用软件回声消除功能
   /// 仅在iOS平台有效.
   /// 默认值 false,如设置true 则SDK在耳机模式下不使用软件回声消除功能，会对某些机型下 耳机的音质效果有影响
-  final bool audioDisableSWAECOnHeadset;
+  final bool? audioDisableSWAECOnHeadset;
 
   /// 设置是否开启AI降噪，开启AI降噪，在嘈杂环境下，让对方更清晰听到您的声音
-  final bool audioAINSEnabled;
+  final bool? audioAINSEnabled;
 
   /// 是否开启服务器录制语音
-  final bool serverRecordAudio;
+  final bool? serverRecordAudio;
 
   /// 是否开启服务器录制视频
-  final bool serverRecordVideo;
+  final bool? serverRecordVideo;
 
   /// 服务器录制模式
-  final NERtcServerRecordMode serverRecordMode;
+  final NERtcServerRecordMode? serverRecordMode;
 
   /// 是否服务器录制主讲人
-  final bool serverRecordSpeaker;
+  final bool? serverRecordSpeaker;
 
   /// 是否允许在房间推流时推送自身的视频流
-  final bool publishSelfStream;
+  final bool? publishSelfStream;
 
   /// 是否允许视频帧回调.
   /// 仅在iOS平台有效.
-  final bool videoCaptureObserverEnabled;
+  final bool? videoCaptureObserverEnabled;
 
   /// 视频编码模式
-  final NERtcMediaCodecMode videoEncodeMode;
+  final NERtcMediaCodecMode? videoEncodeMode;
 
   /// 视频解码模式.
-  final NERtcMediaCodecMode videoDecodeMode;
+  final NERtcMediaCodecMode? videoDecodeMode;
 
   /// 视频发布模式
-  final NERtcVideoSendMode videoSendMode;
+  final NERtcVideoSendMode? videoSendMode;
+
+  ///是否开启H265
+  final bool? videoH265Enabled;
+
+  /// 是否开启频道1V1模式，joinChannel 前设置生效
+  final bool? mode1v1Enabled;
 }
 
 /// Camera类型
@@ -94,47 +102,69 @@ class NERtcSubStreamContentPrefer {
 
 /// 视频设置参数
 class NERtcVideoConfig {
-  /// 视频档位，默认高清模式
+  /// 视频编码的分辨率，用于衡量编码质量视频档位。 详细信息请参考 [NERtcVideoProfile]。
   int videoProfile = NERtcVideoProfile.standard;
 
-  /// 视频裁剪模式
+  /// 视频画面裁剪模式，默认为 [NERtcVideoCropMode.cropDefault]。自定义视频输入不支持设置裁剪模式。
   int videoCropMode = NERtcVideoCropMode.cropDefault;
 
   /// 摄像头位置，默认前置摄像头
   bool frontCamera = true;
 
-  /// 视频编码帧率
+  /// 视频编码的帧率。详细信息请参考 [NERtcVideoFrameRate]。
   int frameRate = NERtcVideoFrameRate.fps_30;
 
-  /// 最小帧率。0：表示使用默认帧率
+  /// 视频编码的最小帧率。默认为 0，表示使用默认最小帧率。
   int minFrameRate = 0;
 
-  /// 视频编码码率，单位为Kbps。 0：表示使用默认码率，手动设置请参考码表
+  /// 视频编码的码率，单位为 Kbps。您可以根据场景需要，手动设置想要的码率。
+  ///
+  /// - 若设置的视频码率超出合理范围，SDK 会自动按照合理区间处理码率。
+  /// - 若设置为 0，SDK将会自行计算处理。
   int bitrate = 0;
 
-  /// 视频编码最小码率，单位为Kbps。直播场景下使用，0：表示使用默认
+  /// 视频编码的最小码率，单位为 Kbps。您可以根据场景需要，手动设置想要的最小码率，若设置为0，SDK 将会自行计算处理。
   int minBitrate = 0;
 
-  /// 带宽受限时的视频编码降级偏好
+  /// 带宽受限时的视频编码降级偏好。详细信息请参考 [NERtcDegradationPreference]。`
   int degradationPrefer = NERtcDegradationPreference.degradationDefault;
 
-  /// 自定义宽 <=0 表示采用 [videoProfile] 档位
+  /// 视频编码分辨率，衡量编码质量，以宽x高表示。与maxProfile属性二选一。
+  /// width表示视频帧在横轴上的像素，即自定义宽。
+  ///
+  /// - 设置为负数时表示采用 maxProfile档位。
+  /// - 如果需要自定义分辨率场景，则设置此属性，maxProfile属性失效。
+  ///
+  /// 自定义视频输入 width 和 height 无效，会自动根据 maxProfile缩放。
   int width = 0;
 
-  /// 自定义高 <=0 表示采用 [videoProfile] 档位
+  /// 视频编码分辨率，衡量编码质量，以宽x高表示。与maxProfile属性二选一。
+  /// height表示视频帧在纵轴上的像素，即自定义高。
+  ///
+  /// - 设置为负数时表示采用 maxProfile档位。
+  /// - 如果需要自定义分辨率场景，则设置此属性，maxProfile属性失效。
+  ///
+  /// 自定义视频输入width和height无效，会自动根据 maxProfile缩放。
   int height = 0;
 
   /// Camera 类型，仅 Android 平台支持
   int cameraType = NERtcCameraType.camera1;
 
+  /// 设置本地视频编码的镜像模式，即本地发送视频的镜像模式，只影响远端用户看到的视频画面。 详细信息请参考 [NERtcVideoMirrorMode]。
+  int mirrorMode = NERtcVideoMirrorMode.auto;
+
+  /// 设置本地视频编码的方向模式，即本地发送视频的方向模式，只影响远端用户看到的视频画面。 详细信息请参考 {@link NERtcVideoOutputOrientationMode}。
+  int orientationMode = NERtcVideoOutputOrientationMode.adaptative;
+
   @override
   String toString() {
     return 'NERtcVideoConfig{videoProfile: $videoProfile, '
-        'videoCropMode: $videoCropMode, frontCamera: $frontCamera,'
-        ' frameRate: $frameRate, minFrameRate: $minFrameRate, '
+        'videoCropMode: $videoCropMode, frontCamera: $frontCamera, '
+        'frameRate: $frameRate, minFrameRate: $minFrameRate, '
         'bitrate: $bitrate, minBitrate: $minBitrate, '
-        'degradationPrefer: $degradationPrefer, '
-        'width: $width, height: $height, cameraType: $cameraType}';
+        'degradationPrefer: $degradationPrefer, width: $width, height: $height, '
+        'cameraType: $cameraType, mirrorMode: $mirrorMode, '
+        'orientationMode: $orientationMode}';
   }
 }
 
@@ -181,6 +211,38 @@ class NERtcVideoProfile {
   static const int hd1080p = 4;
 }
 
+/// 视频镜像模式
+class NERtcVideoMirrorMode {
+  /// （默认）由 SDK 决定镜像模式
+  static const int auto = 0;
+
+  /// 启用镜像模式
+  static const int enabled = 1;
+
+  /// 关闭镜像模式
+  static const int disabled = 2;
+}
+
+/// 视频旋转方向模式
+class NERtcVideoOutputOrientationMode {
+  ///（默认）该模式下 SDK 输出的视频方向与采集到的视频方向一致。接收端会根据收到的视频旋转信息对视频进行旋转。
+  ///
+  /// 该模式适用于接收端可以调整视频方向的场景。
+  /// - 如果采集的视频是横屏模式，则输出的视频也是横屏模式。
+  /// - 如果采集的视频是竖屏模式，则输出的视频也是竖屏模式。
+  static const int adaptative = 0;
+
+  /// 该模式下 SDK 固定输出横屏模式的视频。如果采集到的视频是竖屏模式，则视频编码器会对其进行裁剪。
+  ///
+  /// 该模式适用于接收端无法调整视频方向的场景，例如旁路推流。
+  static const int fixedLandscape = 1;
+
+  /// 该模式下 SDK 固定输出竖屏模式的视频，如果采集到的视频是横屏模式，则视频编码器会对其进行裁剪。
+  ///
+  /// 该模式适用于接收端无法调整视频方向的场景，例如旁路推流。
+  static const int fixedPortrait = 2;
+}
+
 ///屏幕共享清晰度
 class NERtcScreenProfile {
   ///高清, (640x360/480 @5fps)
@@ -224,7 +286,7 @@ class NERtcVideoStreamType {
   static const int main = 1;
 
   /// 辅流
-  int sub = 2;
+  static const int sub = 2;
 }
 
 ///网络类型定义
@@ -256,8 +318,11 @@ class NERtcConnectionType {
   ///The VPN data connection.
   static const int vpn = 8;
 
+  ///The Mobile(5G) data connection.
+  static const int cellular5g = 9;
+
   ///The absence of a connection type.
-  static const int none = 9;
+  static const int none = 10;
 }
 
 ///语音设备类型
@@ -508,6 +573,27 @@ class NERtcErrorCode {
   ///媒体源未找到
   static const int sourceNotFound = 30108;
 
+  ///切换房间状态无效
+  static const int switchChannelInvalidState = 30109;
+
+  /// 原因通常为重复调用 startChannelMediaRelay。成功调用startChannelMediaRelay后，必须先调用 stopChannelMediaRelay 方法退出当前的转发状态，才能再次调用该方法
+  static const int channelMediaRelayInvalidState = 30110;
+
+  /// 媒体流转发权限不足
+  ///
+  /// 原因通常包括：
+  /// - 源房间的房间类型为双人房间（1V1模式）。此时无法转发媒体流。
+  /// - 调用 startChannelMediaRelay 开启媒体流转发的成员角色为观众角色，仅主播角色可以转发媒体流。
+  static const int channelMediaRelayPermissionDenied = 30111;
+
+  /// 停止媒体流转发操作失败
+  /// 原因通常为未开启媒体流转发。请确认调用 stopChannelMediaRelay 前，是否已成功调用 startChannelMediaRelay 开启媒体流转发。
+  static const int channelMediaRelayStopFailed = 30112;
+
+  /// 设置的媒体流加密密钥与房间中其他成员不一致，加入房间失败。
+  /// 请通过 enableEncryption 重新设置加密密钥。
+  static const int encryptNotSuitable = 30113;
+
   ///连接未找到
   static const int connectionNotFound = 30200;
 
@@ -531,6 +617,9 @@ class NERtcErrorCode {
 
   ///房间被关闭
   static const int roomClosed = 30207;
+
+  /// 因为切换频道而离开房间
+  static const int leaveChannelForSwitch = 30208;
 }
 
 /// 运行时错误
@@ -772,19 +861,19 @@ class NERtcLiveStreamLayout {
   });
 
   /// 视频推流宽度
-  int width;
+  int? width;
 
   /// 视频推流高度
-  int height;
+  int? height;
 
   /// 视频推流背景色 RGB
-  Color backgroundColor;
+  Color? backgroundColor;
 
   /// 视频推流背景图
-  NERtcLiveStreamImageInfo backgroundImg;
+  NERtcLiveStreamImageInfo? backgroundImg;
 
   /// 成员布局数组
-  List<NERtcLiveStreamUserTranscoding> userTranscodingList;
+  List<NERtcLiveStreamUserTranscoding>? userTranscodingList;
 }
 
 class NERtcLiveStreamVideoScaleMode {
@@ -798,7 +887,7 @@ class NERtcLiveStreamVideoScaleMode {
 /// 直播成员布局
 class NERtcLiveStreamUserTranscoding {
   NERtcLiveStreamUserTranscoding(
-      {@required this.uid,
+      {required this.uid,
       this.videoPush = true,
       this.audioPush = true,
       this.adaption = NERtcLiveStreamVideoScaleMode.liveStreamModeVideoScaleFit,
@@ -851,7 +940,7 @@ class NERtcLiveStreamImageInfo {
       {this.url, this.x = 0, this.y = 0, this.width = 0, this.height = 0});
 
   /// 图片地址url
-  String url;
+  String? url;
 
   /// 图片离主画面左边距 ， 默认 0
   int x;
@@ -869,8 +958,8 @@ class NERtcLiveStreamImageInfo {
 /// 房间推流任务参数
 class NERtcLiveStreamTaskInfo {
   NERtcLiveStreamTaskInfo(
-      {this.taskId,
-      this.url,
+      {required this.taskId,
+      required this.url,
       this.serverRecordEnabled = false,
       this.liveMode = NERtcLiveStreamMode.liveStreamModeVideo,
       this.layout});
@@ -888,7 +977,7 @@ class NERtcLiveStreamTaskInfo {
   int liveMode;
 
   /// 视频布局
-  NERtcLiveStreamLayout layout;
+  NERtcLiveStreamLayout? layout;
 }
 
 /// 频道连接状态
@@ -956,3 +1045,274 @@ class NERtcClientRole {
   /// 观众
   static const int audience = 1;
 }
+
+/// 变声 预设值
+class NERtcVoiceChangerType {
+  /// 关闭
+  static const int off = 0;
+
+  /// 机器人
+  static const int robot = 1;
+
+  /// 巨人
+  static const int giant = 2;
+
+  /// 恐怖
+  static const int horror = 3;
+
+  /// 成熟
+  static const int mature = 4;
+
+  /// 男变女
+  static const int manToWoman = 5;
+
+  /// 女变男
+  static const int womanToMan = 6;
+
+  /// 男变萝莉
+  static const int manToLoli = 7;
+
+  /// 女变萝莉
+  static const int womanToLoli = 8;
+}
+
+/// 美声效果
+class NERtcVoiceBeautifierType {
+  /// 默认关闭
+  static const int off = 0;
+
+  /// 低沉
+  static const int muffled = 1;
+
+  /// 圆润
+  static const int mellow = 2;
+
+  /// 清澈
+  static const int clear = 3;
+
+  /// 磁性
+  static const int magnetic = 4;
+
+  /// 录音棚
+  static const int recordingStudio = 5;
+
+  /// 天籁
+  static const int nature = 6;
+
+  /// KTV
+  static const int ktv = 7;
+
+  /// 悠远
+  static const int remote = 8;
+
+  /// 教堂
+  static const int church = 9;
+
+  /// 卧室
+  static const int bedroom = 10;
+
+  /// live
+  static const int live = 11;
+}
+
+///伴音错误状态
+class NERtcAudioMixingError {
+  /// 伴音正常结束
+  static const int finish = 0;
+
+  /// 音频解码错误
+  static const int errorDecode = 1;
+
+  /// 操作中断码
+  static const int errorInterrupt = 2;
+
+  /// 404 http/https 对应的文件找不到
+  static const int errorHttpNotFound = 3;
+
+  /// 打开流/文件失败
+  static const int errorOpen = 4;
+
+  /// 获取解码信息失败/超时
+  static const int errorNoInfo = 5;
+
+  /// 无音频流
+  static const int errorNoStream = 6;
+
+  /// 无解码器
+  static const int errorNoCodec = 7;
+
+  /// 无内存
+  static const int errorNoMemory = 8;
+
+  /// 解码器打开失败/超时
+  static const int errorCodecOpen = 9;
+
+  /// 无效音频参数（声道、采样率）
+  static const int errorInvalidInfo = 10;
+
+  /// 打开流/文件超时
+  static const int errorOpenTimeout = 11;
+
+  /// 网络IO 超时
+  static const int errorIOTimeout = 12;
+
+  /// 网络IO 错误
+  static const int errorIO = 13;
+}
+
+/// 媒体流优先级
+class NERtcMediaPriority {
+  /// 高优先级
+  static const int high = 50;
+
+  /// （默认）普通优先级
+  static const int normal = 100;
+}
+
+/// 录音音质
+class NERtcAudioRecordingQuality {
+  /// 低音质
+  static const int low = 0;
+
+  /// （默认）中音质
+  static const int medium = 1;
+
+  /// 高音质
+  static const int high = 2;
+}
+
+/// 录音回调事件状态码
+class NERtcAudioRecordingCode {
+  /// 不支持的录音文件格式
+  static const int errorSuffix = 1;
+
+  /// 无法创建录音文件，原因通常包括：
+  /// - 应用没有磁盘写入权限。
+  /// - 文件路径不存在。
+  static const int openFileFailed = 2;
+
+  /// 开始录制
+  static const int start = 3;
+
+  /// 录制错误。原因通常为磁盘空间已满，无法写入
+  static const int error = 4;
+
+  /// 完成录制
+  static const int finish = 5;
+}
+
+/// 媒体流转发相关的数据结构
+class NERtcChannelMediaRelayInfo {
+  /// 用户 ID
+  int channelUid;
+
+  /// 房间名
+  String channelName;
+
+  /// 房间 Token
+  String channelToken;
+
+  NERtcChannelMediaRelayInfo(
+      {required this.channelUid,
+      required this.channelName,
+      required this.channelToken});
+
+  Map<dynamic, dynamic> _toMap() {
+    final Map<dynamic, dynamic> map = <dynamic, dynamic>{};
+    map['channelUid'] = channelUid;
+    map['channelName'] = channelName;
+    map['channelToken'] = channelToken;
+    return map;
+  }
+
+  static NERtcChannelMediaRelayInfo fromMap(Map<String, dynamic> map) {
+    return NERtcChannelMediaRelayInfo(
+        channelUid: map['channelUid'] ?? 0,
+        channelName: map['channelName'] ?? '',
+        channelToken: map['channelToken'] ?? '');
+  }
+}
+
+/// 媒体流转发参数，包括源房间、目标房间列表等
+class NERtcChannelMediaRelayConfiguration {
+  /// 源房间信息
+  NERtcChannelMediaRelayInfo? sourceMediaInfo;
+
+  /// 目标房间信息列表
+  Map<String, NERtcChannelMediaRelayInfo> destMediaInfo;
+
+  NERtcChannelMediaRelayConfiguration(this.sourceMediaInfo, this.destMediaInfo);
+}
+
+/// 媒体流转发状态
+class NERtcChannelMediaRelayState {
+  /// 初始状态。在成功调用 [NERtcEngine.stopChannelMediaRelay] 停止跨房间媒体流转发后， [onNERtcEngineChannelMediaRelayStateDidChange] 会回调该状态
+  static const int idle = 0;
+
+  /// SDK 尝试跨房间转发媒体流
+  static const int connecting = 1;
+
+  /// 源房间主播角色成功加入目标频道
+  static const int running = 2;
+
+  /// 发生异常，详见 [onMediaRelayReceiveEvent] 的 error 中提示的错误信息
+  static const int failure = 3;
+}
+
+/// 媒体流转发回调事件
+class NERtcChannelMediaRelayEvent {
+  /// 媒体流转发停止
+  static const int disconnect = 0;
+
+  /// 正在连接服务器，开始尝试转发媒体流
+  static const int connecting = 1;
+
+  /// 连接服务器成功
+  static const int connected = 2;
+
+  /// 视频媒体流成功转发到目标房间
+  static const int videoSentSuccess = 3;
+
+  /// 音频媒体流成功转发到目标房间
+  static const int audioSentSuccess = 4;
+
+  /// 屏幕共享等其他媒体流成功转发到目标房间
+  static const int otherStreamSentSuccess = 5;
+
+  /// 媒体流转发失败。原因包括：
+  /// - reserveInvalidParameter(414)：请求参数错误。
+  /// - channelMediaRelayInvalidState(30110)：重复调用 startChannelMediaRelay。
+  /// - channelMediaRelayPermissionDenied(30111)：媒体流转发权限不足。例如调用 startChannelMediaRelay 的房间成员为观众角色、或房间为双人通话房间，不支持转发媒体流。
+  /// - channelMediaRelayStopFailed(30112)：调用 stopChannelMediaRelay 前，未调用 startChannelMediaRelay。
+  static const int failure = 100;
+}
+
+class NERtcStreamFallbackOptions {
+  /// 上行或下行网络较弱时，不对音视频流作回退处理，但不能保证音视频流的质量。
+  ///
+  /// 该选项只对 [NERtcEngine.setLocalPublishFallbackOption] 方法有效，对 [NERtcEngine.setRemoteSubscribeFallbackOption] 方法无效。
+  static const int disabled = 0;
+
+  /// 在下行网络条件较差的情况下，SDK 将只接收视频小流，即低分辨率、低码率视频流。
+  ///
+  /// 该选项只对 [setRemoteSubscribeFallbackOption] 方法有效，对 [setLocalPublishFallbackOption] 方法无效。
+  static const int videoStreamLow = 1;
+
+  /// 上行网络较弱时，只发布音频流。
+  /// 下行网络较弱时，先尝试只接收视频小流，即低分辨率、低码率视频流。如果网络环境无法显示视频，则再回退到只接收音频流。
+  static const int audioOnly = 2;
+}
+
+/// 配置媒体流加密模式和密钥
+class NERtcEncryptionConfig {
+  /// 媒体流加密模式
+  NERtcEncryptionMode mode;
+
+  /// 媒体流加密密钥。字符串类型，推荐设置为英文字符串
+  String key;
+
+  NERtcEncryptionConfig(this.mode, this.key);
+}
+
+/// 媒体流加密模式
+enum NERtcEncryptionMode { GMCryptoSM4ECB }

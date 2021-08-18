@@ -1,80 +1,78 @@
-// Copyright (c) 2019-2020 NetEase, Inc. All right reserved.
+// Copyright (c) 2021 NetEase, Inc.  All rights reserved.
+// Use of this source code is governed by a MIT license that can be
+// found in the LICENSE file.
 
 part of nertc;
 
 class _StatsEventHandler with _EventHandler {
-  NERtcStatsEventCallback _callback;
+  NERtcStatsEventCallback? _callback;
 
   _StatsEventHandler();
 
-  void setCallback(NERtcStatsEventCallback callback) {
+  void setCallback(NERtcStatsEventCallback? callback) {
     this._callback = callback;
   }
 
-  void _handleOnRtcStats(MethodCall call) {
-    Map arguments = call.arguments;
-    _callback.onRtcStats(NERtcStats.fromMap(arguments));
+  void _handleOnRtcStats(Map<dynamic, dynamic> arguments) {
+    _callback!.onRtcStats(NERtcStats.fromMap(arguments));
   }
 
-  void _handleOnLocalAudioStats(MethodCall call) {
-    Map arguments = call.arguments;
-    _callback.onLocalAudioStats(NERtcAudioSendStats.fromMap(arguments));
+  void _handleOnLocalAudioStats(Map<dynamic, dynamic> arguments) {
+    _callback!.onLocalAudioStats(NERtcAudioSendStats.fromMap(arguments));
   }
 
-  void _handleOnRemoteAudioStats(MethodCall call) {
-    List<dynamic> arguments = call.arguments;
-    List<NERtcAudioRecvStats> statsList = new List<NERtcAudioRecvStats>();
-    for (Map<dynamic, dynamic> argument in arguments) {
+  void _handleOnRemoteAudioStats(Map<dynamic, dynamic> arguments) {
+    List<dynamic> argumentList = arguments['list'];
+    List<NERtcAudioRecvStats> statsList = <NERtcAudioRecvStats>[];
+    for (Map<dynamic, dynamic> argument in argumentList) {
       statsList.add(NERtcAudioRecvStats.fromMap(argument));
     }
-    _callback.onRemoteAudioStats(statsList);
+    _callback!.onRemoteAudioStats(statsList);
   }
 
-  void _handleOnLocalVideoStats(MethodCall call) {
-    Map arguments = call.arguments;
-    _callback.onLocalVideoStats(NERtcVideoSendStats.fromMap(arguments));
+  void _handleOnLocalVideoStats(Map<dynamic, dynamic> arguments) {
+    _callback!.onLocalVideoStats(NERtcVideoSendStats.fromMap(arguments));
   }
 
-  void _handleOnRemoteVideoStats(MethodCall call) {
-    List<dynamic> arguments = call.arguments;
-    List<NERtcVideoRecvStats> statsList = new List<NERtcVideoRecvStats>();
-    for (Map<dynamic, dynamic> argument in arguments) {
+  void _handleOnRemoteVideoStats(Map<dynamic, dynamic> arguments) {
+    List<dynamic> argumentList = arguments['list'];
+    var statsList = <NERtcVideoRecvStats>[];
+    for (Map<dynamic, dynamic> argument in argumentList) {
       statsList.add(NERtcVideoRecvStats.fromMap(argument));
     }
-    _callback.onRemoteVideoStats(statsList);
+    _callback!.onRemoteVideoStats(statsList);
   }
 
-  void _handleOnNetworkQuality(MethodCall call) {
-    List<dynamic> arguments = call.arguments;
-    List<NERtcNetworkQualityInfo> statsList =
-        new List<NERtcNetworkQualityInfo>();
-    for (Map<dynamic, dynamic> argument in arguments) {
+  void _handleOnNetworkQuality(Map<dynamic, dynamic> arguments) {
+    List<dynamic> argumentList = arguments['list'];
+    var statsList = <NERtcNetworkQualityInfo>[];
+    for (Map<dynamic, dynamic> argument in argumentList ) {
       statsList.add(NERtcNetworkQualityInfo.fromMap(argument));
     }
-    _callback.onNetworkQuality(statsList);
+    _callback!.onNetworkQuality(statsList);
   }
 
   @override
-  bool handler(MethodCall call) {
+  bool handler(String method, Map<dynamic, dynamic> arguments) {
     if (_callback == null) return false;
-    switch (call.method) {
+    switch (method) {
       case 'onRtcStats':
-        _handleOnRtcStats(call);
+        _handleOnRtcStats(arguments);
         return true;
       case 'onLocalAudioStats':
-        _handleOnLocalAudioStats(call);
+        _handleOnLocalAudioStats(arguments);
         return true;
       case 'onRemoteAudioStats':
-        _handleOnRemoteAudioStats(call);
+        _handleOnRemoteAudioStats(arguments);
         return true;
       case 'onLocalVideoStats':
-        _handleOnLocalVideoStats(call);
+        _handleOnLocalVideoStats(arguments);
         return true;
       case 'onRemoteVideoStats':
-        _handleOnRemoteVideoStats(call);
+        _handleOnRemoteVideoStats(arguments);
         return true;
       case 'onNetworkQuality':
-        _handleOnNetworkQuality(call);
+        _handleOnNetworkQuality(arguments);
         return true;
       default:
         return false;

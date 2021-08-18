@@ -134,14 +134,14 @@
     NSLog(@"FlutterCalled:EngineApi#joinChannel");
 #endif
     NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
-    int ret = [[NERtcEngine sharedEngine] joinChannelWithToken:input.token channelName:input.channelName myUid:input.uid.unsignedLongLongValue completion:^(NSError * _Nullable error, uint64_t channelId, uint64_t elapesd) {
+    int ret = [[NERtcEngine sharedEngine] joinChannelWithToken:input.token channelName:input.channelName myUid:input.uid.unsignedLongLongValue completion:^(NSError * _Nullable error, uint64_t channelId, uint64_t elapesd, uint64_t uid) {
         long code;
         if(error) {
             code = error.code;
         } else {
             code = 0;
         }
-        [self onJoinChannel:code channelId:channelId elapsed:elapesd];
+        [self onJoinChannel:code channelId:channelId elapsed:elapesd uid:uid];
     }];
     result.value = @(ret);
     return result;
@@ -200,6 +200,8 @@
     config.degradationPreference = input.degradationPrefer.intValue;
     config.width = input.width.intValue;
     config.height = input.height.intValue;
+    config.orientationMode = input.orientationMode.intValue;
+    config.mirrorMode = input.mirrorMode.intValue;
     int ret = [[NERtcEngine  sharedEngine] setLocalVideoConfig:config];
     result.value = @(ret);
     return result;
@@ -336,9 +338,6 @@
 // 在代理方法中对视频数据进行处理
 - (void)onNERtcEngineVideoFrameCaptured:(CVPixelBufferRef)bufferRef rotation:(NERtcVideoRotationType)rotation
 {
-#ifdef DEBUG
-    NSLog(@"FlutterCalled:EngineApi#onNERtcEngineVideoFrameCaptured");
-#endif
     if ([[FLNERtcEngineVideoFrameDelegate sharedCenter].observer respondsToSelector:@selector(onNERtcEngineVideoFrameCaptured:rotation:)]) {
         [[FLNERtcEngineVideoFrameDelegate sharedCenter].observer onNERtcEngineVideoFrameCaptured:bufferRef rotation:(NERtcVideoRotationType)rotation];
     }
@@ -378,11 +377,11 @@
 }
 
 
-- (nullable NEFLTIntValue *)startScreenCapture:(NEFLTStartScreenCaptureRequest*)input error:(FlutterError *_Nullable *_Nonnull)error {
+- (void)startScreenCapture:(nullable NEFLTStartScreenCaptureRequest *)input completion:(nonnull void (^)(NEFLTIntValue * _Nullable, FlutterError * _Nullable))completion {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:EngineApi#startScreenCapture");
 #endif
-    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
+    NEFLTIntValue* value = [[NEFLTIntValue alloc] init];
     NERtcVideoSubStreamEncodeConfiguration* config = [[NERtcVideoSubStreamEncodeConfiguration alloc] init];
     if(input.contentPrefer != nil) {
         config.contentPrefer = input.contentPrefer.intValue;
@@ -403,10 +402,9 @@
         config.minBitrate = input.minBitrate.intValue;
     }
     int ret = [[NERtcEngine sharedEngine] startScreenCapture:config];
-    result.value = @(ret);
-    return result;
+    value.value = @(ret);
+    completion(value, nil);
 }
-
 
 
 - (nullable NEFLTIntValue *)stopScreenCapture:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
@@ -419,8 +417,7 @@
     return result;
 }
 
-
-- (void)release:(FlutterError * _Nullable __autoreleasing * _Nonnull)error withCompletion:(nonnull void (^)(void))completion {
+- (void)release:(nonnull void (^)(NEFLTIntValue * _Nullable, FlutterError * _Nullable))completion {
 #ifdef DEBUG
     NSLog(@"FlutterCalled:EngineApi#release");
 #endif
@@ -431,9 +428,9 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [NERtcEngine destroyEngine];
         dispatch_async(dispatch_get_main_queue(), ^{
-            if(completion) {
-                completion();
-            }
+            NEFLTIntValue* value = [[NEFLTIntValue alloc] init];
+            value.value = @(0);
+            completion(value, nil);
         });
     });
 }
@@ -732,6 +729,255 @@
     result.value = @(ret);
     return result;
 }
+
+
+- (nullable NEFLTIntValue *)switchChannel:(nonnull NEFLTSwitchChannelRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+#ifdef DEBUG
+    NSLog(@"FlutterCalled:EngineApi#switchChannel");
+#endif
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
+    int ret = [[NERtcEngine  sharedEngine] switchChannelWithToken:input.token channelName:input.channelName completion:^(NSError * _Nullable error, uint64_t channelId, uint64_t elapesd, uint64_t uid) {
+        long code;
+        if(error) {
+            code = error.code;
+        } else {
+            code = 0;
+        }
+        [self onJoinChannel:code channelId:channelId elapsed:elapesd uid:uid];
+    }];
+    result.value = @(ret);
+    return result;
+}
+
+
+- (nullable NEFLTIntValue *)sendSEIMsg:(nonnull NEFLTSendSEIMsgRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+#ifdef DEBUG
+    NSLog(@"FlutterCalled:EngineApi#sendSEIMsg");
+#endif
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
+    int ret = [[NERtcEngine  sharedEngine] sendSEIMsg: [input.seiMsg dataUsingEncoding:NSUTF8StringEncoding]  streamChannelType:input.streamType.intValue];
+    result.value = @(ret);
+    return result;
+}
+
+- (nullable NEFLTIntValue *)setAudioEffectPreset:(nonnull NEFLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+#ifdef DEBUG
+    NSLog(@"FlutterCalled:EngineApi#setAudioEffectPreset");
+#endif
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
+    int ret = [[NERtcEngine  sharedEngine] setAudioEffectPreset: input.value.intValue];
+    result.value = @(ret);
+    return result;
+}
+
+
+- (nullable NEFLTIntValue *)setLocalVoiceEqualization:(nonnull NEFLTSetLocalVoiceEqualizationRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+#ifdef DEBUG
+    NSLog(@"FlutterCalled:EngineApi#setLocalVoiceEqualization");
+#endif
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
+    int ret = [[NERtcEngine  sharedEngine] setLocalVoiceEqualizationOfBandFrequency:input.bandFrequency.intValue withGain:input.bandGain.intValue];
+    result.value = @(ret);
+    return result;
+}
+
+
+- (nullable NEFLTIntValue *)setLocalVoicePitch:(nonnull NEFLTDoubleValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+#ifdef DEBUG
+    NSLog(@"FlutterCalled:EngineApi#setLocalVoicePitch");
+#endif
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
+    int ret = [[NERtcEngine  sharedEngine] setLocalVoicePitch:input.value.doubleValue];
+    result.value = @(ret);
+    return result;
+}
+
+
+- (nullable NEFLTIntValue *)setVoiceBeautifierPreset:(nonnull NEFLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+#ifdef DEBUG
+    NSLog(@"FlutterCalled:EngineApi#setVoiceBeautifierPreset");
+#endif
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
+    int ret = [[NERtcEngine  sharedEngine] setVoiceBeautifierPreset:input.value.intValue];
+    result.value = @(ret);
+    return result;
+}
+
+- (nullable NEFLTIntValue *)adjustUserPlaybackSignalVolume:(nonnull NEFLTAdjustUserPlaybackSignalVolumeRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+#ifdef DEBUG
+    NSLog(@"FlutterCalled:EngineApi#adjustUserPlaybackSignalVolume");
+#endif
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
+    int ret = [[NERtcEngine sharedEngine]adjustUserPlaybackSignalVolume:input.volume.intValue forUserID:input.uid.unsignedLongLongValue];
+    result.value = @(ret);
+    return result;
+}
+
+
+- (nullable NEFLTIntValue *)setLocalMediaPriority:(nonnull NEFLTSetLocalMediaPriorityRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+#ifdef DEBUG
+    NSLog(@"FlutterCalled:EngineApi#setLocalMediaPriority");
+#endif
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
+    int ret = [[NERtcEngine sharedEngine] setLocalMediaPriority:input.priority.intValue preemptive:input.isPreemptive.boolValue];
+    result.value = @(ret);
+    return result;
+}
+
+
+- (nullable NEFLTIntValue *)startAudioRecording:(nonnull NEFLTStartAudioRecordingRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+#ifdef DEBUG
+    NSLog(@"FlutterCalled:EngineApi#startAudioRecording");
+#endif
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
+    int ret = [[NERtcEngine sharedEngine] startAudioRecording:input.filePath sampleRate:input.sampleRate.intValue quality:input.quality.intValue];
+    result.value = @(ret);
+    return result;
+}
+
+
+- (nullable NEFLTIntValue *)startChannelMediaReplay:(nonnull NEFLTStartOrUpdateChannelMediaReplayRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+#ifdef DEBUG
+    NSLog(@"FlutterCalled:EngineApi#startChannelMediaReplay");
+#endif
+    NERtcChannelMediaRelayConfiguration* config = [[NERtcChannelMediaRelayConfiguration alloc] init];
+    config.sourceInfo = [[NERtcChannelMediaRelayInfo alloc] init];
+    NSString* channelName = input.sourceMediaInfo[@"channelName"];
+    if ((NSNull *)channelName != [NSNull null]) {
+        config.sourceInfo.channelName = channelName;
+    }
+    NSString* channelToken = input.sourceMediaInfo[@"channelToken"];
+    if((NSNull *)channelToken != [NSNull null]) {
+        config.sourceInfo.token = channelToken;
+    }
+    NSNumber* channelUid = input.sourceMediaInfo[@"channelUid"];
+    if((NSNull *)channelToken != [NSNull null]) {
+        config.sourceInfo.uid = channelUid.unsignedLongLongValue;
+    }
+    for (NSString *key in input.destMediaInfo) {
+        id dic = [input.destMediaInfo objectForKey:key];
+        NERtcChannelMediaRelayInfo* info = [[NERtcChannelMediaRelayInfo alloc] init];
+        NSString* channelName = dic[@"channelName"];
+        if ((NSNull *)channelName != [NSNull null]) {
+            info.channelName = channelName;
+        }
+        NSString* channelToken = dic[@"channelToken"];
+        if((NSNull *)channelToken != [NSNull null]) {
+            info.token = channelToken;
+        }
+        NSNumber* channelUid = dic[@"channelUid"];
+        if((NSNull *)channelToken != [NSNull null]) {
+            info.uid = channelUid.unsignedLongLongValue;
+        }
+        [config setDestinationInfo:info forChannelName:key];
+    }
+    
+    int ret = [[NERtcEngine sharedEngine] startChannelMediaRelay:config];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
+    result.value = @(ret);
+    return result;
+}
+
+
+- (nullable NEFLTIntValue *)stopAudioRecording:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+#ifdef DEBUG
+    NSLog(@"FlutterCalled:EngineApi#stopAudioRecording");
+#endif
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
+    int ret = [[NERtcEngine sharedEngine] stopAudioRecording];
+    result.value = @(ret);
+    return result;
+}
+
+
+- (nullable NEFLTIntValue *)stopChannelMediaRelay:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+#ifdef DEBUG
+    NSLog(@"FlutterCalled:EngineApi#stopChannelMediaRelay");
+#endif
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
+    int ret = [[NERtcEngine sharedEngine] stopChannelMediaRelay];
+    result.value = @(ret);
+    return result;
+}
+
+
+- (nullable NEFLTIntValue *)updateChannelMediaRelay:(nonnull NEFLTStartOrUpdateChannelMediaReplayRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+#ifdef DEBUG
+    NSLog(@"FlutterCalled:EngineApi#updateChannelMediaRelay");
+#endif
+    NERtcChannelMediaRelayConfiguration* config = [[NERtcChannelMediaRelayConfiguration alloc] init];
+    config.sourceInfo = [[NERtcChannelMediaRelayInfo alloc] init];
+    NSString* channelName = input.sourceMediaInfo[@"channelName"];
+    if ((NSNull *)channelName != [NSNull null]) {
+        config.sourceInfo.channelName = channelName;
+    }
+    NSString* channelToken = input.sourceMediaInfo[@"channelToken"];
+    if((NSNull *)channelToken != [NSNull null]) {
+        config.sourceInfo.token = channelToken;
+    }
+    NSNumber* channelUid = input.sourceMediaInfo[@"channelUid"];
+    if((NSNull *)channelToken != [NSNull null]) {
+        config.sourceInfo.uid = channelUid.unsignedLongLongValue;
+    }
+    for (NSString *key in input.destMediaInfo) {
+        id dic = [input.destMediaInfo objectForKey:key];
+        NERtcChannelMediaRelayInfo* info = [[NERtcChannelMediaRelayInfo alloc] init];
+        NSString* channelName = dic[@"channelName"];
+        if ((NSNull *)channelName != [NSNull null]) {
+            info.channelName = channelName;
+        }
+        NSString* channelToken = dic[@"channelToken"];
+        if((NSNull *)channelToken != [NSNull null]) {
+            info.token = channelToken;
+        }
+        NSNumber* channelUid = dic[@"channelUid"];
+        if((NSNull *)channelToken != [NSNull null]) {
+            info.uid = channelUid.unsignedLongLongValue;
+        }
+        [config setDestinationInfo:info forChannelName:key];
+    }
+    
+    int ret = [[NERtcEngine sharedEngine] updateChannelMediaRelay:config];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
+    result.value = @(ret);
+    return result;
+}
+
+- (nullable NEFLTIntValue *)setLocalPublishFallbackOption:(nonnull NEFLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+    int ret = [[NERtcEngine sharedEngine] setLocalPublishFallbackOption:input.value.intValue];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
+    result.value = @(ret);
+    return result;
+}
+
+
+- (nullable NEFLTIntValue *)setRemoteSubscribeFallbackOption:(nonnull NEFLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+    int ret = [[NERtcEngine sharedEngine] setRemoteSubscribeFallbackOption:input.value.intValue];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
+    result.value = @(ret);
+    return result;
+}
+
+- (nullable NEFLTIntValue *)enableEncryption:(nonnull NEFLTEnableEncryptionRequest *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+    NERtcEncryptionConfig* config = [[NERtcEncryptionConfig alloc] init];
+    config.key = input.key;
+    config.mode = (NERtcEncryptionMode)input.mode;
+    int ret = [[NERtcEngine sharedEngine] enableEncryption:input.enable.boolValue config:config];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
+    result.value = @(ret);
+    return result;
+}
+
+
+- (nullable NEFLTIntValue *)enableSuperResolution:(nonnull NEFLTBoolValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+    int ret = [[NERtcEngine sharedEngine] enableSuperResolution:input.value.boolValue];
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
+    result.value = @(ret);
+    return result;
+}
+
+
+
 
 
 
@@ -1345,6 +1591,32 @@
     return result;
 }
 
+- (nullable NEFLTIntValue *)getEffectCurrentPosition:(nonnull NEFLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
+    uint64_t position = 0;
+    int ret = [[NERtcEngine sharedEngine] getEffectCurrentPositionWithId:input.value.unsignedIntValue position:&position];
+    if(ret == 0) {
+        result.value = @(position);
+    } else {
+        result.value = @(-1);
+    }
+    return result;
+}
+
+
+- (nullable NEFLTIntValue *)getEffectDuration:(nonnull NEFLTIntValue *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+    NEFLTIntValue* result = [[NEFLTIntValue alloc] init];
+    uint64_t duration = 0;
+    int ret = [[NERtcEngine sharedEngine] getEffectDurationWithId:input.value.unsignedIntValue duration:&duration];
+    if(ret == 0) {
+        result.value = @(duration);
+    } else {
+        result.value = @(-1);
+    }
+    return result;
+}
+
+
 
 #pragma mark - NERtcEngineDelegate
 
@@ -1357,8 +1629,8 @@
     [_channel invokeMethod:@"onConnectionStateChanged" arguments:@{@"state": @(state), @"reason":@(reason)}];
 }
 
-- (void)onJoinChannel:(long)result channelId:(uint64_t)channelId elapsed:(uint64_t)elapesd {
-    [_channel invokeMethod:@"onJoinChannel" arguments:@{@"result": @(result), @"channelId": @(channelId), @"elapesd":@(elapesd)}];
+- (void)onJoinChannel:(long)result channelId:(uint64_t)channelId elapsed:(uint64_t)elapesd uid:(uint64_t) uid {
+    [_channel invokeMethod:@"onJoinChannel" arguments:@{@"result": @(result), @"channelId": @(channelId), @"elapsed":@(elapesd), @"uid":@(uid)}];
 }
 
 - (void)onNERtcEngineDidLeaveChannelWithResult:(NERtcError)result {
@@ -1623,6 +1895,34 @@
 
 }
 
+- (void)onNERtcEngineAudioRecording:(NERtcAudioRecordingCode)code filePath:(nonnull NSString *)filePath {
+    [_channel invokeMethod:@"onAudioRecording" arguments:@{@"code":@(code), @"filePath":filePath}];
+}
+
+
+- (void)onNERtcEngineChannelMediaRelayStateDidChange:(NERtcChannelMediaRelayState)state channelName:(nonnull NSString *)channelName {
+    [_channel invokeMethod:@"onMediaRelayStatesChange" arguments:@{@"state":@(state), @"channelName":channelName}];
+}
+
+
+- (void)onNERtcEngineDidReceiveChannelMediaRelayEvent:(NERtcChannelMediaRelayEvent)event channelName:(nonnull NSString *)channelName error:(NERtcError)error {
+    [_channel invokeMethod:@"onMediaRelayReceiveEvent" arguments:@{@"event":@(event), @"channelName":channelName, @"code":@(error)}];
+}
+
+- (void)onNERtcEngineLocalPublishFallbackToAudioOnly:(BOOL)isFallback streamType:(NERtcStreamChannelType)streamType {
+    [_channel invokeMethod:@"onLocalPublishFallbackToAudioOnly" arguments:@{@"isFallback":@(isFallback), @"streamType":@(streamType)}];
+}
+
+
+- (void)onNERtcEngineRemoteSubscribeFallbackToAudioOnly:(uint64_t)uid isFallback:(BOOL)isFallback streamType:(NERtcStreamChannelType)streamType {
+    [_channel invokeMethod:@"onRemoteSubscribeFallbackToAudioOnly" arguments:@{@"uid":@(uid), @"isFallback":@(isFallback), @"streamType":@(streamType)}];
+}
+
+
+- (void)onNERtcEngineRecvSEIMsg:(uint64_t)userID message:(NSData *)message {
+    NSString* messageString= [[NSString alloc] initWithData:message  encoding:NSUTF8StringEncoding];
+    [_channel invokeMethod:@"onReceiveSEIMsg" arguments:@{@"uid":@(userID), @"message": messageString}];
+}
 
 
 
@@ -1660,6 +1960,7 @@
             [layer setValue:[NSNumber numberWithInt:layerStat.encoderBitrate] forKey:@"encoderBitrate"];
             [layer setValue:[NSNumber numberWithInt:layerStat.sentFrameRate] forKey:@"sentFrameRate"];
             [layer setValue:[NSNumber numberWithInt:layerStat.renderFrameRate] forKey:@"renderFrameRate"];
+            [layer setValue:layerStat.encoderName forKey:@"encoderName"];
             [layers addObject:layer];
         }
         [dictionary setValue:layers forKey:@"layers"];
@@ -1677,7 +1978,9 @@
             [dictionary setValue:[NSNumber numberWithInt:stat.rxQuality] forKey:@"rxQuality"];
             [array addObject:dictionary];
         }
-        [_channel invokeMethod:@"onNetworkQuality" arguments:array];
+        NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
+        [dic setValue:array forKey:@"list"];
+        [_channel invokeMethod:@"onNetworkQuality" arguments:dic];
     }
 }
 
@@ -1695,7 +1998,9 @@
             [dictionary setValue:[NSNumber numberWithInt:stat.frozenRate] forKey:@"frozenRate"];
             [array addObject:dictionary];
         }
-        [_channel invokeMethod:@"onRemoteAudioStats" arguments:array];
+        NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
+        [dic setValue:array forKey:@"list"];
+        [_channel invokeMethod:@"onRemoteAudioStats" arguments:dic];
     }
 }
 
@@ -1720,13 +2025,16 @@
                     [layer setValue:[NSNumber numberWithInt:layerStat.rendererOutputFrameRate] forKey:@"rendererOutputFrameRate"];
                     [layer setValue:[NSNumber numberWithLongLong:layerStat.totalFrozenTime] forKey:@"totalFrozenTime"];
                     [layer setValue:[NSNumber numberWithInt:layerStat.frozenRate] forKey:@"frozenRate"];
+                    [layer setValue:layerStat.decoderName forKey:@"decoderName"];
                     [layers addObject:layer];
                 }
             }
             [dictionary setValue:layers forKey:@"layers"];
             [array addObject:dictionary];
         }
-        [_channel invokeMethod:@"onRemoteVideoStats" arguments:array];
+        NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
+        [dic setValue:array forKey:@"list"];
+        [_channel invokeMethod:@"onRemoteVideoStats" arguments:dic];
     }
     
 }

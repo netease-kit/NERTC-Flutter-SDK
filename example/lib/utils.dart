@@ -1,3 +1,9 @@
+// Copyright (c) 2021 NetEase, Inc.  All rights reserved.
+// Use of this source code is governed by a MIT license that can be
+// found in the LICENSE file.
+
+import 'package:nertc/nertc.dart';
+
 class Utils {
   static String videoDeviceState2String(int state) {
     switch (state) {
@@ -169,6 +175,42 @@ class Utils {
         return 'none';
       default:
         return 'type:$type';
+    }
+  }
+
+  static String mediaRelayEvent2String(int event) {
+    switch (event) {
+      case NERtcChannelMediaRelayEvent.disconnect:
+        return 'disconnect';
+      case NERtcChannelMediaRelayEvent.connecting:
+        return 'connecting';
+      case NERtcChannelMediaRelayEvent.connected:
+        return 'connected';
+      case NERtcChannelMediaRelayEvent.videoSentSuccess:
+        return 'videoSentSuccess';
+      case NERtcChannelMediaRelayEvent.audioSentSuccess:
+        return 'audioSentSuccess';
+      case NERtcChannelMediaRelayEvent.otherStreamSentSuccess:
+        return 'otherStreamSentSuccess';
+      case NERtcChannelMediaRelayEvent.failure:
+        return 'failure';
+      default:
+        return 'unknown';
+    }
+  }
+
+  static String mediaRelayState2String(int state) {
+    switch (state) {
+      case NERtcChannelMediaRelayState.idle:
+        return 'idle';
+      case NERtcChannelMediaRelayState.connecting:
+        return 'connecting';
+      case NERtcChannelMediaRelayState.running:
+        return 'running';
+      case NERtcChannelMediaRelayState.failure:
+        return 'failure';
+      default:
+        return 'unknown';
     }
   }
 }

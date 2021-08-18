@@ -11,7 +11,7 @@ class CallPage extends StatefulWidget {
   final String cid;
   final int uid;
 
-  CallPage({Key key, @required this.cid, @required this.uid});
+  CallPage({Key? key, required this.cid, required this.uid});
 
   @override
   _CallPageState createState() {
@@ -24,9 +24,9 @@ class _CallPageState extends State<CallPage>
         NERtcChannelEventCallback,
         NERtcStatsEventCallback,
         NERtcDeviceEventCallback {
-  Settings _settings;
+  late Settings _settings;
   NERtcEngine _engine = NERtcEngine();
-  List<_UserSession> _remoteSessions = List();
+  List<_UserSession> _remoteSessions = [];
   _UserSession _localSession = _UserSession();
 
   bool _showControlPanel = false;
@@ -89,12 +89,13 @@ class _CallPageState extends State<CallPage>
       // ignore: missing_return
       onWillPop: () {
         _requestPop();
+        return Future.value(true);
       },
     );
   }
 
   Widget buildControlButton(VoidCallback onPressed, Widget child) {
-    return RaisedButton(
+    return ElevatedButton(
       onPressed: onPressed,
       child: child,
     );
@@ -120,7 +121,7 @@ class _CallPageState extends State<CallPage>
   }
 
   Widget buildControlPanel4(BuildContext context) {
-    List<Widget> children = List();
+    List<Widget> children = [];
     children.add(Expanded(
         child: buildControlButton(
       () {
@@ -214,7 +215,7 @@ class _CallPageState extends State<CallPage>
   }
 
   Widget buildControlPanel3(BuildContext context) {
-    List<Widget> children = List();
+    List<Widget> children = [];
     if (Platform.isIOS) {
       children.add(Expanded(
           child: buildControlButton(
@@ -397,7 +398,7 @@ class _CallPageState extends State<CallPage>
                 _engine.deviceManager.switchCamera().then((value) {
                   if (value == 0) {
                     isFrontCamera = !isFrontCamera;
-                    _localSession.renderer
+                    _localSession.renderer!
                         .setMirror(isFrontCamera && isFrontCameraMirror);
                   }
                 });
@@ -431,7 +432,7 @@ class _CallPageState extends State<CallPage>
   }
 
   Widget buildControlPanel2(BuildContext context) {
-    List<Widget> children = List();
+    List<Widget> children = [];
     children.add(Expanded(
         child: buildControlButton(
       () {
@@ -550,7 +551,7 @@ class _CallPageState extends State<CallPage>
       child: Stack(
         children: [
           session.renderer != null
-              ? NERtcVideoView(session.renderer)
+              ? NERtcVideoView(session.renderer!)
               : Container(),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -601,19 +602,19 @@ class _CallPageState extends State<CallPage>
     });
   }
 
-  Future<int> _initCallbacks() async {
+  Future<int?> _initCallbacks() async {
     await _engine.setStatsEventCallback(this);
     return _engine.deviceManager.setEventCallback(this);
   }
 
-  Future<int> _initAudio() async {
+  Future<int?> _initAudio() async {
     await _engine.enableLocalAudio(isAudioEnabled);
     return _engine.setAudioProfile(
         NERtcAudioProfile.values[_settings.audioProfile],
         NERtcAudioScenario.values[_settings.audioScenario]);
   }
 
-  Future<int> _initVideo() async {
+  Future<int?> _initVideo() async {
     await _engine.enableLocalVideo(isVideoEnabled);
     await _engine.enableDualStreamMode(_settings.enableDualStreamMode);
     NERtcVideoConfig config = NERtcVideoConfig();
@@ -627,8 +628,8 @@ class _CallPageState extends State<CallPage>
 
   Future<void> _initRenderer() async {
     _localSession.renderer = await VideoRendererFactory.createVideoRenderer();
-    _localSession.renderer.setMirror(isFrontCamera && isFrontCameraMirror);
-    _localSession.renderer.attachToLocalVideo();
+    _localSession.renderer!.setMirror(isFrontCamera && isFrontCameraMirror);
+    _localSession.renderer!.attachToLocalVideo();
     setState(() {});
   }
 
@@ -641,7 +642,7 @@ class _CallPageState extends State<CallPage>
     _engine.enableLocalAudio(false);
     _engine.stopVideoPreview();
     if (_localSession.renderer != null) {
-      _localSession.renderer.dispose();
+      _localSession.renderer!.dispose();
       _localSession.renderer = null;
     }
     for (_UserSession session in _remoteSessions) {
@@ -727,7 +728,7 @@ class _CallPageState extends State<CallPage>
         gravity: ToastGravity.CENTER);
     for (_UserSession session in _remoteSessions) {
       if (session.uid == uid) {
-        NERtcVideoRenderer renderer = session.renderer;
+        NERtcVideoRenderer? renderer = session.renderer;
         renderer?.dispose();
         _remoteSessions.remove(session);
       }
@@ -766,12 +767,12 @@ class _CallPageState extends State<CallPage>
       if (session.uid == uid && subStream == session.subStream) {
         session.renderer = renderer;
         if (subStream) {
-          session.renderer.attachToRemoteSubStreamVideo(uid);
+          session.renderer!.attachToRemoteSubStreamVideo(uid);
           if (_settings.autoSubscribeVideo) {
             _engine.subscribeRemoteSubStreamVideo(uid, true);
           }
         } else {
-          session.renderer.attachToRemoteVideo(uid);
+          session.renderer!.attachToRemoteVideo(uid);
           if (_settings.autoSubscribeVideo) {
             _engine.subscribeRemoteVideo(
                 uid, NERtcRemoteVideoStreamType.high, true);
@@ -786,7 +787,7 @@ class _CallPageState extends State<CallPage>
   Future<void> releaseVideoView(int uid) async {
     for (_UserSession session in _remoteSessions) {
       if (session.uid == uid) {
-        NERtcVideoRenderer renderer = session.renderer;
+        NERtcVideoRenderer? renderer = session.renderer;
         session.renderer = null;
         renderer?.dispose();
         break;
@@ -842,7 +843,7 @@ class _CallPageState extends State<CallPage>
   }
 
   @override
-  void onJoinChannel(int result, int channelId, int elapsed) {
+  void onJoinChannel(int result, int channelId, int elapsed, int uid) {
     Fluttertoast.showToast(
         msg:
             'onJoinChannel#result:$result, channelId:$channelId, elapsed:$elapsed',
@@ -945,7 +946,7 @@ class _CallPageState extends State<CallPage>
         msg: 'onUserSubStreamVideoStop#$uid', gravity: ToastGravity.CENTER);
     for (_UserSession session in _remoteSessions) {
       if (session.uid == uid && session.subStream) {
-        NERtcVideoRenderer renderer = session.renderer;
+        NERtcVideoRenderer? renderer = session.renderer;
         renderer?.dispose();
         _remoteSessions.remove(session);
         break;
@@ -959,10 +960,29 @@ class _CallPageState extends State<CallPage>
     Fluttertoast.showToast(
         msg: 'onAudioHasHowling', gravity: ToastGravity.CENTER);
   }
+
+  @override
+  void onReceiveSEIMsg(int userID, String seiMsg) {}
+
+  @override
+  void onAudioRecording(int code, String filePath) {}
+
+  @override
+  void onMediaRelayReceiveEvent(int event, int code, String channelName) {}
+
+  @override
+  void onMediaRelayStatesChange(int state, String channelName) {}
+
+  @override
+  void onLocalPublishFallbackToAudioOnly(bool isFallback, int streamType) {}
+
+  @override
+  void onRemoteSubscribeFallbackToAudioOnly(
+      int uid, bool isFallback, int streamType) {}
 }
 
 class _UserSession {
-  int uid;
-  NERtcVideoRenderer renderer;
+  int? uid;
+  NERtcVideoRenderer? renderer;
   bool subStream = false;
 }

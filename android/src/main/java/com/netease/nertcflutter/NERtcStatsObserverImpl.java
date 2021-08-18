@@ -1,6 +1,7 @@
 /*
- * Copyright (c) 2014-2020 NetEase, Inc.
- * All right reserved.
+ * Copyright (c) 2021 NetEase, Inc.  All rights reserved.
+ * Use of this source code is governed by a MIT license that can be 
+ * found in the LICENSE file.
  */
 
 package com.netease.nertcflutter;
@@ -49,7 +50,9 @@ public class NERtcStatsObserverImpl implements NERtcStatsObserver {
             for (NERtcAudioRecvStats stat : stats) {
                 statList.add(toMap(stat));
             }
-            callback.invokeMethod("onRemoteAudioStats", statList);
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("list", statList);
+            callback.invokeMethod("onRemoteAudioStats", map);
         }
     }
 
@@ -66,7 +69,9 @@ public class NERtcStatsObserverImpl implements NERtcStatsObserver {
             for (NERtcVideoRecvStats stat : stats) {
                 statList.add(toMap(stat));
             }
-            callback.invokeMethod("onRemoteVideoStats", statList);
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("list", statList);
+            callback.invokeMethod("onRemoteVideoStats", map);
         }
     }
 
@@ -77,7 +82,9 @@ public class NERtcStatsObserverImpl implements NERtcStatsObserver {
             for (NERtcNetworkQualityInfo stat : stats) {
                 statList.add(toMap(stat));
             }
-            callback.invokeMethod("onNetworkQuality", statList);
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("list", statList);
+            callback.invokeMethod("onNetworkQuality", map);
         }
     }
 
@@ -153,15 +160,16 @@ public class NERtcStatsObserverImpl implements NERtcStatsObserver {
             for(NERtcVideoLayerSendStats stat : stats.videoLayers) {
                 HashMap<String, Object> mapLayer = new HashMap<>();
                 mapLayer.put("layerType", stat.layerType);
-                map.put("width", stat.width);
-                map.put("height", stat.height);
-                map.put("sendBitrate", stat.sendBitrate);
-                map.put("encoderOutputFrameRate", stat.encoderOutputFrameRate);
-                map.put("captureFrameRate", stat.captureFrameRate);
-                map.put("targetBitrate", stat.targetBitrate);
-                map.put("encoderBitrate", stat.encoderBitrate);
-                map.put("sentFrameRate", stat.sentFrameRate);
-                map.put("renderFrameRate", stat.renderFrameRate);
+                mapLayer.put("width", stat.width);
+                mapLayer.put("height", stat.height);
+                mapLayer.put("sendBitrate", stat.sendBitrate);
+                mapLayer.put("encoderOutputFrameRate", stat.encoderOutputFrameRate);
+                mapLayer.put("captureFrameRate", stat.captureFrameRate);
+                mapLayer.put("targetBitrate", stat.targetBitrate);
+                mapLayer.put("encoderBitrate", stat.encoderBitrate);
+                mapLayer.put("sentFrameRate", stat.sentFrameRate);
+                mapLayer.put("renderFrameRate", stat.renderFrameRate);
+                mapLayer.put("encoderName", stat.encoderName);
                 layers.add(mapLayer);
             }
         }
@@ -186,6 +194,7 @@ public class NERtcStatsObserverImpl implements NERtcStatsObserver {
                 mapLayer.put("rendererOutputFrameRate", stat.rendererOutputFrameRate);
                 mapLayer.put("totalFrozenTime", stat.totalFrozenTime);
                 mapLayer.put("frozenRate", stat.frozenRate);
+                mapLayer.put("decoderName", stat.decoderName);
                 layers.add(mapLayer);
             }
         }

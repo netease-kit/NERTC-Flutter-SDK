@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2021 NetEase, Inc.  All rights reserved.
+ * Use of this source code is governed by a MIT license that can be
+ * found in the LICENSE file.
+ */
+
 group 'com.netease.nertcflutter'
 version '1.0'
 
@@ -8,13 +14,14 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.3'
+        classpath 'com.android.tools.build:gradle:4.2.1'
     }
 }
 
 rootProject.allprojects {
     repositories {
         google()
+        mavenCentral()
         jcenter()
     }
 }
@@ -43,7 +50,7 @@ android {
 
         dependencies {
             implementation 'com.netease.yunxin:yxbase:1.0.0'
-            implementation 'com.netease.yunxin:nertc:3.9.0'
+            implementation 'com.netease.yunxin:nertc:4.4.0'
         }
     }
 }

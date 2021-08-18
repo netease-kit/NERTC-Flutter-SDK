@@ -1,6 +1,7 @@
 /*
- * Copyright (c) 2014-2020 NetEase, Inc.
- * All right reserved.
+ * Copyright (c) 2021 NetEase, Inc.  All rights reserved.
+ * Use of this source code is governed by a MIT license that can be 
+ * found in the LICENSE file.
  */
 
 package com.netease.nertcflutter;
@@ -8,8 +9,8 @@ package com.netease.nertcflutter;
 import android.graphics.Rect;
 
 import com.netease.lava.nertc.sdk.NERtcCallbackEx;
-import com.netease.lava.nertc.sdk.audio.NERtcAudioProcessObserver;
 import com.netease.lava.nertc.sdk.stats.NERtcAudioVolumeInfo;
+import com.netease.lava.nertc.sdk.video.NERtcVideoStreamType;
 import com.netease.nertcflutter.NERtcEngine.CallbackMethod;
 
 import java.util.ArrayList;
@@ -43,11 +44,12 @@ public class NERtcCallbackImpl implements NERtcCallbackEx{
     }
 
     @Override
-    public void onJoinChannel(int result, long channelId, long elapsed) {
+    public void onJoinChannel(int result, long channelId, long elapsed, long uid) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("result", result);
         map.put("channelId", channelId);
         map.put("elapsed", elapsed);
+        map.put("uid", uid);
         callback.invokeMethod("onJoinChannel", map);
     }
 
@@ -320,6 +322,22 @@ public class NERtcCallbackImpl implements NERtcCallbackEx{
     }
 
     @Override
+    public void onRecvSEIMsg(long userID, String seiMsg) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("userID", userID);
+        map.put("seiMsg", seiMsg);
+        callback.invokeMethod("onReceiveSEIMsg", map);
+    }
+
+    @Override
+    public void onAudioRecording(int code, String filePath) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("code", code);
+        map.put("filePath", filePath);
+        callback.invokeMethod("onAudioRecording", map);
+    }
+
+    @Override
     public void onError(int code) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("code", code);
@@ -331,6 +349,40 @@ public class NERtcCallbackImpl implements NERtcCallbackEx{
         HashMap<String, Object> map = new HashMap<>();
         map.put("code", code);
         callback.invokeMethod("onWarning", map);
+    }
+
+    @Override
+    public void onMediaRelayStatesChange(int state, String channelName) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("state", state);
+        map.put("channelName", channelName);
+        callback.invokeMethod("onMediaRelayStatesChange", map);
+    }
+
+    @Override
+    public void onMediaRelayReceiveEvent(int event, int code, String channelName) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("event", event);
+        map.put("code", code);
+        map.put("channelName", channelName);
+        callback.invokeMethod("onMediaRelayReceiveEvent", map);
+    }
+
+    @Override
+    public void onLocalPublishFallbackToAudioOnly(boolean isFallback, NERtcVideoStreamType streamType) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("isFallback", isFallback);
+        map.put("streamType", streamType);
+        callback.invokeMethod("onLocalPublishFallbackToAudioOnly", map);
+    }
+
+    @Override
+    public void onRemoteSubscribeFallbackToAudioOnly(long uid, boolean isFallback, NERtcVideoStreamType streamType) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("uid", uid);
+        map.put("isFallback", isFallback);
+        map.put("streamType", streamType);
+        callback.invokeMethod("onRemoteSubscribeFallbackToAudioOnly", map);
     }
 
     private HashMap<String, Object> toMap(NERtcAudioVolumeInfo info) {

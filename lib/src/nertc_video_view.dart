@@ -1,4 +1,6 @@
-// Copyright (c) 2019-2020 NetEase, Inc. All right reserved.
+// Copyright (c) 2021 NetEase, Inc.  All rights reserved.
+// Use of this source code is governed by a MIT license that can be
+// found in the LICENSE file.
 
 part of nertc;
 
@@ -9,7 +11,7 @@ class NERtcVideoView extends StatelessWidget {
   final Color backgroundColor;
 
   NERtcVideoView(this._renderer,
-      {Key key,
+      {Key? key,
       this.fitType = NERtcVideoViewFitType.contain,
       this.backgroundColor = const Color(0xFF292933)})
       : super(key: key);
@@ -35,14 +37,12 @@ class NERtcVideoView extends StatelessWidget {
             child: ValueListenableBuilder<_NERtcVideoValue>(
           valueListenable: _renderer,
           builder:
-              (BuildContext context, _NERtcVideoValue value, Widget child) {
+              (BuildContext context, _NERtcVideoValue value, Widget? child) {
             return SizedBox(
                 height: constraints.maxHeight,
                 width: constraints.maxHeight * value.aspectRatio,
-                child: _renderer != null &&
-                        _renderer.canRender &&
-                        _renderer.textureId != null
-                    ? Texture(textureId: _renderer.textureId)
+                child: _renderer.canRender && _renderer.textureId != null
+                    ? Texture(textureId: _renderer.textureId!)
                     : Container(
                         color: backgroundColor,
                       ));

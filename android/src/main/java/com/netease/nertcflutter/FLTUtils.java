@@ -1,13 +1,24 @@
+/*
+ * Copyright (c) 2021 NetEase, Inc.  All rights reserved.
+ * Use of this source code is governed by a MIT license that can be 
+ * found in the LICENSE file.
+ */
+
 package com.netease.nertcflutter;
 
 import com.netease.lava.nertc.sdk.NERtcConstants;
+import com.netease.lava.nertc.sdk.NERtcMediaRelayParam;
+import com.netease.lava.nertc.sdk.encryption.NERtcEncryptionConfig;
 import com.netease.lava.nertc.sdk.live.NERtcLiveStreamTaskInfo.NERtcLiveStreamMode;
 import com.netease.lava.nertc.sdk.live.NERtcLiveStreamUserTranscoding.NERtcLiveStreamVideoScaleMode;
 import com.netease.lava.nertc.sdk.video.NERtcEncodeConfig.NERtcVideoFrameRate;
 import com.netease.lava.nertc.sdk.video.NERtcRemoteVideoStreamType;
-import com.netease.lava.nertc.sdk.video.NERtcScreenConfig;
 import com.netease.lava.nertc.sdk.video.NERtcScreenConfig.NERtcSubStreamContentPrefer;
+import com.netease.lava.nertc.sdk.video.NERtcVideoConfig;
 import com.netease.lava.nertc.sdk.video.NERtcVideoConfig.NERtcDegradationPreference;
+import com.netease.lava.nertc.sdk.video.NERtcVideoStreamType;
+
+import java.util.Map;
 
 import static com.netease.lava.nertc.sdk.NERtcConstants.MediaCodecMode.MEDIA_CODEC_HARDWARE;
 import static com.netease.lava.nertc.sdk.NERtcConstants.MediaCodecMode.MEDIA_CODEC_SOFTWARE;
@@ -16,7 +27,7 @@ public class FLTUtils {
 
     static NERtcLiveStreamMode int2LiveStreamMode(int intValue) {
         for (NERtcLiveStreamMode value : NERtcLiveStreamMode.values()) {
-            if(intValue == value.ordinal()) {
+            if (intValue == value.ordinal()) {
                 return value;
             }
         }
@@ -26,7 +37,7 @@ public class FLTUtils {
 
     static NERtcLiveStreamVideoScaleMode int2LiveStreamVideoScaleMode(int intValue) {
         for (NERtcLiveStreamVideoScaleMode value : NERtcLiveStreamVideoScaleMode.values()) {
-            if(intValue == value.ordinal()) {
+            if (intValue == value.ordinal()) {
                 return value;
             }
         }
@@ -39,7 +50,7 @@ public class FLTUtils {
 
     static NERtcDegradationPreference int2DegradationPreference(int intValue) {
         for (NERtcDegradationPreference value : NERtcDegradationPreference.values()) {
-            if(intValue == value.ordinal()) {
+            if (intValue == value.ordinal()) {
                 return value;
             }
         }
@@ -63,7 +74,7 @@ public class FLTUtils {
 
     static NERtcRemoteVideoStreamType int2RemoteVideoStreamType(int intValue) {
         for (NERtcRemoteVideoStreamType value : NERtcRemoteVideoStreamType.values()) {
-            if(intValue == value.ordinal()) {
+            if (intValue == value.ordinal()) {
                 return value;
             }
         }
@@ -87,6 +98,69 @@ public class FLTUtils {
             case 0:
             default:
                 return NERtcSubStreamContentPrefer.CONTENT_PREFER_MOTION;
+        }
+    }
+
+
+    static NERtcVideoStreamType int2VideoStreamType(int intValue) {
+        switch (intValue) {
+            case 1:
+                return NERtcVideoStreamType.kNERtcVideoStreamTypeSub;
+            case 0:
+            default:
+                return NERtcVideoStreamType.kNERtcVideoStreamTypeMain;
+        }
+    }
+
+
+    static NERtcMediaRelayParam.ChannelMediaRelayInfo fromMap(Map<Object, Object> map) {
+        if(map == null || map.isEmpty()) return null;
+        String channelName = null;
+        if(map.containsKey("channelName")) {
+            channelName = (String) map.get("channelName");
+        }
+        long channelUid = 0;
+        if(map.containsKey("channelUid")) {
+            channelUid = ((Number) map.get("channelUid")).longValue();
+        }
+        String channelToken = null;
+        if(map.containsKey("channelToken")) {
+            channelToken = (String) map.get("channelToken");
+        }
+        return new NERtcMediaRelayParam().new ChannelMediaRelayInfo(channelToken, channelName, channelUid);
+    }
+
+
+    static NERtcVideoConfig.NERtcVideoOutputOrientationMode int2VideoOutputOrientationMode(int intValue) {
+        switch (intValue) {
+            case 1:
+                return NERtcVideoConfig.NERtcVideoOutputOrientationMode.VIDEO_OUTPUT_ORIENTATION_MODE_FIXED_LANDSCAPE;
+            case 2:
+                return NERtcVideoConfig.NERtcVideoOutputOrientationMode.VIDEO_OUTPUT_ORIENTATION_MODE_FIXED_PORTRAIT;
+            case 0:
+            default:
+                return NERtcVideoConfig.NERtcVideoOutputOrientationMode.VIDEO_OUTPUT_ORIENTATION_MODE_ADAPTATIVE;
+        }
+    }
+
+    static NERtcVideoConfig.NERtcVideoMirrorMode int2VideoMirrorMode(int intValue) {
+        switch (intValue) {
+            case 1:
+                return NERtcVideoConfig.NERtcVideoMirrorMode.VIDEO_MIRROR_MODE_ENABLED;
+            case 2:
+                return NERtcVideoConfig.NERtcVideoMirrorMode.VIDEO_MIRROR_MODE_DISABLED;
+            case 0:
+            default:
+                return NERtcVideoConfig.NERtcVideoMirrorMode.VIDEO_MIRROR_MODE_AUTO;
+        }
+    }
+
+
+    static NERtcEncryptionConfig.EncryptionMode int2EncryptionMode(int intValue) {
+        switch (intValue) {
+            case 0:
+            default:
+                return NERtcEncryptionConfig.EncryptionMode.GMCryptoSM4ECB;
         }
     }
 

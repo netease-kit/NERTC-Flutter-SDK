@@ -1,3 +1,7 @@
+// Copyright (c) 2021 NetEase, Inc.  All rights reserved.
+// Use of this source code is governed by a MIT license that can be
+// found in the LICENSE file.
+
 import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
@@ -112,9 +116,7 @@ class _MainPageState extends State<MainPage> {
                 ButtonTheme(
                   minWidth: 200.0,
                   height: 55.0,
-                  child: RaisedButton(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5.0)),
+                  child: ElevatedButton(
                       onPressed: () {
                         _channelFocusNode.unfocus();
                         _uidFocusNode.unfocus();
@@ -178,19 +180,19 @@ class _MainPageState extends State<MainPage> {
       }
 
       if (showRationale.isNotEmpty) {
-        ConfirmAction action = await showDialog<ConfirmAction>(
+        ConfirmAction? action = await showDialog<ConfirmAction>(
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
                 content: const Text('You need to allow some permissions'),
                 actions: <Widget>[
-                  FlatButton(
+                  TextButton(
                     child: const Text('Cancel'),
                     onPressed: () {
                       Navigator.of(context).pop(ConfirmAction.CANCEL);
                     },
                   ),
-                  FlatButton(
+                  TextButton(
                     child: const Text('Accept'),
                     onPressed: () {
                       Navigator.of(context).pop(ConfirmAction.ACCEPT);

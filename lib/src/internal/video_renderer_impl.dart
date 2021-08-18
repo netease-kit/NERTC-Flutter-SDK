@@ -1,16 +1,18 @@
-// Copyright (c) 2019-2020 NetEase, Inc. All right reserved.
+// Copyright (c) 2021 NetEase, Inc.  All rights reserved.
+// Use of this source code is governed by a MIT license that can be
+// found in the LICENSE file.
 
 part of nertc;
 
 class _NERtcVideoRendererImpl extends NERtcVideoRenderer {
-  _NERtcVideoRendererImpl({NERtcVideoRendererEventListener listener})
+  _NERtcVideoRendererImpl({NERtcVideoRendererEventListener? listener})
       : super(rendererEventLister: listener);
 
   VideoRendererApi _api = VideoRendererApi();
 
-  int _textureId;
+  int? _textureId;
   bool _mirror = false;
-  StreamSubscription<dynamic> _rendererEventSubscription;
+  StreamSubscription<dynamic>? _rendererEventSubscription;
 
   bool _local = false;
   int _uid = -1;
@@ -47,7 +49,7 @@ class _NERtcVideoRendererImpl extends NERtcVideoRenderer {
   bool get canRender =>
       value.width * value.height != 0 && (_uid != -1 || _local);
 
-  int get textureId => _textureId;
+  int? get textureId => _textureId;
 
   @override
   Future<int> attachToRemoteVideo(int uid) {
@@ -82,7 +84,7 @@ class _NERtcVideoRendererImpl extends NERtcVideoRenderer {
   }
 
   Future<int> _setSource(
-      bool local, bool subStream, int uid, int textureId) async {
+      bool local, bool subStream, int uid, int? textureId) async {
     if (textureId == null) return -1;
     if (local) {
       IntValue reply = _subStream
@@ -96,7 +98,7 @@ class _NERtcVideoRendererImpl extends NERtcVideoRenderer {
             ..mirror = _mirror);
         }
       }
-      return reply.value;
+      return reply.value ?? -1;
     } else {
       IntValue reply = _subStream
           ? await _api.setupRemoteSubStreamVideoRenderer(
@@ -107,7 +109,7 @@ class _NERtcVideoRendererImpl extends NERtcVideoRenderer {
               .setupRemoteVideoRenderer(SetupRemoteVideoRendererRequest()
                 ..textureId = textureId
                 ..uid = uid);
-      return reply.value;
+      return reply.value ?? -1;
     }
   }
 
@@ -118,7 +120,7 @@ class _NERtcVideoRendererImpl extends NERtcVideoRenderer {
       ..textureId = textureId
       ..mirror = mirror);
     if (reply.value == 0) _mirror = mirror;
-    return reply.value;
+    return reply.value ?? -1;
   }
 
   @override

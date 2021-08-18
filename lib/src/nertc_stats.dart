@@ -1,97 +1,99 @@
-// Copyright (c) 2019-2020 NetEase, Inc. All right reserved.
+// Copyright (c) 2021 NetEase, Inc.  All rights reserved.
+// Use of this source code is governed by a MIT license that can be
+// found in the LICENSE file.
 
 part of nertc;
 
 /// 通话相关的统计信息
 class NERtcStats {
   /// 发送字节数（Byte），累计值
-  int txBytes;
+  int? txBytes;
 
   /// 接收字节数（Byte），累计值
-  int rxBytes;
+  int? rxBytes;
 
   /// 当前 App 的 CPU 使用率 (%)
   ///  <p>Android 8.0及后续版本无法获取<p/>
-  int cpuAppUsage;
+  int? cpuAppUsage;
 
   /// 当前系统的 CPU 使用率 (%)
   /// <p>Android 8.0及后续版本无法获取<p/>
-  int cpuTotalUsage;
+  int? cpuTotalUsage;
 
   /// 当前 App 的内存占比 (%) , 占最大可用内存
-  int memoryAppUsageRatio;
+  int? memoryAppUsageRatio;
 
   /// 当前系统的内存占比 (%)
-  int memoryTotalUsageRatio;
+  int? memoryTotalUsageRatio;
 
   /// 当前 App 的内存大小 (KB)
-  int memoryAppUsageInKBytes;
+  int? memoryAppUsageInKBytes;
 
   /// 自加入频道的通话时长， 退出后再加入重新计时 ( 单位：S)
-  int totalDuration;
+  int? totalDuration;
 
   /// 自加入频道后累计的发送的音频字节数（Byte）
-  int txAudioBytes;
+  int? txAudioBytes;
 
   /// 自加入频道后累计的发送的视频字节数（Byte）
-  int txVideoBytes;
+  int? txVideoBytes;
 
   /// 自加入频道后累计的接收的音频字节数（Byte）
-  int rxAudioBytes;
+  int? rxAudioBytes;
 
   /// 自加入频道后累计的接收的视频字节数（Byte）
-  int rxVideoBytes;
+  int? rxVideoBytes;
 
   /// 音频接收码率（kbps）
-  int rxAudioKBitRate;
+  int? rxAudioKBitRate;
 
   /// 视频接收码率（kbps）
-  int rxVideoKBitRate;
+  int? rxVideoKBitRate;
 
   /// 音频发送码率（kbps）
-  int txAudioKBitRate;
+  int? txAudioKBitRate;
 
   /// 视频发送码率（kbps）
-  int txVideoKBitRate;
+  int? txVideoKBitRate;
 
   /// 上行平均往返时延(ms)
-  int upRtt;
+  int? upRtt;
 
   /// 本地上行音频丢包率(%)
-  int txAudioPacketLossRate;
+  int? txAudioPacketLossRate;
 
   /// 本地上行视频实际丢包率(%)
-  int txVideoPacketLossRate;
+  int? txVideoPacketLossRate;
 
   /// 本地上行音频丢包数
-  int txAudioPacketLossSum;
+  int? txAudioPacketLossSum;
 
   /// 本地上行视频丢包数
-  int txVideoPacketLossSum;
+  int? txVideoPacketLossSum;
 
   /// 本地上行音频抖动 (ms)
-  int txAudioJitter;
+  int? txAudioJitter;
 
   /// 本地上行视频抖动 (ms)
-  int txVideoJitter;
+  int? txVideoJitter;
 
   /// 本地下行音频丢包率(%)
-  int rxAudioPacketLossRate;
+  int? rxAudioPacketLossRate;
 
   /// 本地下行视频丢包率(%)
-  int rxVideoPacketLossRate;
+  int? rxVideoPacketLossRate;
 
   /// 本地下行音频丢包数
-  int rxAudioPacketLossSum;
+  int? rxAudioPacketLossSum;
 
   /// 本地下行视频丢包数
-  int rxVideoPacketLossSum;
+  int? rxVideoPacketLossSum;
 
   /// 本地下行音频抖动 (ms)
-  int rxAudioJitter;
+  int? rxAudioJitter;
 
   /// 本地下行视频抖动 (ms)
-  int rxVideoJitter;
+  int? rxVideoJitter;
 
   NERtcStats.fromMap(Map stats)
       : txBytes = stats['txBytes'],
@@ -152,22 +154,22 @@ class NERtcStats {
 /// 远端用户的音频统计
 class NERtcAudioRecvStats {
   /// 用户 ID，指定是哪个用户的音频流
-  int uid;
+  int? uid;
 
   /// 接收到的码率 (kbps)
-  int kbps;
+  int? kbps;
 
   /// 丢包率
-  int lossRate;
+  int? lossRate;
 
   /// 音量[0-100]
-  int volume;
+  int? volume;
 
   /// 音频卡顿累计时长，从收到远端用户音频算起
-  int totalFrozenTime;
+  int? totalFrozenTime;
 
   /// 平均音频卡顿率
-  int frozenRate;
+  int? frozenRate;
 
   NERtcAudioRecvStats.fromMap(Map stats)
       : uid = stats['uid'],
@@ -187,22 +189,22 @@ class NERtcAudioRecvStats {
 /// 本地音频流上传统计信息
 class NERtcAudioSendStats {
   /// 发送码率
-  int kbps;
+  int? kbps;
 
   /// 特定时间内的音频丢包率
-  int lossRate;
+  int? lossRate;
 
   /// 环路延迟
-  int rtt;
+  int? rtt;
 
   /// 音量[0-100]
-  int volume;
+  int? volume;
 
   /// 本地音频采集声道数
-  int numChannels;
+  int? numChannels;
 
   /// 本地音频采样率（Hz）
-  int sentSampleRate;
+  int? sentSampleRate;
 
   NERtcAudioSendStats.fromMap(Map stats)
       : kbps = stats['kbps'],
@@ -225,34 +227,37 @@ class NERtcAudioSendStats {
 class NERtcVideoLayerRecvStats {
 
   /// 流的类型. [NERtcVideoStreamType]
-  int layerType;
+  int? layerType;
 
   /// 视频流宽
-  int width;
+  int? width;
 
   /// 视频流高
-  int height;
+  int? height;
 
   /// 接收到的码率
-  int receivedBitrate;
+  int? receivedBitrate;
 
   /// 接收到的帧率
-  int fps;
+  int? fps;
 
   /// 接收视频的丢包率
-  int packetLossRate;
+  int? packetLossRate;
 
   /// 解码器输出帧率
-  int decoderOutputFrameRate;
+  int? decoderOutputFrameRate;
 
   /// 渲染帧率
-  int rendererOutputFrameRate;
+  int? rendererOutputFrameRate;
 
   /// 接收视频卡顿累计时长（ms）， 从收到对应用户的视频算起
-  int totalFrozenTime;
+  int? totalFrozenTime;
 
   /// 接收视频的平均卡顿率
-  int frozenRate;
+  int? frozenRate;
+
+  /// 解码器名字
+  String? decoderName;
 
   NERtcVideoLayerRecvStats.fromMap(Map stats)
       : layerType = stats['layerType'],
@@ -264,7 +269,8 @@ class NERtcVideoLayerRecvStats {
         decoderOutputFrameRate = stats['decoderOutputFrameRate'],
         rendererOutputFrameRate = stats['rendererOutputFrameRate'],
         totalFrozenTime = stats['totalFrozenTime'],
-        frozenRate = stats['frozenRate'];
+        frozenRate = stats['frozenRate'],
+        decoderName = stats['decoderName'];
 
   @override
   String toString() {
@@ -274,17 +280,17 @@ class NERtcVideoLayerRecvStats {
         'fps: $fps, packetLossRate: $packetLossRate, '
         'decoderOutputFrameRate: $decoderOutputFrameRate, '
         'rendererOutputFrameRate: $rendererOutputFrameRate, '
-        'totalFrozenTime: $totalFrozenTime, frozenRate: $frozenRate}';
+        'totalFrozenTime: $totalFrozenTime, frozenRate: $frozenRate, decoderName: $decoderName}';
   }
 }
 
 /// 远端视频流的统计信息
 class NERtcVideoRecvStats {
   /// 用户 ID，指定是哪个用户的视频流
-  int uid;
+  int? uid;
 
   /// 当前uid 每条流的接收下行统计信息
-  List<NERtcVideoLayerRecvStats> layers = List();
+  List<NERtcVideoLayerRecvStats> layers = <NERtcVideoLayerRecvStats>[];
 
   NERtcVideoRecvStats.fromMap(Map stats) {
     uid = stats['uid'];
@@ -304,34 +310,37 @@ class NERtcVideoRecvStats {
 /// 本地视频单条流统计信息
 class NERtcVideoLayerSendStats {
   /// 流的类型. [NERtcVideoStreamType]
-  int layerType;
+  int? layerType;
 
   /// 视频流宽
-  int width;
+  int? width;
 
   /// 视频流高
-  int height;
+  int? height;
 
   /// 发送码率(kbps)
-  int sendBitrate;
+  int? sendBitrate;
 
   /// 编码输出帧率
-  int encoderOutputFrameRate;
+  int? encoderOutputFrameRate;
 
   /// 视频采集帧率
-  int captureFrameRate;
+  int? captureFrameRate;
 
   /// 编码器的目标码率(kbps)
-  int targetBitrate;
+  int? targetBitrate;
 
   /// 编码器的实际编码码率(kbps)
-  int encoderBitrate;
+  int? encoderBitrate;
 
   /// 视频发送帧率
-  int sentFrameRate;
+  int? sentFrameRate;
 
   /// 视频渲染帧率
-  int renderFrameRate;
+  int? renderFrameRate;
+
+  /// 编码器名字
+  String? encoderName;
 
   NERtcVideoLayerSendStats.fromMap(Map stats)
       : layerType = stats['layerType'],
@@ -343,7 +352,8 @@ class NERtcVideoLayerSendStats {
         targetBitrate = stats['targetBitrate'],
         encoderBitrate = stats['encoderBitrate'],
         sentFrameRate = stats['sentFrameRate'],
-        renderFrameRate = stats['renderFrameRate'];
+        renderFrameRate = stats['renderFrameRate'],
+        encoderName = stats['encoderName'];
 
   @override
   String toString() {
@@ -351,14 +361,14 @@ class NERtcVideoLayerSendStats {
         'width: $width, height: $height, sendBitrate: $sendBitrate, '
         'encoderOutputFrameRate: $encoderOutputFrameRate, '
         'captureFrameRate: $captureFrameRate, targetBitrate: $targetBitrate, '
-        'sentFrameRate: $sentFrameRate}';
+        'sentFrameRate: $sentFrameRate, encoderName: $encoderName}';
   }
 }
 
 /// 本地视频流上传统计信息
 class NERtcVideoSendStats {
   /// 具体每条流的上行统计信息
-  List<NERtcVideoLayerSendStats> layers =  List();
+  List<NERtcVideoLayerSendStats> layers =  <NERtcVideoLayerSendStats>[];
 
   NERtcVideoSendStats.fromMap(Map stats) {
     List mapLayers = stats['layers'];
@@ -376,10 +386,10 @@ class NERtcVideoSendStats {
 /// 语音音量
 class NERtcAudioVolumeInfo {
   /// 用户 ID
-  int uid;
+  int? uid;
 
   /// 音量[0-100]
-  int volume;
+  int? volume;
 
   NERtcAudioVolumeInfo.fromMap(Map stats)
       : uid = stats['uid'],
@@ -394,13 +404,13 @@ class NERtcAudioVolumeInfo {
 /// 用户的网络质量
 class NERtcNetworkQualityInfo {
   /// 用户 ID
-  int uid;
+  int? uid;
 
   /// 上行网络质量 [NERTcNetworkStatus]
-  int txQuality;
+  int? txQuality;
 
   /// 下行网络质量 [NERTcNetworkStatus]
-  int rxQuality;
+  int? rxQuality;
 
   NERtcNetworkQualityInfo.fromMap(Map stats)
       : uid = stats['uid'],

@@ -1,11 +1,11 @@
 name: nertc
 description: A Flutter plugin for NetEase RTC SDK on Android and iOS.
-version: 3.9.0
+version: 4.4.0-rc.1
 homepage: https://github.com/netease-im/NERTC-Flutter-SDK
 
 environment:
-  sdk: ">=2.8.0 <3.0.0"
-  flutter: ">=1.17.0 <2.0.0"
+  sdk: '>=2.12.0 <3.0.0'
+  flutter: ">=1.22.0"
 
 dependencies:
   flutter:
@@ -16,7 +16,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  pigeon: ^0.1.17
+  pigeon: ^0.2.3
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -1,3 +1,7 @@
+// Copyright (c) 2021 NetEase, Inc.  All rights reserved.
+// Use of this source code is governed by a MIT license that can be
+// found in the LICENSE file.
+
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -9,7 +13,7 @@ class Settings {
   static final defaultFileUrl =
       'http://music.163.com/song/media/outer/url?id=30431364.mp3';
   static final Settings _instance = Settings._();
-  SharedPreferences _prefs;
+  SharedPreferences? _prefs;
 
   Settings._();
 
@@ -53,7 +57,7 @@ class Settings {
   set videoFrameRate(int value) => _prefs?.setInt("videoFrameRate", value);
 
   int get screenProfile =>
-      _prefs?.getInt('screenProfile') ?? NERtcScreenProfile.hd1080p;
+      _prefs?.getInt('screenProfile') ?? NERtcVideoProfile.hd1080p;
   set screenProfile(int value) => _prefs?.setInt("screenProfile", value);
 
   int get screenContentPrefer =>
@@ -185,7 +189,7 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  Settings settings;
+  late Settings settings;
 
   bool _frontFacingCamera = true;
   bool _frontFacingCameraMirror = true;
@@ -194,7 +198,7 @@ class _SettingsPageState extends State<SettingsPage> {
   int _videoProfile = NERtcVideoProfile.hd720p;
   int _degradationPreference = NERtcDegradationPreference.degradationDefault;
   int _videoFrameRate = NERtcVideoFrameRate.fps_30;
-  int _screenProfile = NERtcScreenProfile.hd1080p;
+  int _screenProfile = NERtcVideoProfile.hd1080p;
   int _screenContentPrefer = NERtcSubStreamContentPrefer.motion;
   int _remoteVideoStreamType = NERtcRemoteVideoStreamType.high;
   int _videoViewFitType = NERtcVideoViewFitType.contain.index;
@@ -212,14 +216,12 @@ class _SettingsPageState extends State<SettingsPage> {
   bool _serverRecordVideo = false;
   int _serverRecordMode = NERtcServerRecordMode.mixAndSingle.index;
   String _audioMixingFileUrl = Settings.defaultFileUrl;
-  String _audioMixingFilePath = '';
+  String? _audioMixingFilePath = '';
   bool _audioMixingSendEnabled = true;
   bool _audioMixingPlayEnabled = true;
-  int _audioMixingLoopCount = 1;
-  String _audioEffectFilePath = '';
+  String? _audioEffectFilePath = '';
   bool _audioEffectSendEnabled = true;
   bool _audioEffectPlayEnabled = true;
-  int _audioEffectLoopCount = 1;
   bool _autoEnableAudio = true;
   bool _autoEnableVideo = true;
   bool _autoSubscribeAudio = true;
@@ -257,11 +259,9 @@ class _SettingsPageState extends State<SettingsPage> {
       _audioMixingFilePath = settings.audioMixingFilePath;
       _audioMixingSendEnabled = settings.audioMixingSendEnabled;
       _audioMixingPlayEnabled = settings.audioMixingPlayEnabled;
-      _audioMixingLoopCount = settings.audioMixingLoopCount;
       _audioEffectFilePath = settings.audioEffectFilePath;
       _audioEffectSendEnabled = settings.audioEffectSendEnabled;
       _audioEffectPlayEnabled = settings.audioEffectPlayEnabled;
-      _audioEffectLoopCount = settings.audioEffectLoopCount;
       _autoEnableAudio = settings.autoEnableAudio;
       _autoEnableVideo = settings.autoEnableVideo;
       _autoSubscribeAudio = settings.autoSubscribeAudio;
@@ -379,7 +379,7 @@ class _SettingsPageState extends State<SettingsPage> {
           children: [
             ListTile(
               title: const Text('文件路径'),
-              subtitle: Text(_audioEffectFilePath),
+              subtitle: Text(_audioEffectFilePath!),
               onTap: () {
                 _selectAudioEffectFilePath();
               },
@@ -453,7 +453,7 @@ class _SettingsPageState extends State<SettingsPage> {
             if (Platform.isAndroid)
               ListTile(
                 title: const Text('文件路径'),
-                subtitle: Text(_audioMixingFilePath),
+                subtitle: Text(_audioMixingFilePath!),
                 onTap: () {
                   _selectAudioMixFilePath();
                 },
@@ -755,7 +755,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _selectServerRecordMode() async {
-    int mode = await showDialog(
+    int? mode = await showDialog(
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
@@ -792,7 +792,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _selectAudioScenario() async {
-    int scenario = await showDialog(
+    int? scenario = await showDialog(
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
@@ -831,7 +831,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _selectAudioProfile() async {
-    int profile = await showDialog(
+    int? profile = await showDialog(
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
@@ -898,7 +898,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _selectVideoCropMode() async {
-    int mode = await showDialog(
+    int? mode = await showDialog(
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
@@ -940,7 +940,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _selectVideoDecodeMediaCodecMode() async {
-    int mode = await showDialog(
+    int? mode = await showDialog(
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
@@ -970,7 +970,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _selectVideoEncodeMediaCodecMode() async {
-    int mode = await showDialog(
+    int? mode = await showDialog(
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
@@ -1000,7 +1000,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _selectVideoViewFitType() async {
-    int videoViewFitType = await showDialog(
+    int? videoViewFitType = await showDialog(
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
@@ -1030,7 +1030,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _selectRemoteVideoStreamType() async {
-    int remoteVideoStreamType = await showDialog(
+    int? remoteVideoStreamType = await showDialog(
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
@@ -1060,7 +1060,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _selectSubStreamContentPrefer() async {
-    int contentPrefer = await showDialog(
+    int? contentPrefer = await showDialog(
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
@@ -1090,7 +1090,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _selectScreenProfile() async {
-    int screenProfile = await showDialog(
+    int? screenProfile = await showDialog(
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
@@ -1098,19 +1098,19 @@ class _SettingsPageState extends State<SettingsPage> {
             children: <Widget>[
               SimpleDialogOption(
                 onPressed: () {
-                  Navigator.pop(context, NERtcScreenProfile.hd480p);
+                  Navigator.pop(context, NERtcVideoProfile.standard);
                 },
                 child: const Text('480p'),
               ),
               SimpleDialogOption(
                 onPressed: () {
-                  Navigator.pop(context, NERtcScreenProfile.hd720p);
+                  Navigator.pop(context, NERtcVideoProfile.hd720p);
                 },
                 child: const Text('720p'),
               ),
               SimpleDialogOption(
                 onPressed: () {
-                  Navigator.pop(context, NERtcScreenProfile.hd1080p);
+                  Navigator.pop(context, NERtcVideoProfile.hd1080p);
                 },
                 child: const Text('1080p'),
               ),
@@ -1126,7 +1126,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _selectVideoFrameRate() async {
-    int videoFrameRate = await showDialog(
+    int? videoFrameRate = await showDialog(
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
@@ -1174,7 +1174,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _selectDegradationPreference() async {
-    int degradationPreference = await showDialog(
+    int? degradationPreference = await showDialog(
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
@@ -1220,7 +1220,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _selectVideoProfile() async {
-    int profile = await showDialog(
+    int? profile = await showDialog(
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
@@ -1262,7 +1262,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _selectVideoSendMode() async {
-    NERtcVideoSendMode mode = await showDialog<NERtcVideoSendMode>(
+    NERtcVideoSendMode? mode = await showDialog<NERtcVideoSendMode>(
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
@@ -1366,11 +1366,11 @@ class _SettingsPageState extends State<SettingsPage> {
 
   String _screenProfileToString(int profile) {
     switch (profile) {
-      case NERtcScreenProfile.hd480p:
+      case NERtcVideoProfile.standard:
         return '480p';
-      case NERtcScreenProfile.hd720p:
+      case NERtcVideoProfile.hd720p:
         return '720p';
-      case NERtcScreenProfile.hd1080p:
+      case NERtcVideoProfile.hd1080p:
         return '1080p';
       default:
         return '1080p';
@@ -1481,8 +1481,8 @@ class _SettingsPageState extends State<SettingsPage> {
   void _selectAudioMixFilePath() {
     FilePicker.platform.pickFiles(type: FileType.audio).then((value) => {
           setState(() {
-            _audioMixingFilePath = value.paths.first;
-            settings.audioMixingFilePath = _audioMixingFilePath;
+            _audioMixingFilePath = value!.paths.first;
+            settings.audioMixingFilePath = _audioMixingFilePath!;
           })
         });
   }
@@ -1490,8 +1490,8 @@ class _SettingsPageState extends State<SettingsPage> {
   void _selectAudioEffectFilePath() {
     FilePicker.platform.pickFiles(type: FileType.audio).then((value) => {
           setState(() {
-            _audioEffectFilePath = value.paths.first;
-            settings.audioEffectFilePath = _audioEffectFilePath;
+            _audioEffectFilePath = value!.paths.first;
+            settings.audioEffectFilePath = _audioEffectFilePath!;
           })
         });
   }

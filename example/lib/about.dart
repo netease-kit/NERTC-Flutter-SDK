@@ -1,3 +1,7 @@
+// Copyright (c) 2021 NetEase, Inc.  All rights reserved.
+// Use of this source code is governed by a MIT license that can be
+// found in the LICENSE file.
+
 import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
 
@@ -10,6 +14,8 @@ class AboutPage extends StatefulWidget {
 
 class _AboutPageState extends State<AboutPage> {
   PackageInfo _packageInfo = PackageInfo(
+    packageName: 'Unknown',
+    appName: 'Unknown',
     version: 'Unknown',
     buildNumber: 'Unknown',
   );

@@ -1,4 +1,6 @@
-// Copyright (c) 2019-2020 NetEase, Inc. All right reserved.
+// Copyright (c) 2021 NetEase, Inc.  All rights reserved.
+// Use of this source code is governed by a MIT license that can be
+// found in the LICENSE file.
 
 part of nertc;
 
@@ -9,7 +11,8 @@ abstract class NERtcChannelEventCallback {
   /// [result] 参考 [ErrorCode]
   /// [channelId] 分配的Channel ID
   /// [elapsed] 加入房间总耗时(毫秒)
-  void onJoinChannel(int result, int channelId, int elapsed);
+  /// [uid] 用户 ID。 如果在 [NERtcEngine.joinChannel] 方法中指定了 uid，此处会返回指定的 ID; 如果未指定 uid，此处将返回云信服务器自动分配的 ID。
+  void onJoinChannel(int result, int channelId, int elapsed, int uid);
 
   /// 退出房间回调
   ///
@@ -172,6 +175,57 @@ abstract class NERtcChannelEventCallback {
   ///  上层用户接收到回调信息，代表有啸叫产生，用户可提示用户mute麦克风或者是直接操作mute麦克风
   ///  啸叫检测用于VoIP场景，音乐场景不支持啸叫检测
   void onAudioHasHowling();
+
+  /// 收到sei 信息
+  ///
+  /// [uid] 远端用户ID.
+  /// [seiMsg] SEI 信息
+  void onReceiveSEIMsg(int userID, String seiMsg);
+
+  /// 音频录制状态回调
+  /// [code] 音频录制状态码。详细信息请参考 [NERtcAudioRecordingCode]
+  /// [filePath] 音频录制文件保存路径
+  void onAudioRecording(int code, String filePath);
+
+  /// 跨房间媒体流转发状态发生改变回调
+  ///
+  /// [state] 当前跨房间媒体流转发状态。详细信息请参考 [NERtcChannelMediaRelayState]
+  /// [channelName] 媒体流转发的目标房间名
+  void onMediaRelayStatesChange(int state, String channelName);
+
+  /// 媒体流相关转发事件回调
+  ///
+  /// [event] 当前媒体流转发事件。详细信息请参考[NERtcChannelMediaRelayEvent]
+  /// [code] 相关错误码。详细信息请参考 [NERtcErrorCode]
+  /// [channelName] 媒体流转发的目标房间名
+  void onMediaRelayReceiveEvent(int event, int code, String channelName);
+
+  /// 本地发布流已回退为音频流、或已恢复为音视频流回调。
+  ///
+  /// 如果您调用了设置本地推流回退选项 [NERtcEngine.setLocalPublishFallbackOption] 接口，
+  /// 并将参数设置为 [NERtcStreamFallbackOptions.audioOnly] 后，当上行网络环境不理想、本地发布的媒体流回退为音频流时，
+  /// 或当上行网络改善、媒体流恢复为音视频流时，会触发该回调。
+  ///
+  ///
+  /// [isFallback] 本地发布流已回退或已恢复:
+  /// - `true`： 由于网络环境不理想，发布的媒体流已回退为音频流。
+  /// - `false`：由于网络环境改善，从音频流恢复为音视频流。
+  ///
+  /// [streamType] 对应的视频流类型，即主流或辅流。详细信息请参考 [NERtcVideoStreamType]
+  void onLocalPublishFallbackToAudioOnly(bool isFallback, int streamType);
+
+  /// 订阅的远端流已回退为音频流、或已恢复为音视频流回调。
+  /// 如果你调用了设置远端订阅流回退选项 [NERtcEngine.setRemoteSubscribeFallbackOption] 接口,
+  /// 并将参数设置 [NERtcStreamFallbackOptions.audioOnly] 后，当下行网络环境不理想、仅接收远端音频流时，
+  /// 或当下行网络改善、恢复订阅音视频流时，会触发该回调。
+  ///
+  /// [isFallback] 远端订阅流已回退或恢复：
+  /// - `true`： 由于网络环境不理想，订阅的远端流已回退为音频流。
+  /// - `false`：由于网络环境改善，订阅的远端流从音频流恢复为音视频流。
+  ///
+  /// [uid] 为远端用户ID，[streamType] 对应的视频流类型，即主流或辅流。详细信息请参考 [NERtcVideoStreamType]
+  void onRemoteSubscribeFallbackToAudioOnly(
+      int uid, bool isFallback, int streamType);
 }
 
 abstract class NERtcDeviceEventCallback {
