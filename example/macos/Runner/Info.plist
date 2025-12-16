@@ -28,5 +28,11 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>NSCameraUsageDescription</key>
+	<string>此应用需要访问摄像头以进行视频通话。</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>此应用需要访问麦克风以进行语音通话。</string>
+    <key>NSScreenCaptureUsageDescription</key>
+    <string>需要屏幕录制权限以共享您的屏幕内容</string>
 </dict>
 </plist>

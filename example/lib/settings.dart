@@ -1,15 +1,18 @@
-import 'dart:io';
+// Copyright (c) 2022 NetEase, Inc. All rights reserved.
+// Use of this source code is governed by a MIT license that can be
+// found in the LICENSE file.
 
+import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:nertc/nertc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:nertc_core/nertc_core.dart';
 
 class Settings {
   static final defaultFileUrl =
       'http://music.163.com/song/media/outer/url?id=30431364.mp3';
   static final Settings _instance = Settings._();
-  SharedPreferences _prefs;
+  SharedPreferences? _prefs;
 
   Settings._();
 
@@ -53,7 +56,7 @@ class Settings {
   set videoFrameRate(int value) => _prefs?.setInt("videoFrameRate", value);
 
   int get screenProfile =>
-      _prefs?.getInt('screenProfile') ?? NERtcScreenProfile.hd1080p;
+      _prefs?.getInt('screenProfile') ?? NERtcVideoProfile.hd1080p;
   set screenProfile(int value) => _prefs?.setInt("screenProfile", value);
 
   int get screenContentPrefer =>
@@ -61,6 +64,21 @@ class Settings {
       NERtcSubStreamContentPrefer.motion;
   set screenContentPrefer(int value) =>
       _prefs?.setInt("screenContentPrefer", value);
+
+  int get screenFrameRate =>
+      _prefs?.getInt('screenFrameRate') ?? NERtcVideoFrameRate.fps_30;
+  set screenFrameRate(int value) => _prefs?.setInt('screenFrameRate', value);
+
+  int get screenMinFrameRate =>
+      _prefs?.getInt('screenMinFrameRate') ?? NERtcVideoFrameRate.fpsDefault;
+  set screenMinFrameRate(int value) =>
+      _prefs?.setInt('screenMinFrameRate', value);
+
+  int get screenBitRate => _prefs?.getInt('screenBitRate') ?? 0;
+  set screenBitRate(int value) => _prefs?.setInt('screenBitRate', value);
+
+  int get screenMinBitRate => _prefs?.getInt('screenMinBitRate') ?? 0;
+  set screenMinBitRate(int value) => _prefs?.setInt('screenMinBitRate', value);
 
   int get remoteVideoStreamType =>
       _prefs?.getInt('remoteVideoStreamType') ??
@@ -100,6 +118,12 @@ class Settings {
       _prefs?.getInt('audioScenario') ??
       NERtcAudioScenario.scenarioDefault.index;
   set audioScenario(int value) => _prefs?.setInt("audioScenario", value);
+
+  int get audioSessionRestriction =>
+      _prefs?.getInt('_audioSessionRestriction') ??
+      NERtcAudioSessionOperationRestriction.none.index;
+  set audioSessionRestriction(int value) =>
+      _prefs?.setInt("_audioSessionRestriction", value);
 
   bool get serverRecordSpeaker =>
       _prefs?.getBool('serverRecordSpeaker') ?? false;
@@ -175,6 +199,20 @@ class Settings {
   bool get autoSubscribeVideo => _prefs?.getBool('autoSubscribeVideo') ?? true;
   set autoSubscribeVideo(bool value) =>
       _prefs?.setBool("autoSubscribeVideo", value);
+
+  bool get disableFirstJoinUserCreateChannel =>
+      _prefs?.getBool('disableFirstJoinUserCreateChannel') ?? false;
+  set disableFirstJoinUserCreateChannel(bool value) =>
+      _prefs?.setBool("disableFirstJoinUserCreateChannel", value);
+
+  bool get forceLandScapeMode => _prefs?.getBool('forceLandScapeMode') ?? false;
+  set forceLandScapeMode(bool value) =>
+      _prefs?.setBool('forceLandScapeMode', value);
+
+  bool get openTestEnvironment =>
+      _prefs?.getBool('openTestEnvironment') ?? false;
+  set openTestEnvironment(bool value) =>
+      _prefs?.setBool('openTestEnvironment', value);
 }
 
 class SettingsPage extends StatefulWidget {
@@ -185,7 +223,9 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  Settings settings;
+  late Settings settings;
+
+  final ipController = TextEditingController();
 
   bool _frontFacingCamera = true;
   bool _frontFacingCameraMirror = true;
@@ -194,7 +234,11 @@ class _SettingsPageState extends State<SettingsPage> {
   int _videoProfile = NERtcVideoProfile.hd720p;
   int _degradationPreference = NERtcDegradationPreference.degradationDefault;
   int _videoFrameRate = NERtcVideoFrameRate.fps_30;
-  int _screenProfile = NERtcScreenProfile.hd1080p;
+  int _screenProfile = NERtcVideoProfile.hd1080p;
+  int _screenFrameRate = NERtcVideoFrameRate.fps_30;
+  int _screenMinFrameRate = NERtcVideoFrameRate.fpsDefault;
+  int _screenBitRate = 0; //kbps.
+  int _screenMinBitRate = 0; //kbps.
   int _screenContentPrefer = NERtcSubStreamContentPrefer.motion;
   int _remoteVideoStreamType = NERtcRemoteVideoStreamType.high;
   int _videoViewFitType = NERtcVideoViewFitType.contain.index;
@@ -207,23 +251,26 @@ class _SettingsPageState extends State<SettingsPage> {
   int _videoCropMode = NERtcVideoCropMode.cropDefault;
   int _audioProfile = NERtcAudioProfile.profileDefault.index;
   int _audioScenario = NERtcAudioScenario.scenarioDefault.index;
+  int _audioSessionRestriction =
+      NERtcAudioSessionOperationRestriction.none.index;
   bool _serverRecordSpeaker = false;
   bool _serverRecordAudio = false;
   bool _serverRecordVideo = false;
   int _serverRecordMode = NERtcServerRecordMode.mixAndSingle.index;
   String _audioMixingFileUrl = Settings.defaultFileUrl;
-  String _audioMixingFilePath = '';
+  String? _audioMixingFilePath = '';
   bool _audioMixingSendEnabled = true;
   bool _audioMixingPlayEnabled = true;
-  int _audioMixingLoopCount = 1;
-  String _audioEffectFilePath = '';
+  String? _audioEffectFilePath = '';
   bool _audioEffectSendEnabled = true;
   bool _audioEffectPlayEnabled = true;
-  int _audioEffectLoopCount = 1;
   bool _autoEnableAudio = true;
   bool _autoEnableVideo = true;
   bool _autoSubscribeAudio = true;
   bool _autoSubscribeVideo = true;
+  bool _disableFirstJoinUserCreateChannel = false;
+  bool _forceLandScapeMode = false;
+  bool _test_uri_environment = false;
 
   @override
   void initState() {
@@ -241,8 +288,6 @@ class _SettingsPageState extends State<SettingsPage> {
       _videoProfile = settings.videoProfile;
       _degradationPreference = settings.degradationPreference;
       _videoFrameRate = settings.videoFrameRate;
-      _screenProfile = settings.screenProfile;
-      _screenContentPrefer = settings.screenContentPrefer;
       _remoteVideoStreamType = settings.remoteVideoStreamType;
       _videoViewFitType = settings.videoViewFitType;
       _videoEncodeMediaCodecMode = settings.videoEncodeMediaCodecMode;
@@ -250,6 +295,7 @@ class _SettingsPageState extends State<SettingsPage> {
       _videoCropMode = settings.videoCropMode;
       _audioProfile = settings.audioProfile;
       _audioScenario = settings.audioScenario;
+      _audioSessionRestriction = settings.audioSessionRestriction;
       _serverRecordSpeaker = settings.serverRecordSpeaker;
       _serverRecordAudio = settings.serverRecordAudio;
       _serverRecordVideo = settings.serverRecordVideo;
@@ -257,15 +303,25 @@ class _SettingsPageState extends State<SettingsPage> {
       _audioMixingFilePath = settings.audioMixingFilePath;
       _audioMixingSendEnabled = settings.audioMixingSendEnabled;
       _audioMixingPlayEnabled = settings.audioMixingPlayEnabled;
-      _audioMixingLoopCount = settings.audioMixingLoopCount;
       _audioEffectFilePath = settings.audioEffectFilePath;
       _audioEffectSendEnabled = settings.audioEffectSendEnabled;
       _audioEffectPlayEnabled = settings.audioEffectPlayEnabled;
-      _audioEffectLoopCount = settings.audioEffectLoopCount;
       _autoEnableAudio = settings.autoEnableAudio;
       _autoEnableVideo = settings.autoEnableVideo;
       _autoSubscribeAudio = settings.autoSubscribeAudio;
       _autoSubscribeVideo = settings.autoSubscribeVideo;
+      _disableFirstJoinUserCreateChannel =
+          settings.disableFirstJoinUserCreateChannel;
+      _forceLandScapeMode = settings.forceLandScapeMode;
+      //屏幕共享
+      _screenProfile = settings.screenProfile;
+      _screenContentPrefer = settings.screenContentPrefer;
+      _screenFrameRate = settings.screenFrameRate;
+      _screenMinFrameRate = settings.screenMinFrameRate;
+      _screenBitRate = settings.screenBitRate;
+      _screenMinBitRate = settings.screenMinBitRate;
+      //测试环境
+      _test_uri_environment = settings.openTestEnvironment;
     });
   }
 
@@ -280,6 +336,7 @@ class _SettingsPageState extends State<SettingsPage> {
         child: ListView(
           children: <Widget>[
             buildVideoSettings(context),
+            buildScreenSettings(context),
             buildAudioSettings(context),
             buildServerRecordSettings(context),
             buildAudioMixingSettings(context),
@@ -357,6 +414,43 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             Divider(
                 height: 1, color: Colors.grey, indent: 15.0, endIndent: 15.0),
+            SwitchListTile(
+              title: const Text('频道不存在时禁止自动创建'),
+              subtitle: Text('如果目标频道不存在，则加入频道时不会自动创建频道'),
+              onChanged: (bool value) {
+                setState(() {
+                  _disableFirstJoinUserCreateChannel = value;
+                  settings.disableFirstJoinUserCreateChannel = value;
+                });
+              },
+              value: _disableFirstJoinUserCreateChannel,
+            ),
+            Divider(
+                height: 1, color: Colors.grey, indent: 15.0, endIndent: 15.0),
+            SwitchListTile(
+              title: const Text('强制横屏显示'),
+              subtitle: Text('只会作用到会话界面'),
+              onChanged: (bool value) {
+                setState(() {
+                  _forceLandScapeMode = value;
+                  settings.forceLandScapeMode = value;
+                });
+              },
+              value: _forceLandScapeMode,
+            ),
+            Divider(
+                height: 1, color: Colors.grey, indent: 15.0, endIndent: 15.0),
+            SwitchListTile(
+              title: const Text('测试环境'),
+              subtitle: Text('是否打开测试环境'),
+              onChanged: (bool value) {
+                setState(() {
+                  _test_uri_environment = value;
+                  settings.openTestEnvironment = value;
+                });
+              },
+              value: _test_uri_environment,
+            )
           ],
         )
       ],
@@ -379,7 +473,7 @@ class _SettingsPageState extends State<SettingsPage> {
           children: [
             ListTile(
               title: const Text('文件路径'),
-              subtitle: Text(_audioEffectFilePath),
+              subtitle: Text(_audioEffectFilePath!),
               onTap: () {
                 _selectAudioEffectFilePath();
               },
@@ -453,7 +547,7 @@ class _SettingsPageState extends State<SettingsPage> {
             if (Platform.isAndroid)
               ListTile(
                 title: const Text('文件路径'),
-                subtitle: Text(_audioMixingFilePath),
+                subtitle: Text(_audioMixingFilePath!),
                 onTap: () {
                   _selectAudioMixFilePath();
                 },
@@ -588,6 +682,128 @@ class _SettingsPageState extends State<SettingsPage> {
                 _selectAudioScenario();
               },
             ),
+            if (Platform.isIOS)
+              Divider(
+                  height: 1, color: Colors.grey, indent: 15.0, endIndent: 15.0),
+            if (Platform.isIOS)
+              ListTile(
+                title: const Text('音频会话控制权限'),
+                subtitle: Text(
+                    _audioSessionRestrictionToString(_audioSessionRestriction)),
+                onTap: () {
+                  _selectAudioSessionRestriction();
+                },
+              ),
+          ],
+        )
+      ],
+    );
+  }
+
+  Widget buildScreenSettings(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Container(
+          child: Text(
+            '屏幕共享',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          padding: const EdgeInsets.only(left: 15, top: 10, bottom: 6),
+        ),
+        Column(
+          children: <Widget>[
+            ListTile(
+              title: const Text('屏幕共享分辨率'),
+              subtitle: Text(_screenProfileToString(_screenProfile)),
+              onTap: () {
+                _selectScreenProfile();
+              },
+            ),
+            Divider(
+                height: 1, color: Colors.grey, indent: 15.0, endIndent: 15.0),
+            ListTile(
+              title: const Text('录屏模式'),
+              subtitle: Text(_subStreamContentPrefer(_screenContentPrefer)),
+              onTap: () {
+                _selectSubStreamContentPrefer();
+              },
+            ),
+            Divider(
+                height: 1, color: Colors.grey, indent: 15.0, endIndent: 15.0),
+            ListTile(
+              title: const Text('录屏帧率'),
+              subtitle: Text(_screenFrameRate.toString()),
+              onTap: () {
+                _selectScreenFrameRate();
+              },
+            ),
+            Divider(
+                height: 1, color: Colors.grey, indent: 15.0, endIndent: 15.0),
+            ListTile(
+              title: const Text('录屏最小帧率(默认:0)'),
+              subtitle: Text(_screenMinFrameRate.toString()),
+              onTap: () {
+                _showInputDialog(
+                  context: context,
+                  title: '录屏最小帧率',
+                  initialValue: _screenMinFrameRate.toString(),
+                  onConfirm: (value) {
+                    final allowed = [0, 7, 10, 15, 24, 30];
+                    final intValue = int.tryParse(value) ?? -1;
+                    if (!allowed.contains(intValue)) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('仅支持 0, 7, 10, 15, 24, 30')),
+                      );
+                      return;
+                    }
+                    setState(() {
+                      _screenMinFrameRate = int.tryParse(value) ?? 0;
+                      settings.screenMinFrameRate = _screenMinFrameRate;
+                    });
+                  },
+                );
+              },
+            ),
+            Divider(
+                height: 1, color: Colors.grey, indent: 15.0, endIndent: 15.0),
+            ListTile(
+              title: Text('录屏码率(默认: 0kbps)'),
+              subtitle: Text(_screenBitRate.toString()),
+              onTap: () {
+                _showInputDialog(
+                  context: context,
+                  title: '录屏码率',
+                  initialValue: _screenBitRate.toString(),
+                  onConfirm: (value) {
+                    setState(() {
+                      _screenBitRate = int.tryParse(value) ?? 0;
+                      settings.screenBitRate = _screenBitRate;
+                    });
+                  },
+                );
+              },
+            ),
+            Divider(
+                height: 1, color: Colors.grey, indent: 15.0, endIndent: 15.0),
+            ListTile(
+              title: Text('录屏最小码率(默认: 0kbps)'),
+              subtitle: Text(_screenMinBitRate.toString()),
+              onTap: () {
+                _showInputDialog(
+                  context: context,
+                  title: '录屏最小码率',
+                  initialValue: _screenMinBitRate.toString(),
+                  onConfirm: (value) {
+                    setState(() {
+                      _screenMinBitRate = int.tryParse(value) ?? 0;
+                      settings.screenMinBitRate = _screenMinBitRate;
+                    });
+                  },
+                );
+              },
+            ),
           ],
         )
       ],
@@ -685,24 +901,6 @@ class _SettingsPageState extends State<SettingsPage> {
             Divider(
                 height: 1, color: Colors.grey, indent: 15.0, endIndent: 15.0),
             ListTile(
-              title: const Text('屏幕共享分辨率'),
-              subtitle: Text(_screenProfileToString(_screenProfile)),
-              onTap: () {
-                _selectScreenProfile();
-              },
-            ),
-            Divider(
-                height: 1, color: Colors.grey, indent: 15.0, endIndent: 15.0),
-            ListTile(
-              title: const Text('录屏模式'),
-              subtitle: Text(_subStreamContentPrefer(_screenContentPrefer)),
-              onTap: () {
-                _selectSubStreamContentPrefer();
-              },
-            ),
-            Divider(
-                height: 1, color: Colors.grey, indent: 15.0, endIndent: 15.0),
-            ListTile(
               title: const Text('订阅分辨率'),
               subtitle: Text(_remoteVideoStreamTypeToString(_screenProfile)),
               onTap: () {
@@ -755,7 +953,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _selectServerRecordMode() async {
-    int mode = await showDialog(
+    int? mode = await showDialog(
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
@@ -792,7 +990,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _selectAudioScenario() async {
-    int scenario = await showDialog(
+    int? scenario = await showDialog(
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
@@ -831,7 +1029,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _selectAudioProfile() async {
-    int profile = await showDialog(
+    int? profile = await showDialog(
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
@@ -897,8 +1095,49 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
+  Future<void> _selectAudioSessionRestriction() async {
+    int? restriction = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return SimpleDialog(
+            title: const Text('音频会话控制权限'),
+            children: <Widget>[
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context,
+                      NERtcAudioSessionOperationRestriction.none.index);
+                },
+                child: const Text('none'),
+              ),
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(
+                      context, NERtcAudioSessionOperationRestriction.all.index);
+                },
+                child: const Text('all'),
+              ),
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(
+                      context,
+                      NERtcAudioSessionOperationRestriction
+                          .deactivateSession.index);
+                },
+                child: const Text('deactivateSession'),
+              ),
+            ],
+          );
+        });
+    if (restriction != null) {
+      setState(() {
+        _audioSessionRestriction = restriction;
+        settings.audioSessionRestriction = _audioSessionRestriction;
+      });
+    }
+  }
+
   Future<void> _selectVideoCropMode() async {
-    int mode = await showDialog(
+    int? mode = await showDialog(
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
@@ -940,7 +1179,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _selectVideoDecodeMediaCodecMode() async {
-    int mode = await showDialog(
+    int? mode = await showDialog(
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
@@ -970,7 +1209,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _selectVideoEncodeMediaCodecMode() async {
-    int mode = await showDialog(
+    int? mode = await showDialog(
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
@@ -1000,7 +1239,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _selectVideoViewFitType() async {
-    int videoViewFitType = await showDialog(
+    int? videoViewFitType = await showDialog(
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
@@ -1030,7 +1269,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _selectRemoteVideoStreamType() async {
-    int remoteVideoStreamType = await showDialog(
+    int? remoteVideoStreamType = await showDialog(
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
@@ -1060,7 +1299,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _selectSubStreamContentPrefer() async {
-    int contentPrefer = await showDialog(
+    int? contentPrefer = await showDialog(
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
@@ -1089,8 +1328,97 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
+  Future<void> _selectScreenFrameRate() async {
+    int? frameRate = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return SimpleDialog(
+            title: const Text('录屏帧率'),
+            children: <Widget>[
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context, NERtcVideoFrameRate.fps_7);
+                },
+                child: const Text('7'),
+              ),
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context, NERtcVideoFrameRate.fps_10);
+                },
+                child: const Text('10'),
+              ),
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context, NERtcVideoFrameRate.fps_15);
+                },
+                child: const Text('15'),
+              ),
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context, NERtcVideoFrameRate.fps_24);
+                },
+                child: const Text('24'),
+              ),
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context, NERtcVideoFrameRate.fps_30);
+                },
+                child: const Text('30'),
+              ),
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context, NERtcVideoFrameRate.fps_30);
+                },
+                child: const Text('default'),
+              ),
+            ],
+          );
+        });
+    if (frameRate != null) {
+      setState(() {
+        _screenFrameRate = frameRate;
+        settings.screenFrameRate = _screenFrameRate;
+      });
+    }
+  }
+
+  Future<void> _showInputDialog({
+    required BuildContext context,
+    required String title,
+    String initialValue = '',
+    required ValueChanged<String> onConfirm,
+  }) async {
+    final controller = TextEditingController(text: initialValue);
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: TextField(
+            controller: controller,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(hintText: '请输入数字'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('取消'),
+            ),
+            TextButton(
+              onPressed: () {
+                onConfirm(controller.text);
+                Navigator.of(context).pop();
+              },
+              child: const Text('确定'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<void> _selectScreenProfile() async {
-    int screenProfile = await showDialog(
+    int? screenProfile = await showDialog(
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
@@ -1098,19 +1426,19 @@ class _SettingsPageState extends State<SettingsPage> {
             children: <Widget>[
               SimpleDialogOption(
                 onPressed: () {
-                  Navigator.pop(context, NERtcScreenProfile.hd480p);
+                  Navigator.pop(context, NERtcVideoProfile.standard);
                 },
                 child: const Text('480p'),
               ),
               SimpleDialogOption(
                 onPressed: () {
-                  Navigator.pop(context, NERtcScreenProfile.hd720p);
+                  Navigator.pop(context, NERtcVideoProfile.hd720p);
                 },
                 child: const Text('720p'),
               ),
               SimpleDialogOption(
                 onPressed: () {
-                  Navigator.pop(context, NERtcScreenProfile.hd1080p);
+                  Navigator.pop(context, NERtcVideoProfile.hd1080p);
                 },
                 child: const Text('1080p'),
               ),
@@ -1126,7 +1454,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _selectVideoFrameRate() async {
-    int videoFrameRate = await showDialog(
+    int? videoFrameRate = await showDialog(
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
@@ -1174,7 +1502,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _selectDegradationPreference() async {
-    int degradationPreference = await showDialog(
+    int? degradationPreference = await showDialog(
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
@@ -1220,7 +1548,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _selectVideoProfile() async {
-    int profile = await showDialog(
+    int? profile = await showDialog(
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
@@ -1262,7 +1590,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _selectVideoSendMode() async {
-    NERtcVideoSendMode mode = await showDialog<NERtcVideoSendMode>(
+    NERtcVideoSendMode? mode = await showDialog<NERtcVideoSendMode>(
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
@@ -1366,11 +1694,11 @@ class _SettingsPageState extends State<SettingsPage> {
 
   String _screenProfileToString(int profile) {
     switch (profile) {
-      case NERtcScreenProfile.hd480p:
+      case NERtcVideoProfile.standard:
         return '480p';
-      case NERtcScreenProfile.hd720p:
+      case NERtcVideoProfile.hd720p:
         return '720p';
-      case NERtcScreenProfile.hd1080p:
+      case NERtcVideoProfile.hd1080p:
         return '1080p';
       default:
         return '1080p';
@@ -1466,6 +1794,19 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
+  String _audioSessionRestrictionToString(int restriction) {
+    if (restriction == NERtcAudioSessionOperationRestriction.none.index) {
+      return 'none';
+    } else if (restriction == NERtcAudioSessionOperationRestriction.all.index) {
+      return 'all';
+    } else if (restriction ==
+        NERtcAudioSessionOperationRestriction.deactivateSession.index) {
+      return 'deactivateSession';
+    } else {
+      return 'none';
+    }
+  }
+
   String _serverRecordModeToString(int mode) {
     if (mode == NERtcServerRecordMode.mix.index) {
       return 'mix';
@@ -1481,8 +1822,8 @@ class _SettingsPageState extends State<SettingsPage> {
   void _selectAudioMixFilePath() {
     FilePicker.platform.pickFiles(type: FileType.audio).then((value) => {
           setState(() {
-            _audioMixingFilePath = value.paths.first;
-            settings.audioMixingFilePath = _audioMixingFilePath;
+            _audioMixingFilePath = value!.paths.first;
+            settings.audioMixingFilePath = _audioMixingFilePath!;
           })
         });
   }
@@ -1490,8 +1831,8 @@ class _SettingsPageState extends State<SettingsPage> {
   void _selectAudioEffectFilePath() {
     FilePicker.platform.pickFiles(type: FileType.audio).then((value) => {
           setState(() {
-            _audioEffectFilePath = value.paths.first;
-            settings.audioEffectFilePath = _audioEffectFilePath;
+            _audioEffectFilePath = value!.paths.first;
+            settings.audioEffectFilePath = _audioEffectFilePath!;
           })
         });
   }

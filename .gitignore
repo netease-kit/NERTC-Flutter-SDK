@@ -3,3 +3,8 @@
 .idea/
 example/lib/config.dart
 .dart_tool/
+/src
+/test
+nertc_core.run.xml
+nertc_core.iml
+analysis_options.yaml

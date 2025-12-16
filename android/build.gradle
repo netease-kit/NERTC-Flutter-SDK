@@ -1,28 +1,38 @@
+/*
+ * Copyright (c) 2022 NetEase, Inc.  All rights reserved.
+ * Use of this source code is governed by a MIT license that can be
+ * found in the LICENSE file.
+ */
+
 group 'com.netease.nertcflutter'
 version '1.0'
 
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.3'
+        classpath 'com.android.tools.build:gradle:4.2.2'
     }
 }
 
 rootProject.allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
+        maven {
+            url  "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
     }
 }
 
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 29
+    namespace = "com.netease.nertcflutter"
+    compileSdkVersion 34
 
     defaultConfig {
         minSdkVersion 21
@@ -40,10 +50,10 @@ android {
             sourceCompatibility = '1.8'
             targetCompatibility = '1.8'
         }
-
-        dependencies {
-            implementation 'com.netease.yunxin:yxbase:1.0.0'
-            implementation 'com.netease.yunxin:nertc:3.9.0'
-        }
     }
+}
+
+dependencies {
+    implementation 'org.jetbrains:annotations:15.0'
+    implementation('com.netease.yunxin:nertc:5.9.11')
 }
