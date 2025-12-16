@@ -1,10 +1,11 @@
-# nertc
+# nertc_core
+
 [![build Status](https://github.com/netease-im/NERTC-Flutter-SDK/workflows/build/badge.svg)](https://github.com/netease-im/NERTC-Flutter-SDK/actions) [![pub package](https://img.shields.io/pub/v/nertc.svg)](https://pub.dev/packages/nertc)
 
 Flutter plugin for NetEase RTC SDK.
 
 ## Usage
-Add `nertc` as a [dependency in your pubspec.yaml file](https://flutter.io/using-packages/).
+Add `nertc_core` as a [dependency in your pubspec.yaml file](https://flutter.io/using-packages/).
 
 ### iOS
 

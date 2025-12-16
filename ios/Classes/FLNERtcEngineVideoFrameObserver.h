@@ -1,13 +1,9 @@
-//
-//  FLNERtcEngineVideoFrameObserver.h
-//  Pods
-//
-//  Created by zhaochong on 2020/12/24.
-//
+// Copyright (c) 2022 NetEase, Inc. All rights reserved.
+// Use of this source code is governed by a MIT license that can be
+// found in the LICENSE file.
 
 #ifndef FLNERtcEngineVideoFrameObserver_h
 #define FLNERtcEngineVideoFrameObserver_h
-
 
 #endif /* FLNERtcEngineVideoFrameObserver_h */
 
@@ -27,5 +23,6 @@
  @param bufferRef CVPixelBufferRef, iOS 原生格式
  @param rotation 视频方向
  */
-- (void)onNERtcEngineVideoFrameCaptured:(CVPixelBufferRef)bufferRef rotation:(NERtcVideoRotationType)rotation;
+- (void)onNERtcEngineVideoFrameCaptured:(CVPixelBufferRef)bufferRef
+                               rotation:(NERtcVideoRotationType)rotation;
 @end

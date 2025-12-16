@@ -1,0 +1,25 @@
+# Run with `flutter pub run ffigen --config ffigen.yaml`.
+name: NERtcBinding
+description: |
+  Bindings for `src/nertc_wrapper.h`.
+
+  Regenerate bindings with `flutter pub run ffigen --config ffigen.yaml`.
+output: 'lib/src/ffi/nertc_bindings_generated.dart'
+headers:
+  entry-points:
+    - 'wrapper/nertc_wrapper.h'
+  include-directives:
+    - 'wrapper/nertc_wrapper.h'
+
+#typeMap:
+#  'const char *':
+#    dartType: 'Pointer<Utf8>'
+#  'char *':
+#    dartType: 'Pointer<Utf8>'
+
+#preamble: |
+#  import 'package:ffi/ffi.dart';
+
+comments:
+  style: any
+  length: full

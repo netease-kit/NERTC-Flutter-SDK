@@ -1,22 +1,33 @@
-name: nertc
-description: A Flutter plugin for NetEase RTC SDK on Android and iOS.
-version: 3.9.0
+name: nertc_core
+description: A Flutter plugin for NetEase RTC SDK.
+version: 5.9.11
 homepage: https://github.com/netease-im/NERTC-Flutter-SDK
 
+#publish_to: 'none'
 environment:
-  sdk: ">=2.8.0 <3.0.0"
-  flutter: ">=1.17.0 <2.0.0"
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.10.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
+  yunxin_alog: ^2.0.0
+  path_provider: ^2.1.5
+  crypto: ^3.0.0
+  ffi: ^2.0.1
+
+  
+  nertc_core_platform_interface: ^5.9.11
+#  nertc_core_platform_interface:
+#    path: ./../nertc_core_platform_interface
 
 dev_dependencies:
+  ffigen: ^7.0.0
   flutter_test:
     sdk: flutter
 
-  pigeon: ^0.1.17
+  pigeon: ^9.0.6
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -31,9 +42,15 @@ flutter:
     platforms:
       android:
         package: com.netease.nertcflutter
-        pluginClass: NERtcPlugin
+        pluginClass: NERtcCorePlugin
       ios:
-        pluginClass: NERtcPlugin
+        pluginClass: NERtcCorePlugin
+      macos:
+        pluginClass: NERtcCorePlugin
+        ffiPlugin: true
+      windows:
+        pluginClass: NertcCorePluginCApi
+        
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:

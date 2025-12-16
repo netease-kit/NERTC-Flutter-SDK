@@ -1,9 +1,6 @@
-//
-//  FLNERtcEngineVideoFrameDelegate.m
-//  nertc
-//
-//  Created by zhaochong on 2020/12/24.
-//
+// Copyright (c) 2022 NetEase, Inc. All rights reserved.
+// Use of this source code is governed by a MIT license that can be
+// found in the LICENSE file.
 
 #import "FLNERtcEngineVideoFrameDelegate.h"
 
@@ -12,18 +9,20 @@
 @end
 
 @implementation FLNERtcEngineVideoFrameDelegate
-+ (instancetype)sharedCenter
-{
-    static FLNERtcEngineVideoFrameDelegate *instance;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        instance = [[FLNERtcEngineVideoFrameDelegate alloc] init];
-    });
-    return instance;
++ (instancetype)sharedCenter {
+  static FLNERtcEngineVideoFrameDelegate *instance;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    instance = [[FLNERtcEngineVideoFrameDelegate alloc] init];
+  });
+  return instance;
 }
-- (void)onNERtcEngineVideoFrameCaptured:(CVPixelBufferRef)bufferRef rotation:(NERtcVideoRotationType)rotation {
-    if (self.observer && [self.observer respondsToSelector:@selector(onNERtcEngineVideoFrameCaptured:rotation:)]) {
-        [self.observer onNERtcEngineVideoFrameCaptured:bufferRef rotation:(NERtcVideoRotationType)rotation];
-    }
+- (void)onNERtcEngineVideoFrameCaptured:(CVPixelBufferRef)bufferRef
+                               rotation:(NERtcVideoRotationType)rotation {
+  if (self.observer &&
+      [self.observer respondsToSelector:@selector(onNERtcEngineVideoFrameCaptured:rotation:)]) {
+    [self.observer onNERtcEngineVideoFrameCaptured:bufferRef
+                                          rotation:(NERtcVideoRotationType)rotation];
+  }
 }
 @end
