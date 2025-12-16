@@ -1,7 +1,8 @@
 name: nertc_core
 description: A Flutter plugin for NetEase RTC SDK.
+homepage: https://doc.yunxin.163.com/nertc/guide/Dc0NTg0NzM?platform=flutter
+repository: https://github.com/netease-im/NERTC-Flutter-SDK
 version: 5.9.11
-homepage: https://github.com/netease-im/NERTC-Flutter-SDK
 
 #publish_to: 'none'
 environment:
