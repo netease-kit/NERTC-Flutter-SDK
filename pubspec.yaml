@@ -1,8 +1,8 @@
 name: nertc_core
-description: A Flutter plugin for NetEase RTC SDK.
+description: A Flutter plugin for NetEase RTC SDK, It can help you integrate SDK quickly and realize basic functions of Real-Time Communication.
 homepage: https://doc.yunxin.163.com/nertc/guide/Dc0NTg0NzM?platform=flutter
 repository: https://github.com/netease-im/NERTC-Flutter-SDK
-version: 5.9.11
+version: 5.9.11+1
 
 #publish_to: 'none'
 environment:
