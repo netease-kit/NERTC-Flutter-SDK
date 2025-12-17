@@ -1,3 +1,6 @@
+## 5.9.11+1
+* Documentation supplements, update README.md file.
+
 ## 5.9.11
 * New features:
   - Set video streaming mode. `setVideoStreamLayerCount`
