@@ -64,7 +64,6 @@ class _NERtcVideoRendererImpl extends NERtcVideoRenderer with _SDKLoggerMixin {
   int _uid = -1;
   bool _subStream = false;
   bool _disposed = false;
-  String _streamId = "";
 
   // bool get canRender => (_uid != -1 || _local);
   bool get canRender =>
@@ -126,7 +125,6 @@ class _NERtcVideoRendererImpl extends NERtcVideoRenderer with _SDKLoggerMixin {
   @override
   Future<int> attachToPlayingStreamVideo(String streamId) {
     _local = true;
-    _streamId = streamId;
     _subStream = false;
     _uid = 0;
     return _setPlayingCanvasSource(streamId, _textureId);
