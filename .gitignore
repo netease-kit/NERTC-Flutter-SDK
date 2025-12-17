@@ -8,3 +8,4 @@ example/lib/config.dart
 nertc_core.run.xml
 nertc_core.iml
 analysis_options.yaml
+pubspec.lock
