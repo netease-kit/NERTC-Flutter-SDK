@@ -1,6 +1,6 @@
 # nertc_core
 
-[![build Status](https://github.com/netease-im/NERTC-Flutter-SDK/workflows/build/badge.svg)](https://github.com/netease-im/NERTC-Flutter-SDK/actions) [![pub package](https://img.shields.io/pub/v/nertc.svg)](https://pub.dev/packages/nertc)
+[![build Status](https://github.com/netease-im/NERTC-Flutter-SDK/workflows/build/badge.svg)](https://github.com/netease-im/NERTC-Flutter-SDK/actions) [![pub package](https://img.shields.io/pub/v/nertc_core.svg)](https://pub.dev/packages/nertc_core)
 
 Flutter plugin for NetEase RTC SDK, currently supports Android/iOS/macOS/Windows platforms.
 
