@@ -5,10 +5,10 @@
 part of nertc;
 
 class _NERtcEngineImpl extends NERtcEngine
-    with
-        _SDKLoggerMixin,
-        LoggingApi,
+    with _SDKLoggerMixin, LoggingApi
+    implements
         NERtcChannelEventSink,
+        NERtcAudioFrameEventSink,
         NERtcDeviceEventSink,
         NERtcAudioEffectEventSink,
         NERtcAudioMixingEventSink,
@@ -34,6 +34,7 @@ class _NERtcEngineImpl extends NERtcEngine
   final _eventCallbacks = <NERtcChannelEventCallback>{};
   final _statsCallbacks = <NERtcStatsEventCallback>{};
   final _liveTaskCallback = <NERtcLiveTaskCallback>{};
+  final _audioFrameCallbacks = <NERtcAudioFrameEventCallback>{};
   final _platform = NERtcEnginePlatform.instance;
 
   final Map<String, NERtcChannel> _channelMaps = {};
@@ -79,6 +80,50 @@ class _NERtcEngineImpl extends NERtcEngine
       }
       return reply;
     }
+  }
+
+  @override
+  Future<int> setRecordingAudioFrameParameters(
+      NERtcAudioFrameRequestFormat format) async {
+    if (Platform.isAndroid || Platform.isIOS) {
+      return await wrapper(
+          'setRecordingAudioFrameParameters',
+          _platform.setRecordingAudioFrameParameters(format));
+    }
+    return 0;
+  }
+
+  @override
+  Future<int> setPlaybackAudioFrameParameters(
+      NERtcAudioFrameRequestFormat format) async {
+    if (Platform.isAndroid || Platform.isIOS) {
+      return await wrapper(
+          'setPlaybackAudioFrameParameters',
+          _platform.setPlaybackAudioFrameParameters(format));
+    }
+    return 0;
+  }
+
+  @override
+  Future<int> setPlaybackBeforeMixingAudioFrameParameters(
+      NERtcAudioFrameRequestFormat format) async {
+    if (Platform.isAndroid || Platform.isIOS) {
+      return await wrapper(
+          'setPlaybackBeforeMixingAudioFrameParameters',
+          _platform.setPlaybackBeforeMixingAudioFrameParameters(format));
+    }
+    return 0;
+  }
+
+  @override
+  Future<int> setMixedAudioFrameParameters(
+      NERtcAudioFrameRequestFormat format) async {
+    if (Platform.isAndroid || Platform.isIOS) {
+      return await wrapper(
+          'setMixedAudioFrameParameters',
+          _platform.setMixedAudioFrameParameters(format));
+    }
+    return 0;
   }
 
   Future<NERtcChannel> createChannel(String channelName) async {
@@ -136,10 +181,12 @@ class _NERtcEngineImpl extends NERtcEngine
 
   void setEventCallback(NERtcChannelEventCallback callback) {
     _eventCallbacks.add(callback);
+    // Listener registration is handled by create()/dispose().
   }
 
   void removeEventCallback(NERtcChannelEventCallback callback) {
     _eventCallbacks.remove(callback);
+    // Listener lifecycle is managed by create()/dispose().
   }
 
   void setStatsEventCallback(NERtcStatsEventCallback callback) {
@@ -155,6 +202,26 @@ class _NERtcEngineImpl extends NERtcEngine
       InvokeMethod_(jsonEncode(convertJson));
     }
     apiLogger.i('setStatsEventCallback');
+  }
+
+  @override
+  void setAudioFrameEventCallback(NERtcAudioFrameEventCallback callback) {
+    _audioFrameCallbacks.add(callback);
+    if (Platform.isAndroid || Platform.isIOS) {
+      _platform.addRtcAudioFrameListener(this);
+      _platform.setAudioFrameObserver(true);
+    }
+  }
+
+  @override
+  void removeAudioFrameEventCallback(NERtcAudioFrameEventCallback callback) {
+    _audioFrameCallbacks.remove(callback);
+    if (Platform.isAndroid || Platform.isIOS) {
+      _platform.removeRtcAudioFrameListener(this);
+      if (_audioFrameCallbacks.isEmpty) {
+        _platform.setAudioFrameObserver(false);
+      }
+    }
   }
 
   void removeStatsEventCallback(NERtcStatsEventCallback callback) {
@@ -182,8 +249,10 @@ class _NERtcEngineImpl extends NERtcEngine
     _eventCallbacks.clear();
     _statsCallbacks.clear();
     _liveTaskCallback.clear();
+    _audioFrameCallbacks.clear();
 
     _platform.removeRtcChannelListener(this);
+    _platform.removeRtcAudioFrameListener(this);
     _rtcStatsPlatform.unregisterStatsListener(this);
     if (Platform.isAndroid || Platform.isIOS) {
       _platform.clearStatsEventCallback();
@@ -2443,6 +2512,65 @@ class _NERtcEngineImpl extends NERtcEngine
   }
 
   @override
+  void onRecordFrame(NERtcAudioFrame frame) {
+    commonLogger.i('onRecordFrame');
+    for (var callback in _audioFrameCallbacks.copy()) {
+      callback.onRecordFrame(frame);
+    }
+  }
+
+  @override
+  void onRecordSubStreamAudioFrame(NERtcAudioFrame frame) {
+    commonLogger.i('onRecordSubStreamAudioFrame');
+    for (var callback in _audioFrameCallbacks.copy()) {
+      callback.onRecordSubStreamAudioFrame(frame);
+    }
+  }
+
+  @override
+  void onPlaybackFrame(NERtcAudioFrame frame) {
+    commonLogger.i('onPlaybackFrame');
+    for (var callback in _audioFrameCallbacks.copy()) {
+      callback.onPlaybackFrame(frame);
+    }
+  }
+
+  @override
+  void onPlaybackAudioFrameBeforeMixingWithUserID(
+      int uid, NERtcAudioFrame frame) {
+    commonLogger.i('onPlaybackAudioFrameBeforeMixingWithUserID: uid:$uid');
+    for (var callback in _audioFrameCallbacks.copy()) {
+      callback.onPlaybackAudioFrameBeforeMixingWithUserID(uid, frame);
+    }
+  }
+
+  @override
+  void onPlaybackSubStreamAudioFrameBeforeMixingWithUserID(
+      int uid, NERtcAudioFrame frame) {
+    commonLogger.i('onPlaybackSubStreamAudioFrameBeforeMixingWithUserID: uid:$uid');
+    for (var callback in _audioFrameCallbacks.copy()) {
+      callback.onPlaybackSubStreamAudioFrameBeforeMixingWithUserID(uid, frame);
+    }
+  }
+
+  @override
+  void onPlaybackAudioFrameBeforeMixingForPlayStreaming(
+      String streamId, NERtcAudioFrame frame) {
+    commonLogger.i('onPlaybackAudioFrameBeforeMixingForPlayStreaming: streamId:$streamId');
+    for (var callback in _audioFrameCallbacks.copy()) {
+      callback.onPlaybackAudioFrameBeforeMixingForPlayStreaming(streamId, frame);
+    }
+  }
+
+  @override
+  void onMixedAudioFrame(NERtcAudioFrame frame) {
+    commonLogger.i('onMixedAudioFrame');
+    for (var callback in _audioFrameCallbacks.copy()) {
+      callback.onMixedAudioFrame(frame);
+    }
+  }
+
+  @override
   Future<int> enableVideoCorrection(bool enable) async {
     apiLogger.i('enableVideoCorrection#arg{enable:$enable}');
     int reply = await wrapper(
@@ -3250,6 +3378,16 @@ class _NERtcEngineImpl extends NERtcEngine
       };
       return PushAudioFrame(jsonEncode(params), frame.data);
     }
+  }
+
+  @override
+  Future<NERtcLLMRequestResult> requestLLM(
+      int dstUid, NERtcLLMRequestParams params) async {
+    apiLogger.i('requestLLM#arg: dstUid:$dstUid, params:$params');
+    return await wrapper(
+      'requestLLM',
+      _platform.requestLLM(dstUid, params),
+    );
   }
 }
 

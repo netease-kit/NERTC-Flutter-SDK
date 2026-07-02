@@ -7,23 +7,30 @@ package com.netease.nertcflutter;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Looper;
+import androidx.annotation.Nullable;
 import com.netease.lava.nertc.sdk.LastmileProbeResult;
 import com.netease.lava.nertc.sdk.NERtcAsrCaptionResult;
 import com.netease.lava.nertc.sdk.NERtcCallbackEx;
 import com.netease.lava.nertc.sdk.NERtcUserJoinExtraInfo;
 import com.netease.lava.nertc.sdk.NERtcUserLeaveExtraInfo;
+import com.netease.lava.nertc.sdk.audio.NERtcAudioFrame;
+import com.netease.lava.nertc.sdk.audio.NERtcAudioFrameObserver;
 import com.netease.lava.nertc.sdk.audio.NERtcAudioProcessObserver;
+import com.netease.lava.nertc.sdk.audio.NERtcAudioType;
 import com.netease.lava.nertc.sdk.audio.NERtcAudioStreamType;
 import com.netease.lava.nertc.sdk.stats.NERtcAudioVolumeInfo;
 import com.netease.lava.nertc.sdk.video.NERtcVideoStreamType;
+import io.flutter.plugin.common.BasicMessageChannel;
 import io.flutter.plugin.common.BinaryMessenger;
+import io.flutter.plugin.common.StandardMessageCodec;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class NERtcCallbackImpl implements NERtcCallbackEx, NERtcAudioProcessObserver {
+public class NERtcCallbackImpl
+    implements NERtcCallbackEx, NERtcAudioProcessObserver, NERtcAudioFrameObserver {
 
   //  private final CallbackMethod callback;
   //  private EventChannel.EventSink _eventSink;
@@ -31,6 +38,7 @@ public class NERtcCallbackImpl implements NERtcCallbackEx, NERtcAudioProcessObse
   private Messages.NERtcDeviceEventSink _deviceEventSink;
   private Messages.NERtcAudioMixingEventSink _audioMixingEventSink;
   private Messages.NERtcAudioEffectEventSink _audioEffectEventSink;
+  private final BasicMessageChannel<Object> _audioFrameChannel;
   Handler handler = new Handler(Looper.getMainLooper());
 
   NERtcCallbackImpl(BinaryMessenger argBinaryMessenger) {
@@ -38,6 +46,11 @@ public class NERtcCallbackImpl implements NERtcCallbackEx, NERtcAudioProcessObse
     _deviceEventSink = new Messages.NERtcDeviceEventSink(argBinaryMessenger);
     _audioEffectEventSink = new Messages.NERtcAudioEffectEventSink(argBinaryMessenger);
     _audioMixingEventSink = new Messages.NERtcAudioMixingEventSink(argBinaryMessenger);
+    _audioFrameChannel =
+        new BasicMessageChannel<>(
+            argBinaryMessenger,
+            "dev.flutter.nertc_core_platform_interface.audio_frame.binary",
+            StandardMessageCodec.INSTANCE);
   }
 
   public void dispose() {
@@ -224,6 +237,9 @@ public class NERtcCallbackImpl implements NERtcCallbackEx, NERtcAudioProcessObse
   }
 
   @Override
+  public void onPlayStreamingDuration(String taskId, long duration, long progress) {}
+  
+  @Override
   public void onFirstVideoDataReceived(long uid) {
     //    Messages.FirstVideoDataReceivedEvent.Builder builder =
     //        new Messages.FirstVideoDataReceivedEvent.Builder();
@@ -275,6 +291,10 @@ public class NERtcCallbackImpl implements NERtcCallbackEx, NERtcAudioProcessObse
     builder.setStreamType(type);
     Messages.FirstVideoFrameDecodedEvent event = builder.build();
     _eventSink.onFirstVideoFrameDecoded(event, aVoid -> {});
+  }
+  @Override
+  public void onAudioDeviceChanged(int selected) {
+    _deviceEventSink.onAudioDeviceChanged((long) selected, aVoid -> {});
   }
 
   @Override
@@ -592,11 +612,6 @@ public class NERtcCallbackImpl implements NERtcCallbackEx, NERtcAudioProcessObse
   }
 
   @Override
-  public void onAudioDeviceChanged(int selected) {
-    _deviceEventSink.onAudioDeviceChanged((long) selected, aVoid -> {});
-  }
-
-  @Override
   public void onLocalPublishFallbackToAudioOnly(
       boolean isFallback, NERtcVideoStreamType neRtcVideoStreamType) {
     long type = neRtcVideoStreamType.ordinal();
@@ -702,5 +717,133 @@ public class NERtcCallbackImpl implements NERtcCallbackEx, NERtcAudioProcessObse
     if (b) {
       _eventSink.onAudioHasHowling(aVoid -> {});
     }
+  }
+
+  private byte[] toByteArray(ByteBuffer buffer) {
+    if (buffer == null) {
+      return null;
+    }
+    ByteBuffer duplicate = buffer.duplicate();
+    byte[] data = new byte[duplicate.remaining()];
+    duplicate.get(data);
+    return data;
+  }
+
+  private void sendAudioFrame(int eventType, long uid, NERtcAudioFrame frame) {
+    if (frame == null) {
+      return;
+    }
+    byte[] data = toByteArray(frame.getData());
+    int dataLength = data == null ? 0 : data.length;
+    int audioType = 0;
+    int sampleRate = 0;
+    int channels = 0;
+    int bytesPerSample = 0;
+    int samplesPerChannel = 0;
+    if (frame.getFormat() != null) {
+      NERtcAudioType type = frame.getFormat().getType();
+      audioType = type == null ? 0 : type.ordinal();
+      sampleRate = frame.getFormat().getSampleRate();
+      channels = frame.getFormat().getChannels();
+      bytesPerSample = frame.getFormat().getBytesPerSample();
+      samplesPerChannel = frame.getFormat().getSamplesPerChannel();
+    }
+    ArrayList<Object> payload = new ArrayList<>(8);
+    payload.add(eventType);
+    payload.add(audioType);
+    payload.add(uid);
+    payload.add(sampleRate);
+    payload.add(channels);
+    payload.add(bytesPerSample);
+    payload.add(samplesPerChannel);
+    ArrayList<Integer> audioData = new ArrayList<>(dataLength);
+    if (dataLength > 0) {
+      for (byte value : data) {
+        audioData.add(value & 0xFF);
+      }
+    }
+    payload.add(audioData);
+    handler.post(() -> _audioFrameChannel.send(payload));
+  }
+
+  private void sendAudioFrameString(int eventType, String streamId, NERtcAudioFrame frame) {
+    if (frame == null) {
+      return;
+    }
+    byte[] data = toByteArray(frame.getData());
+    int dataLength = data == null ? 0 : data.length;
+    int audioType = 0;
+    int sampleRate = 0;
+    int channels = 0;
+    int bytesPerSample = 0;
+    int samplesPerChannel = 0;
+    if (frame.getFormat() != null) {
+      NERtcAudioType type = frame.getFormat().getType();
+      audioType = type == null ? 0 : type.ordinal();
+      sampleRate = frame.getFormat().getSampleRate();
+      channels = frame.getFormat().getChannels();
+      bytesPerSample = frame.getFormat().getBytesPerSample();
+      samplesPerChannel = frame.getFormat().getSamplesPerChannel();
+    }
+    ArrayList<Object> payload = new ArrayList<>(8);
+    payload.add(eventType);
+    payload.add(audioType);
+    payload.add(streamId);
+    payload.add(sampleRate);
+    payload.add(channels);
+    payload.add(bytesPerSample);
+    payload.add(samplesPerChannel);
+    ArrayList<Integer> audioData = new ArrayList<>(dataLength);
+    if (dataLength > 0) {
+      for (byte value : data) {
+        audioData.add(value & 0xFF);
+      }
+    }
+    payload.add(audioData);
+    handler.post(() -> _audioFrameChannel.send(payload));
+  }
+
+  // eventType: 0=record, 1=playback, 2=before_mixing, 3=mixed,
+  //            4=record_sub_stream, 5=playback_sub_stream_before_mixing,
+  //            6=playback_before_mixing_for_play_streaming
+
+  @Override
+  public void onRecordFrame(NERtcAudioFrame frame) {
+    sendAudioFrame(0, 0L, frame);
+  }
+
+  @Override
+  public void onRecordSubStreamAudioFrame(NERtcAudioFrame frame) {
+    sendAudioFrame(4, 0L, frame);
+  }
+
+  @Override
+  public void onPlaybackFrame(NERtcAudioFrame frame) {
+    sendAudioFrame(1, 0L, frame);
+  }
+
+  @Override
+  public void onPlaybackAudioFrameBeforeMixingWithUserID(long uid, NERtcAudioFrame frame) {
+    sendAudioFrame(2, uid, frame);
+  }
+
+  @Override
+  public void onPlaybackAudioFrameBeforeMixingWithUserID(
+      long uid, NERtcAudioFrame frame, long type) {
+  }
+
+  public void onPlaybackSubStreamAudioFrameBeforeMixingWithUserID(
+      long uid, NERtcAudioFrame frame, long type) {
+    sendAudioFrame(5, uid, frame);
+  }
+
+  public void onPlaybackAudioFrameBeforeMixingForPlayStreaming(
+      String streamId, NERtcAudioFrame frame) {
+    sendAudioFrameString(6, streamId, frame);
+  }
+
+  @Override
+  public void onMixedAudioFrame(NERtcAudioFrame frame) {
+    sendAudioFrame(3, 0L, frame);
   }
 }

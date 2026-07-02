@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'nertc_core'
-  s.version          = '5.9.11'
+  s.version          = '5.9.21'
   s.summary          = 'Flutter plugin for NetEase RTC SDK.'
   s.description      = <<-DESC
 Flutter plugin for NetEase RTC SDK.
@@ -22,7 +22,7 @@ Flutter plugin for NetEase RTC SDK.
 
   s.dependency 'FlutterMacOS'
 #   s.dependency 'Flutter'
-  s.dependency 'NERtcSDK-MacOS', '5.9.11'
+  s.dependency 'NERtcSDK-MacOS', '5.9.21'
 
 
   s.platform = :osx, '11.5'

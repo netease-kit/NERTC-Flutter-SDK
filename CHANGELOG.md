@@ -1,3 +1,12 @@
+## 5.9.30
+* New features:
+  - Add Audio frame callback. 
+* Update NERtc SDK dependency to 5.9.21.
+## 5.9.20
+* New features:
+  - Add Request LLM API (Large Language Model). `requestLLM`
+* Update NERtc SDK dependency to 5.9.20.
+
 ## 5.9.11+1
 * Documentation supplements, update README.md file.
 

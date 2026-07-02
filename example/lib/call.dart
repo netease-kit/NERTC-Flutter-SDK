@@ -4,6 +4,7 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
@@ -67,6 +68,7 @@ class _CallPageState extends State<CallPage>
         AppLoggerMixin,
         NERtcVideoRendererEventListener,
         NERtcChannelEventCallback,
+        NERtcAudioFrameEventCallback,
         NERtcAudioMixingEventCallback,
         NERtcAudioEffectEventCallback,
         NERtcStatsEventCallback,
@@ -107,6 +109,7 @@ class _CallPageState extends State<CallPage>
   bool isMuteMic = false;
   bool isMuteSpeaker = false;
   bool isSubAllAudio = true;
+  bool _saveAudioFramePcm = false;
 
   bool setMediaSever = false;
   int videoViewFitType = 0;
@@ -114,6 +117,8 @@ class _CallPageState extends State<CallPage>
   // 创建一个数据流控制器
   final StreamController<Uint8List> streamController =
       StreamController<Uint8List>();
+  final Map<String, Future<IOSink>> _pcmSinkFutures = {};
+  late final String _pcmSessionTag;
 
   // force to call sub and unsub
   bool forceSubAndUnsubVideo = false;
@@ -130,6 +135,7 @@ class _CallPageState extends State<CallPage>
   @override
   void initState() {
     super.initState();
+    _pcmSessionTag = DateTime.now().millisecondsSinceEpoch.toString();
     print('start call: uid=${widget.uid}, cid=${widget.cid}');
     _initSettings().then((value) => _initRtcEngine()).then((value) {
       if (_settings.forceLandScapeMode) {
@@ -152,6 +158,7 @@ class _CallPageState extends State<CallPage>
     isFrontCamera = _settings.frontFacingCamera;
     isFrontCameraMirror = _settings.frontFacingCameraMirror;
     videoViewFitType = _settings.videoViewFitType;
+    _saveAudioFramePcm = _settings.saveAudioFramePcm;
     updateLocalMirror();
   }
 
@@ -240,6 +247,7 @@ class _CallPageState extends State<CallPage>
         buildControlPanel7(context),
         if (Platform.isMacOS || Platform.isWindows) buildControlPanel8(context),
         if (Platform.isMacOS || Platform.isWindows) buildControlPanel9(context),
+        buildControlPanel10(context), // LLM测试面板
       ],
     );
   }
@@ -303,6 +311,25 @@ class _CallPageState extends State<CallPage>
         child: buildControlButton(() {
       _showPushLocalRecorderVideoFrameDialog();
     }, Text('推送本地录制视频帧', style: TextStyle(fontSize: 10)))));
+    return Container(
+      height: 40,
+      child: Row(
+        children: children,
+      ),
+    );
+  }
+
+  /// LLM测试面板
+  Widget buildControlPanel10(BuildContext context) {
+    List<Widget> children = [];
+    children.add(Expanded(
+        child: buildControlButton(() {
+      _testLLMWithText();
+    }, Text('LLM文本测试', style: TextStyle(fontSize: 10)))));
+    children.add(Expanded(
+        child: buildControlButton(() {
+      _testLLMWithImage();
+    }, Text('LLM图片测试', style: TextStyle(fontSize: 10)))));
     return Container(
       height: 40,
       child: Row(
@@ -1661,6 +1688,11 @@ class _CallPageState extends State<CallPage>
         });
   }
 
+  Future<void> _appendPcm(String fileName, Uint8List data) async {
+    final sink = await _getPcmSink(fileName);
+    sink.add(data);
+  }
+
   void _showStopRemuxFlvToMp4Dialog() {
     showDialog(
         context: context,
@@ -1690,6 +1722,27 @@ class _CallPageState extends State<CallPage>
             ],
           );
         });
+  }
+
+  Future<IOSink> _getPcmSink(String fileName) async {
+    return _pcmSinkFutures.putIfAbsent(fileName, () async {
+      final directory = Platform.isIOS || Platform.isMacOS
+          ? await getApplicationDocumentsDirectory()
+          : await getExternalStorageDirectory();
+      if (directory == null) {
+        throw StateError('Unable to resolve a writable directory for PCM output');
+      }
+      final file = File('${directory.path}/$fileName');
+      return file.openWrite(mode: FileMode.writeOnlyAppend);
+    });
+  }
+
+  String _pcmFileName(String kind, NERtcAudioFrame frame, {int? uid}) {
+    final uidPart = uid == null ? '' : '_uid$uid';
+    final sampleRate = frame.format?.sampleRate ?? 0;
+    final channels = frame.format?.channels ?? 0;
+    return '${_pcmSessionTag}_${widget.cid}_${widget.uid}_$kind'
+        '_sr${sampleRate}_ch${channels}$uidPart.pcm';
   }
 
   void _showPushLocalRecorderVideoFrameDialog() {
@@ -4873,8 +4926,10 @@ class _CallPageState extends State<CallPage>
           '_settings.openTestEnvironment:${_settings.openTestEnvironment}, appKey:$appKey');
     }
 
+    // 错误异常需要处理
     _engine
         .create(appKey: appKey, channelEventCallback: this, options: options)
+        .then((value) => _setupAudioFrameParameters())
         .then((value) => _initCallbacks())
         .then((value) => _initAudio())
         .then((value) => _initVideo())
@@ -4884,18 +4939,140 @@ class _CallPageState extends State<CallPage>
         .catchError((e) {
       FlutterToastr.show("catchError:' + e.toString()", context,
           position: FlutterToastr.bottom);
+      print('+++ error +++' + e.toString());
       return -1;
     });
   }
 
   Future<int?> _initCallbacks() async {
     _engine.setStatsEventCallback(this);
+    if (_settings.enableAudioFrameCallback) {
+      _engine.setAudioFrameEventCallback(this);
+    }
     _engine.audioMixingManager.setEventCallback(this);
     _engine.audioEffectManager.setEventCallback(this);
     _engine.deviceManager.setEventCallback(this);
     _engine.setLiveTaskEventCallback(this);
     _engine.setEventCallback(this);
     return 0;
+  }
+
+  Future<int?> _setupAudioFrameParameters() async {
+    final format = NERtcAudioFrameRequestFormat(
+      channels: 1,
+      sampleRate: 48000,
+      opMode: 0,
+    );
+    await _engine.setRecordingAudioFrameParameters(format);
+    await _engine.setPlaybackAudioFrameParameters(format);
+    await _engine.setPlaybackBeforeMixingAudioFrameParameters(format);
+    await _engine.setMixedAudioFrameParameters(format);
+    return 0;
+  }
+
+  @override
+  void onRecordFrame(NERtcAudioFrame frame) {
+    final data = frame.data;
+    if (_saveAudioFramePcm) {
+      if (data != null) {
+        unawaited(_appendPcm(_pcmFileName('record', frame), data));
+      }
+      return;
+    }
+    logger.i(
+        'CALL audioFrame onRecordFrame format=${frame.format?.sampleRate}/${frame.format?.channels} bytes=${frame.data?.length ?? 0}');
+  }
+
+  @override
+  void onPlaybackFrame(NERtcAudioFrame frame) {
+    final data = frame.data;
+    if (_saveAudioFramePcm) {
+      if (data != null) {
+        unawaited(_appendPcm(_pcmFileName('playback', frame), data));
+      }
+      return;
+    }
+    logger.i(
+        'CALL audioFrame onPlaybackFrame format=${frame.format?.sampleRate}/${frame.format?.channels} bytes=${frame.data?.length ?? 0}');
+  }
+
+  @override
+  void onPlaybackAudioFrameBeforeMixingWithUserID(
+      int uid, NERtcAudioFrame frame) {
+    final data = frame.data;
+    if (_saveAudioFramePcm) {
+      if (data != null) {
+        unawaited(
+            _appendPcm(_pcmFileName('before_mixing', frame, uid: uid), data));
+      }
+      return;
+    }
+    logger.i(
+        'CALL audioFrame onPlaybackAudioFrameBeforeMixingWithUserID uid=$uid format=${frame.format?.sampleRate}/${frame.format?.channels} bytes=${frame.data?.length ?? 0}');
+  }
+
+  @override
+  void onMixedAudioFrame(NERtcAudioFrame frame) {
+    final data = frame.data;
+    if (_saveAudioFramePcm) {
+      if (data != null) {
+        unawaited(_appendPcm(_pcmFileName('mixed', frame), data));
+      }
+      return;
+    }
+    logger.i(
+        'CALL audioFrame onMixedAudioFrame format=${frame.format?.sampleRate}/${frame.format?.channels} bytes=${frame.data?.length ?? 0}');
+  }
+
+  @override
+  void onRecordSubStreamAudioFrame(NERtcAudioFrame frame) {
+    final data = frame.data;
+    if (_saveAudioFramePcm) {
+      if (data != null) {
+        unawaited(_appendPcm(_pcmFileName('record_sub_stream', frame), data));
+      }
+      return;
+    }
+    logger.i(
+        'CALL audioFrame onRecordSubStreamAudioFrame format=${frame.format?.sampleRate}/${frame.format?.channels} bytes=${frame.data?.length ?? 0}');
+  }
+
+  @override
+  void onPlaybackSubStreamAudioFrameBeforeMixingWithUserID(
+      int uid, NERtcAudioFrame frame) {
+    final data = frame.data;
+    if (_saveAudioFramePcm) {
+      if (data != null) {
+        unawaited(_appendPcm(
+            _pcmFileName('sub_stream_before_mixing', frame, uid: uid), data));
+      }
+      return;
+    }
+    logger.i(
+        'CALL audioFrame onPlaybackSubStreamAudioFrameBeforeMixingWithUserID uid=$uid format=${frame.format?.sampleRate}/${frame.format?.channels} bytes=${frame.data?.length ?? 0}');
+  }
+
+  @override
+  void onPlaybackAudioFrameBeforeMixingForPlayStreaming(
+      String streamId, NERtcAudioFrame frame) {
+    final data = frame.data;
+    if (_saveAudioFramePcm) {
+      if (data != null) {
+        unawaited(_appendPcm(
+            _pcmFileName('play_streaming', frame), data));
+      }
+      return;
+    }
+    logger.i(
+        'CALL audioFrame onPlaybackAudioFrameBeforeMixingForPlayStreaming streamId=$streamId format=${frame.format?.sampleRate}/${frame.format?.channels} bytes=${frame.data?.length ?? 0}');
+  }
+
+  Future<void> _syncAudioFrameListener() async {
+    if (_settings.enableAudioFrameCallback) {
+      _engine.setAudioFrameEventCallback(this);
+    } else {
+      _engine.removeAudioFrameEventCallback(this);
+    }
   }
 
   Future<int?> _initAudio() async {
@@ -4965,6 +5142,10 @@ class _CallPageState extends State<CallPage>
     }
     _leaveChannel();
     _releaseRtcEngine();
+    for (final sinkFuture in _pcmSinkFutures.values) {
+      unawaited(sinkFuture.then((sink) => sink.close()));
+    }
+    _pcmSinkFutures.clear();
     if (Platform.isAndroid) {
       foregroundServiceChannel.invokeMethod('cancelForegroundService');
     }
@@ -5543,6 +5724,103 @@ class _CallPageState extends State<CallPage>
       int userId, int videoType, int width, int height) {
     print(
         'onRemoteVideoSizeChanged#userId:$userId, videoType:$videoType, width:$width, height:$height');
+  }
+
+  /// LLM纯文本测试
+  Future<void> _testLLMWithText() async {
+    try {
+      print('开始LLM纯文本测试');
+      FlutterToastr.show('开始LLM纯文本测试', context);
+
+      // 创建任务ID
+      String taskId = 'text_task_${DateTime.now().millisecondsSinceEpoch}';
+
+      // 创建请求参数
+      var params = NERtcLLMRequestParams(
+        taskId: taskId,
+        text: "你好，请介绍一下今天的天气情况",
+        interruptMode: 1, // 高优先级
+      );
+
+      print('LLM请求参数: taskId=$taskId, text=${params.text}');
+
+      // 调用requestLLM接口
+      NERtcLLMRequestResult result =
+          await _engine.requestLLM(0, params); // 0表示SDK自动查找AI用户
+
+      // 处理结果
+      if (result.code == 0) {
+        print('✅ LLM纯文本请求成功');
+        print('  任务ID: ${result.taskId}');
+        FlutterToastr.show('LLM纯文本请求成功\n任务ID: ${result.taskId}', context,
+            duration: FlutterToastr.lengthLong);
+      } else {
+        print('❌ LLM纯文本请求失败');
+        print('  任务ID: ${result.taskId}');
+        print('  错误码: ${result.code}');
+        print('  错误信息: ${result.errorMsg}');
+        FlutterToastr.show(
+            'LLM纯文本请求失败\n错误码: ${result.code}\n错误信息: ${result.errorMsg}',
+            context,
+            duration: FlutterToastr.lengthLong);
+      }
+    } catch (e) {
+      print('❌ LLM纯文本测试异常: $e');
+      FlutterToastr.show('LLM纯文本测试异常: $e', context,
+          duration: FlutterToastr.lengthLong);
+    }
+  }
+
+  /// LLM图片测试
+  Future<void> _testLLMWithImage() async {
+    try {
+      print('开始LLM图片测试');
+      FlutterToastr.show('开始LLM图片测试', context);
+
+      // 创建任务ID
+      String taskId = 'image_task_${DateTime.now().millisecondsSinceEpoch}';
+
+      // 这里使用一个小的测试图片的base64编码（1x1像素的红色PNG图片）
+      String base64Image =
+          'iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/gAIDAAAA5klEQVR4nO3QQQkAIADAQLV/Z63gXiLcJRibe3BrvQ74iVmBWYFZgVmBWYFZgVmBWYFZgVmBWYFZgVmBWYFZgVmBWYFZgVmBWYFZgVmBWYFZgVmBWYFZgVmBWYFZgVmBWYFZgVmBWYFZgVmBWYFZgVmBWYFZgVmBWYFZgVmBWYFZgVmBWYFZgVmBWYFZgVmBWYFZgVmBWYFZgVmBWYFZgVmBWYFZgVmBWYFZgVmBWYFZgVmBWYFZgVmBWYFZgVmBWYFZgVmBWYFZgVmBWYFZgVmBWYFZgVmBWYFZgVmBWcEBil4Bx/GEGnoAAAAASUVORK5CYII=';
+      String mediaContent = 'data:image/png;base64,$base64Image';
+
+      // 创建请求参数
+      var params = NERtcLLMRequestParams(
+        taskId: taskId,
+        mediaContent: mediaContent,
+        text: "这张图片里有什么内容？",
+        interruptMode: 1, // 高优先级
+      );
+
+      print('LLM请求参数: taskId=$taskId');
+      print('  text=${params.text}');
+      print('  mediaContent长度=${mediaContent.length}字符');
+
+      // 调用requestLLM接口
+      NERtcLLMRequestResult result =
+          await _engine.requestLLM(0, params); // 0表示SDK自动查找AI用户
+
+      // 处理结果
+      if (result.code == 0) {
+        print('✅ LLM图片请求成功');
+        print('  任务ID: ${result.taskId}');
+        FlutterToastr.show('LLM图片请求成功\n任务ID: ${result.taskId}', context,
+            duration: FlutterToastr.lengthLong);
+      } else {
+        print('❌ LLM图片请求失败');
+        print('  任务ID: ${result.taskId}');
+        print('  错误码: ${result.code}');
+        print('  错误信息: ${result.errorMsg}');
+        FlutterToastr.show(
+            'LLM图片请求失败\n错误码: ${result.code}\n错误信息: ${result.errorMsg}', context,
+            duration: FlutterToastr.lengthLong);
+      }
+    } catch (e) {
+      print('❌ LLM图片测试异常: $e');
+      FlutterToastr.show('LLM图片测试异常: $e', context,
+          duration: FlutterToastr.lengthLong);
+    }
   }
 }
 

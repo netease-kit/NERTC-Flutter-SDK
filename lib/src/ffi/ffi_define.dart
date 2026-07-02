@@ -34,6 +34,14 @@ class InvokeMethod {
   static const String kNERtcEngineUploadSdkInfo = "UploadSdkInfo";
   static const String kNERtcEngineGetChannelConnection = "getChannelConnection";
   static const String kNERtcSetMediaStatsObserver = "SetMediaStatsObserver";
+  static const String kNERtcSetRecordingAudioFrameParameters =
+      "SetRecordingAudioFrameParameters";
+  static const String kNERtcSetPlaybackAudioFrameParameters =
+      "SetPlaybackAudioFrameParameters";
+  static const String kNERtcSetPlaybackBeforeMixingAudioFrameParameters =
+      "SetPlaybackBeforeMixingAudioFrameParameters";
+  static const String kNERtcSetMixedAudioFrameParameters =
+      "SetMixedAudioFrameParameters";
   static const String kNERtcEngineSetCaptureConfig = "SetCameraCaptureConfig";
   static const String kNERtcEngineSetAudioSubscribeOnlyBy =
       "SetAudioSubscribeOnlyBy";

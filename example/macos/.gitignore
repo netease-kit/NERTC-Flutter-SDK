@@ -5,7 +5,3 @@
 # Xcode-related
 **/dgph
 **/xcuserdata/
-/build
-/Runner.xcworkspace
-/Runner.xcodeproj
-Podfile.lock

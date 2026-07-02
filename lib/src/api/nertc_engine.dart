@@ -35,6 +35,28 @@ abstract class NERtcEngine {
   /// 移除统计信息观测回调
   void removeStatsEventCallback(NERtcStatsEventCallback callback);
 
+  /// 注册原始音频帧回调
+  void setAudioFrameEventCallback(NERtcAudioFrameEventCallback callback);
+
+  /// 移除原始音频帧回调
+  void removeAudioFrameEventCallback(NERtcAudioFrameEventCallback callback);
+
+  /// 设置本地录音音频帧参数
+  Future<int> setRecordingAudioFrameParameters(
+      NERtcAudioFrameRequestFormat format);
+
+  /// 设置播放音频帧参数
+  Future<int> setPlaybackAudioFrameParameters(
+      NERtcAudioFrameRequestFormat format);
+
+  /// 设置播放前混音音频帧参数
+  Future<int> setPlaybackBeforeMixingAudioFrameParameters(
+      NERtcAudioFrameRequestFormat format);
+
+  /// 设置混音音频帧参数
+  Future<int> setMixedAudioFrameParameters(
+      NERtcAudioFrameRequestFormat format);
+
   /// 设置房间推流任务事件回调
   void setLiveTaskEventCallback(NERtcLiveTaskCallback callback);
 
@@ -2096,4 +2118,53 @@ abstract class NERtcEngine {
   Future<int> pushExternalAudioFrame(NERtcAudioExternalFrame frame);
 
   Future<int> pushExternalSubAudioFrame(NERtcAudioExternalFrame frame);
+
+  /// 请求LLM
+  ///
+  /// 方法成功调用后，房间内的成员可以接收到来自LLM的响应。
+  ///
+  /// **使用前提**
+  ///
+  /// 请先通过B端接口让AI入会。
+  ///
+  /// **调用时机**
+  ///
+  /// 请在引擎初始化之后，且在加入房间后调用。
+  ///
+  /// **参数说明**
+  ///
+  /// [dstUid] - AI在会中的uid，默认可以写0，sdk会自动查找。
+  ///
+  /// [params] - LLM请求参数
+  ///   - taskId: 任务ID
+  ///   - mediaContent: 请求LLM的图片数据(base64编码 格式：data:image/{format};base64,{base64_image})
+  ///   - url: 请求LLM的url地址
+  ///   - text: 请求LLM的文本描述
+  ///   - interruptMode: 传入文本信息或外部问题时，处理的优先级 默认1。1:高优先级。传入信息直接打断交互，
+  ///     进行处理。2:中优先级。等待当前交互结束后，进行处理。3:低优先级。如当前正在发生交互，直接丢弃。
+  ///
+  /// **返回值**
+  ///
+  /// 返回 Future<NERtcLLMRequestResult>，包含回调结果
+  ///   - taskId: 任务ID
+  ///   - code: 错误码，0表示成功
+  ///   - errorMsg: 错误信息
+  ///
+  /// **示例代码**
+  /// ```dart
+  /// var params = NERtcLLMRequestParams("123456")
+  ///   ..text = "今天天气怎么样"
+  ///   ..interruptMode = 1;
+  ///
+  /// NERtcLLMRequestResult result = await NERtcEngine.instance.requestLLM(0, params);
+  /// if (result.code == 0) {
+  ///   print("LLM请求成功，taskId: ${result.taskId}");
+  /// } else {
+  ///   print("LLM请求失败，code: ${result.code}, errorMsg: ${result.errorMsg}");
+  /// }
+  /// ```
+  ///
+  /// @since V5.9.20
+  Future<NERtcLLMRequestResult> requestLLM(
+      int dstUid, NERtcLLMRequestParams params);
 }

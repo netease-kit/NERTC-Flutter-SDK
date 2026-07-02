@@ -66,6 +66,10 @@ export 'package:nertc_core_platform_interface/nertc_core_platform_interface.dart
         NERtcVideoViewFitType,
         NERtcVideoCropMode,
         NERtcVideoStreamType,
+        NERtcAudioFrame,
+        NERtcAudioFrameEventSink,
+        NERtcAudioFrameFormat,
+        NERtcAudioFrameRequestFormat,
         NERtcAudioVolumeInfo,
         NERtcAudioDumpType,
         NERtcAudioMixingError,
@@ -164,6 +168,8 @@ export 'package:nertc_core_platform_interface/pigeon.dart'
         NERtcUserLeaveExtraInfo,
         NERtcUserJoinExtraInfo,
         NERtcCaptureExtraRotation,
+        NERtcLLMRequestParams,
+        NERtcLLMRequestResult,
         NERtcLastmileProbeResult,
         NERtcLastmileProbeOneWayResult;
 

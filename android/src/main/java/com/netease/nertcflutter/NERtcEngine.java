@@ -35,6 +35,7 @@ import com.netease.lava.nertc.sdk.NERtcVideoCorrectionConfiguration;
 import com.netease.lava.nertc.sdk.audio.NERtcAudioAINSMode;
 import com.netease.lava.nertc.sdk.audio.NERtcAudioExternalFrame;
 import com.netease.lava.nertc.sdk.audio.NERtcAudioRecordingConfiguration;
+import com.netease.lava.nertc.sdk.audio.NERtcAudioFrameRequestFormat;
 import com.netease.lava.nertc.sdk.audio.NERtcAudioStreamType;
 import com.netease.lava.nertc.sdk.audio.NERtcCreateAudioEffectOption;
 import com.netease.lava.nertc.sdk.audio.NERtcCreateAudioMixingOption;
@@ -369,6 +370,85 @@ public class NERtcEngine
 
   @NonNull
   @Override
+  public Long setRecordingAudioFrameParameters(
+      @NonNull Messages.NERtcAudioFrameRequestFormat request) {
+    NERtcAudioFrameRequestFormat format = new NERtcAudioFrameRequestFormat();
+    if (request.getChannels() != null) {
+      format.setChannels(request.getChannels().intValue());
+    }
+    if (request.getSampleRate() != null) {
+      format.setSampleRate(request.getSampleRate().intValue());
+    }
+    if (request.getOpMode() != null) {
+      format.setOpMode(request.getOpMode().intValue());
+    }
+    return (long) NERtcEx.getInstance().setRecordingAudioFrameParameters(format);
+  }
+
+  @NonNull
+  @Override
+  public Long setPlaybackAudioFrameParameters(
+      @NonNull Messages.NERtcAudioFrameRequestFormat request) {
+    NERtcAudioFrameRequestFormat format = new NERtcAudioFrameRequestFormat();
+    if (request.getChannels() != null) {
+      format.setChannels(request.getChannels().intValue());
+    }
+    if (request.getSampleRate() != null) {
+      format.setSampleRate(request.getSampleRate().intValue());
+    }
+    if (request.getOpMode() != null) {
+      format.setOpMode(request.getOpMode().intValue());
+    }
+    return (long) NERtcEx.getInstance().setPlaybackAudioFrameParameters(format);
+  }
+
+  @NonNull
+  @Override
+  public Long setPlaybackBeforeMixingAudioFrameParameters(
+      @NonNull Messages.NERtcAudioFrameRequestFormat request) {
+    NERtcAudioFrameRequestFormat format = new NERtcAudioFrameRequestFormat();
+    if (request.getChannels() != null) {
+      format.setChannels(request.getChannels().intValue());
+    }
+    if (request.getSampleRate() != null) {
+      format.setSampleRate(request.getSampleRate().intValue());
+    }
+    if (request.getOpMode() != null) {
+      format.setOpMode(request.getOpMode().intValue());
+    }
+    return (long) NERtcEx.getInstance().setPlaybackBeforeMixingAudioFrameParameters(format);
+  }
+
+  @NonNull
+  @Override
+  public Long setMixedAudioFrameParameters(
+      @NonNull Messages.NERtcAudioFrameRequestFormat request) {
+    NERtcAudioFrameRequestFormat format = new NERtcAudioFrameRequestFormat();
+    if (request.getChannels() != null) {
+      format.setChannels(request.getChannels().intValue());
+    }
+    if (request.getSampleRate() != null) {
+      format.setSampleRate(request.getSampleRate().intValue());
+    }
+    if (request.getOpMode() != null) {
+      format.setOpMode(request.getOpMode().intValue());
+    }
+    return (long) NERtcEx.getInstance().setMixedAudioFrameParameters(format);
+  }
+
+  @NonNull
+  @Override
+  public Long setAudioFrameObserver(@NonNull Boolean enabled) {
+    if (enabled) {
+      NERtcEx.getInstance().setAudioFrameObserver(callback);
+    } else {
+      NERtcEx.getInstance().setAudioFrameObserver(null);
+    }
+    return 0L;
+  }
+
+  @NonNull
+  @Override
   public Long createChannel(@NonNull String channelName) {
     return NERtcChannelManager.getInstance().createChannel(channelName);
   }
@@ -544,6 +624,7 @@ public class NERtcEngine
   public void release(Messages.Result<Long> result) {
     NERtcEx.getInstance().setStatsObserver(null);
     NERtcEx.getInstance().setAudioProcessObserver(null);
+    NERtcEx.getInstance().setAudioFrameObserver(null);
     NERtc.getInstance().release();
     NERtcChannelManager.getInstance().releaseAll();
     isInitialized = false;
@@ -3229,5 +3310,97 @@ public class NERtcEngine
       result = -1L;
     }
     return result;
+  }
+
+  @Override
+  public void requestLLM(
+      @NonNull Messages.RequestLLMRequest request,
+      @NonNull Messages.Result<Messages.NERtcLLMRequestResult> result) {
+    ThreadUtils.runOnUiThread(
+        () -> {
+          try {
+            // 构造 LLM 请求参数
+            com.netease.lava.nertc.sdk.ai.NERtcLLMRequestParams params =
+                new com.netease.lava.nertc.sdk.ai.NERtcLLMRequestParams();
+
+            // 设置必填参数
+            params.taskId = request.getParams().getTaskId();
+
+            // 设置可选参数
+            if (request.getParams().getText() != null) {
+              params.text = request.getParams().getText();
+            }
+
+            if (request.getParams().getMediaContent() != null) {
+              params.mediaContent = request.getParams().getMediaContent();
+            }
+
+            if (request.getParams().getUrl() != null) {
+              params.url = request.getParams().getUrl();
+            }
+
+            if (request.getParams().getInterruptMode() != null) {
+              params.interruptMode = request.getParams().getInterruptMode().intValue();
+            }
+
+            Log.i(
+                "NERtcEngine",
+                "requestLLM: dstUid="
+                    + request.getDstUid()
+                    + ", taskId="
+                    + params.taskId
+                    + ", text="
+                    + params.text
+                    + ", interruptMode="
+                    + params.interruptMode);
+
+            // 调用 SDK
+            int ret =
+                NERtcEx.getInstance()
+                    .requestLLM(
+                        request.getDstUid(),
+                        params,
+                        new com.netease.lava.nertc.sdk.ai.NERtcLLMRequestCallback() {
+                          @Override
+                          public void onLLMRequestResult(String taskId, int code, String errorMsg) {
+                            Log.i(
+                                "NERtcEngine",
+                                "requestLLM callback: taskId="
+                                    + taskId
+                                    + ", code="
+                                    + code
+                                    + ", errorMsg="
+                                    + errorMsg);
+
+                            // 构造返回结果
+                            Messages.NERtcLLMRequestResult llmResult =
+                                new Messages.NERtcLLMRequestResult.Builder()
+                                    .setTaskId(taskId)
+                                    .setCode((long) code)
+                                    .setErrorMsg(errorMsg)
+                                    .build();
+
+                            // 回调 Flutter 层
+                            result.success(llmResult);
+                          }
+                        });
+
+            // 如果调用失败，立即返回错误
+            if (ret != 0) {
+              Log.e("NERtcEngine", "requestLLM failed: ret=" + ret);
+              Messages.NERtcLLMRequestResult llmResult =
+                  new Messages.NERtcLLMRequestResult.Builder()
+                      .setTaskId(params.taskId)
+                      .setCode((long) ret)
+                      .setErrorMsg("requestLLM SDK call failed with code: " + ret)
+                      .build();
+              result.success(llmResult);
+            }
+
+          } catch (Exception e) {
+            Log.e("NERtcEngine", "requestLLM exception", e);
+            result.error(e);
+          }
+        });
   }
 }

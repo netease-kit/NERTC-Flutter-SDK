@@ -5,11 +5,8 @@
 part of nertc;
 
 class _NERtcChannelImpl extends NERtcChannel
-    with
-        _SDKLoggerMixin,
-        LoggingApi,
-        NERtcSubChannelEventSink,
-        NERtcStatsEventSink {
+    with _SDKLoggerMixin, LoggingApi
+    implements NERtcSubChannelEventSink, NERtcStatsEventSink {
   final String channelTag;
   final _platform = NERtcChannelPlatform.instance;
   final _rtcStatsPlatform = NERtcStatsPlatform.instance;

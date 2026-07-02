@@ -19,6 +19,7 @@ static NSString *const kLiteSDKBusinessScenarioFlutter = @"sdk.business.scenario
 
 @interface NERtcCorePlugin () <NEFLTEngineApi,
                                NERtcEngineDelegateEx,
+                               NERtcEngineAudioFrameObserver,
                                NEFLTDeviceManagerApi,
                                NEFLTAudioEffectApi,
                                NEFLTAudioMixingApi,
@@ -30,6 +31,7 @@ static NSString *const kLiteSDKBusinessScenarioFlutter = @"sdk.business.scenario
 @property(nonatomic, strong) NEFLTNERtcChannelEventSink *channelEventSink;
 @property(nonatomic, strong) NEFLTNERtcDeviceEventSink *deviceEventSink;
 @property(nonatomic, strong) NEFLTNERtcStatsEventSink *statsEventSink;
+@property(nonatomic, strong) FlutterBasicMessageChannel *audioFrameChannel;
 @property(nonatomic, strong) NEFLTNERtcAudioMixingEventSink *mixingEventSink;
 @property(nonatomic, strong) NEFLTNERtcAudioEffectEventSink *effectEventSink;
 @property(nonatomic, strong) NEFLTNERtcLiveStreamEventSink *liveTaskEventSink;
@@ -108,6 +110,11 @@ static NSString *const kLiteSDKBusinessScenarioFlutter = @"sdk.business.scenario
 
   _statsEventSink =
       [[NEFLTNERtcStatsEventSink alloc] initWithBinaryMessenger:[registrar messenger]];
+  _audioFrameChannel =
+      [FlutterBasicMessageChannel
+          messageChannelWithName:@"dev.flutter.nertc_core_platform_interface.audio_frame.binary"
+                 binaryMessenger:[registrar messenger]
+                           codec:[FlutterStandardMessageCodec sharedInstance]];
 
   _mixingEventSink =
       [[NEFLTNERtcAudioMixingEventSink alloc] initWithBinaryMessenger:[registrar messenger]];
@@ -302,6 +309,56 @@ static NSString *const kLiteSDKBusinessScenarioFlutter = @"sdk.business.scenario
   return result;
 }
 
+- (nullable NSNumber *)setRecordingAudioFrameParametersRequest:
+                           (nonnull NEFLTNERtcAudioFrameRequestFormat *)request
+                                                          error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
+  NERtcAudioFrameRequestFormat *format = [[NERtcAudioFrameRequestFormat alloc] init];
+  format.channels = request.channels;
+  format.sampleRate = request.sampleRate;
+  int ret = [[NERtcEngine sharedEngine] setRecordingAudioFrameParameters:format];
+  return @(ret);
+}
+
+- (nullable NSNumber *)setPlaybackAudioFrameParametersRequest:
+                           (nonnull NEFLTNERtcAudioFrameRequestFormat *)request
+                                                          error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
+  NERtcAudioFrameRequestFormat *format = [[NERtcAudioFrameRequestFormat alloc] init];
+  format.channels = request.channels;
+  format.sampleRate = request.sampleRate;
+  int ret = [[NERtcEngine sharedEngine] setPlaybackAudioFrameParameters:format];
+  return @(ret);
+}
+
+- (nullable NSNumber *)setPlaybackBeforeMixingAudioFrameParametersRequest:
+                           (nonnull NEFLTNERtcAudioFrameRequestFormat *)request
+                                                                          error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
+  NERtcAudioFrameRequestFormat *format = [[NERtcAudioFrameRequestFormat alloc] init];
+  format.channels = request.channels;
+  format.sampleRate = request.sampleRate;
+  int ret = [[NERtcEngine sharedEngine] setPlaybackBeforeMixingAudioFrameParameters:format];
+  return @(ret);
+}
+
+- (nullable NSNumber *)setMixedAudioFrameParametersRequest:
+                           (nonnull NEFLTNERtcAudioFrameRequestFormat *)request
+                                                          error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
+  NERtcAudioFrameRequestFormat *format = [[NERtcAudioFrameRequestFormat alloc] init];
+  format.channels = request.channels;
+  format.sampleRate = request.sampleRate;
+  int ret = [[NERtcEngine sharedEngine] setMixedAudioFrameParameters:format];
+  return @(ret);
+}
+
+- (nullable NSNumber *)setAudioFrameObserverEnabled:(NSNumber *)enabled
+                                              error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
+  if (enabled.boolValue) {
+    [[NERtcEngine sharedEngine] setAudioFrameObserver:self];
+  } else {
+    [[NERtcEngine sharedEngine] setAudioFrameObserver:nil];
+  }
+  return @(0);
+}
+
 - (nullable NSNumber *)createChannelChannelTag:(NSString *)channelTag
                                          error:(FlutterError *_Nullable *_Nonnull)error {
 #ifdef DEBUG
@@ -318,6 +375,7 @@ static NSString *const kLiteSDKBusinessScenarioFlutter = @"sdk.business.scenario
   NSLog(@"FlutterCalled:EngineApi#release");
 #endif
   [[NERtcEngine sharedEngine] cleanupEngineMediaStatsObserver];
+  [[NERtcEngine sharedEngine] setAudioFrameObserver:nil];
 
   // 释放所有 channel 资源
   [[NERtcChannelManager sharedInstance] releaseAll];
@@ -3055,6 +3113,77 @@ static NSString *const kLiteSDKBusinessScenarioFlutter = @"sdk.business.scenario
   }
 }
 
+- (void)requestLLMRequest:(nonnull NEFLTRequestLLMRequest *)request
+               completion:(nonnull void (^)(NEFLTNERtcLLMRequestResult *_Nullable,
+                                            FlutterError *_Nullable))completion {
+#ifdef DEBUG
+  NSLog(@"FlutterCalled:EngineApi#requestLLM");
+#endif
+
+  // 参数校验
+  if (!request || !request.params || !request.params.taskId) {
+    FlutterError *error = [FlutterError errorWithCode:@"INVALID_PARAMETER"
+                                              message:@"request or params or taskId is null"
+                                              details:nil];
+    completion(nil, error);
+    return;
+  }
+
+  // 构造 LLM 请求参数
+  NERtcLLMRequestParams *params = [[NERtcLLMRequestParams alloc] init];
+
+  // 设置必填参数
+  params.taskId = request.params.taskId;
+
+  // 设置可选参数
+  if (request.params.text) {
+    params.text = request.params.text;
+  }
+
+  if (request.params.mediaContent) {
+    params.mediaContent = request.params.mediaContent;
+  }
+
+  if (request.params.url) {
+    params.url = request.params.url;
+  }
+
+  if (request.params.interruptMode) {
+    params.interruptMode = request.params.interruptMode.intValue;
+  }
+
+  NSLog(@"requestLLM: dstUid=%lld, taskId=%@, text=%@, interruptMode=%d",
+        request.dstUid.unsignedLongLongValue, params.taskId, params.text, params.interruptMode);
+
+  // 调用 SDK
+
+  int ret = [[NERtcEngine sharedEngine]
+      requestLLM:request.dstUid.unsignedLongLongValue
+          params:params
+      compeltion:^(NSString *_Nonnull taskId, int code, NSString *_Nullable errorMsg) {
+        NSLog(@"requestLLM callback: taskId=%@, code=%d, errorMsg=%@", taskId, code, errorMsg);
+
+        // 构造返回结果
+        NEFLTNERtcLLMRequestResult *result =
+            [NEFLTNERtcLLMRequestResult makeWithTaskId:params.taskId
+                                                  code:@(code)
+                                              errorMsg:errorMsg];
+
+        // 回调 Flutter 层
+        completion(result, nil);
+      }];
+
+  // 如果调用失败，立即返回错误
+  if (ret != 0) {
+    NSLog(@"requestLLM failed: ret=%d", ret);
+    NEFLTNERtcLLMRequestResult *result = [NEFLTNERtcLLMRequestResult makeWithTaskId:params.taskId
+                                                                               code:@(ret)
+                                                                           errorMsg:nil];
+
+    completion(result, nil);
+  }
+}
+
 #pragma mark - NEFLTVideoRendererApi
 
 - (nullable NSNumber *)createVideoRendererWithError:
@@ -4738,6 +4867,96 @@ static NSString *const kLiteSDKBusinessScenarioFlutter = @"sdk.business.scenario
   [map setObject:[NSNumber numberWithBool:stat.dropBwStrategyEnabled]
           forKey:@"dropBwStrategyEnabled"];
   return map;
+}
+
+- (void)sendAudioFrame:(int)eventType uid:(uint64_t)uid frame:(NERtcAudioFrame *)frame {
+  if (!_audioFrameChannel || !frame) {
+    return;
+  }
+  NERtcAudioFormat *format = frame.format;
+  void *buffer = frame.data;
+  NSUInteger actualLength = 0;
+  if (format && buffer) {
+    NSUInteger channels = format.channels ? format.channels : 1;
+    NSUInteger bytesPerSample = format.bytesPerSample ? format.bytesPerSample : 2;
+    NSUInteger samplesPerChannel = format.samplesPerChannel;
+    actualLength = channels * bytesPerSample * samplesPerChannel;
+  }
+  NSData *pcmData = (buffer && actualLength > 0)
+                        ? [NSData dataWithBytes:buffer length:actualLength]
+                        : nil;
+  NSUInteger dataLength = pcmData ? pcmData.length : 0;
+  uint32_t audioType = 0;
+  uint32_t sampleRate = 0;
+  uint32_t channels = 0;
+  uint32_t bytesPerSample = 0;
+  uint32_t samplesPerChannel = 0;
+  if (format) {
+    audioType = format.type;
+    sampleRate = format.sampleRate;
+    channels = format.channels;
+    bytesPerSample = format.bytesPerSample;
+    samplesPerChannel = format.samplesPerChannel;
+  }
+  NSMutableArray *payload = [NSMutableArray arrayWithCapacity:8];
+  [payload addObject:@(eventType)];
+  [payload addObject:@(audioType)];
+  [payload addObject:@(uid)];
+  [payload addObject:@(sampleRate)];
+  [payload addObject:@(channels)];
+  [payload addObject:@(bytesPerSample)];
+  [payload addObject:@(samplesPerChannel)];
+  NSMutableArray *audioData = [NSMutableArray arrayWithCapacity:dataLength];
+  const uint8_t *bytes = pcmData.bytes;
+  for (NSUInteger index = 0; index < dataLength; index++) {
+    [audioData addObject:@(bytes[index])];
+  }
+  [payload addObject:audioData];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [_audioFrameChannel sendMessage:payload];
+  });
+}
+
+#pragma mark - NERtcEngineAudioFrameObserver
+
+- (void)onNERtcEngineAudioFrameDidRecord:(NERtcAudioFrame *)frame {
+  [self sendAudioFrame:0 uid:0 frame:frame];
+}
+
+- (void)onNERtcEngineAudioFrameDidRecordSubStream:(NERtcAudioFrame *)frame {
+  [self sendAudioFrame:4 uid:0 frame:frame];
+}
+
+- (void)onNERtcEngineAudioFrameWillPlayback:(NERtcAudioFrame *)frame {
+  [self sendAudioFrame:1 uid:0 frame:frame];
+}
+
+- (void)onNERtcEnginePlaybackAudioFrameBeforeMixingWithUserID:(uint64_t)userID
+                                                        frame:(NERtcAudioFrame *)frame {
+  [self sendAudioFrame:2 uid:userID frame:frame];
+}
+
+- (void)onNERtcEnginePlaybackAudioFrameBeforeMixingWithUserID:(uint64_t)userID
+                                                        frame:(NERtcAudioFrame *)frame
+                                                         type:(uint64_t)type {
+  // iOS SDK compatibility shim:
+  // keep the 3-parameter selector available, but let Flutter continue using
+  // the existing 2-parameter callback path.
+}
+
+- (void)onNERtcEnginePlaybackSubStreamAudioFrameBeforeMixingWithUserID:(uint64_t)userID
+                                                                  frame:(NERtcAudioFrame *)frame
+                                                              channelId:(uint64_t)channelId {
+  [self sendAudioFrame:5 uid:userID frame:frame];
+}
+
+- (void)onNERtcEnginePlaybackAudioFrameBeforeMixingForPlayStreaming:(NSString *)streamId
+                                                             frame:(NERtcAudioFrame *)frame {
+  [self sendAudioFrame:6 uid:0 frame:frame];
+}
+
+- (void)onNERtcEngineMixedAudioFrame:(NERtcAudioFrame *)frame {
+  [self sendAudioFrame:3 uid:0 frame:frame];
 }
 
 @end

@@ -2,7 +2,7 @@ name: nertc_core
 description: A Flutter plugin for NetEase RTC SDK, It can help you integrate SDK quickly and realize basic functions of Real-Time Communication.
 homepage: https://doc.yunxin.163.com/nertc/guide/Dc0NTg0NzM?platform=flutter
 repository: https://github.com/netease-im/NERTC-Flutter-SDK
-version: 5.9.11+1
+version: 5.9.30
 
 #publish_to: 'none'
 environment:
@@ -13,13 +13,13 @@ dependencies:
   flutter:
     sdk: flutter
 
-  yunxin_alog: ^2.0.0
+  yunxin_alog: ^2.0.6
   path_provider: ^2.1.5
   crypto: ^3.0.0
   ffi: ^2.0.1
 
   
-  nertc_core_platform_interface: ^5.9.11
+  nertc_core_platform_interface: ^5.9.30
 #  nertc_core_platform_interface:
 #    path: ./../nertc_core_platform_interface
 

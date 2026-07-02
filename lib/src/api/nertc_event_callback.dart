@@ -686,6 +686,26 @@ mixin class NERtcStatsEventCallback {
   void onNetworkQuality(List<NERtcNetworkQualityInfo> statsList) {}
 }
 
+/// 原始音频帧回调通知
+mixin class NERtcAudioFrameEventCallback {
+  void onRecordFrame(NERtcAudioFrame frame) {}
+
+  void onRecordSubStreamAudioFrame(NERtcAudioFrame frame) {}
+
+  void onPlaybackFrame(NERtcAudioFrame frame) {}
+
+  void onPlaybackAudioFrameBeforeMixingWithUserID(
+      int uid, NERtcAudioFrame frame) {}
+
+  void onPlaybackSubStreamAudioFrameBeforeMixingWithUserID(
+      int uid, NERtcAudioFrame frame) {}
+
+  void onPlaybackAudioFrameBeforeMixingForPlayStreaming(
+      String streamId, NERtcAudioFrame frame) {}
+
+  void onMixedAudioFrame(NERtcAudioFrame frame) {}
+}
+
 /// 直播事件回调通知
 mixin class NERtcLiveTaskCallback {
   /// 添加直播任务结果回调

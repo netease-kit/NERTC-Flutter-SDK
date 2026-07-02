@@ -1,6 +1,6 @@
 
 # native dependencies start
-set(NATIVE_SDK_DOWNLOAD_URL "https://yx-web-nosdn.netease.im/package/1761213316/NERTC_Windows_SDK_V5.9.11.zip?download=NERTC_Windows_SDK_V5.9.11.zip")
+set(NATIVE_SDK_DOWNLOAD_URL "https://yx-web-nosdn.netease.im/package/1751880570/NERTC_Windows_SDK_V5.9.21.zip?download=NERTC_Windows_SDK_V5.9.21.zip")
 # native dependencies end
 
 function(download_and_extract URL TARGET_DIR EXTRACTED_DIR)
